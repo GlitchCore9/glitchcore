@@ -1,0 +1,752 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101112">
+  <meta name="description" content="GlitchCore: профиль повреждён. Авторские 3D-объекты, глитч-арт, электроника и заметки из процесса.">
+  <title>GlitchCore.exe — профиль повреждён</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    @font-face {
+      font-family: "Monocraft";
+      src: url("https://cdn.jsdelivr.net/gh/IdreesInc/Monocraft@main/dist/Monocraft-ttf/Monocraft.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    :root {
+      color-scheme: light;
+      --paper: #18395e;
+      --window: #f0f0f0;
+      --ink: #111;
+      --muted: #4b4b4b;
+      --line: #154f9b;
+      --accent-blue: #0078d7;
+      --error-red: #ff0000;
+      --blue: #0000aa;
+      --blue-dark: #06152d;
+      --mono: "DM Mono", "Courier New", monospace;
+      --sans: "Space Grotesk", "Trebuchet MS", sans-serif;
+      --pixel: "Monocraft", "Courier New", monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      padding: 18px;
+      color: var(--ink);
+      background-color: var(--paper);
+      background-image:
+        linear-gradient(45deg, #07182dcc 25%, transparent 25%, transparent 75%, #07182dcc 75%),
+        linear-gradient(45deg, #07182dcc 25%, transparent 25%, transparent 75%, #07182dcc 75%),
+        radial-gradient(100% 55% at 4% 100%, #65a735 0 48%, transparent 49%),
+        radial-gradient(100% 54% at 96% 100%, #397c26 0 47%, transparent 48%),
+        linear-gradient(180deg, #155da2 0%, #80bde6 54%, #4f922a 55%, #72ae36 100%);
+      background-size: 44px 44px, 44px 44px, 100vw 50vh, 100vw 50vh, 100vw 100vh;
+      background-position: 0 0, 22px 22px, -18vw 50vh, 42vw 49vh, 0 0;
+      background-attachment: fixed;
+      background-repeat: repeat, repeat, no-repeat, no-repeat, no-repeat;
+      font-family: var(--sans);
+    }
+    a { color: inherit; }
+    button { color: inherit; font: inherit; }
+    .desktop { width: min(1200px, 100%); margin: 0 auto; }
+    .sysbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 34px;
+      margin-bottom: 10px;
+      padding: 0 10px;
+      color: #e8eee5;
+      background: var(--blue-dark);
+      font: 11px var(--mono);
+      letter-spacing: 0;
+    }
+    .sysbar-left, .sysbar-right { display: flex; gap: 16px; align-items: center; }
+    .led { width: 8px; height: 8px; display: inline-block; background: var(--accent-blue); border-radius: 50%; box-shadow: 0 0 8px #4e91df80; }
+    .window {
+      overflow: hidden;
+      border: 2px solid var(--blue);
+      background: var(--window);
+      color: var(--ink);
+      box-shadow: 0 0 0 1px #000, 8px 8px 0 #0008;
+    }
+    .titlebar {
+      display: flex;
+      height: 38px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 9px 0 13px;
+      color: #fff;
+      background: var(--blue);
+      border-bottom: 2px solid var(--accent-blue);
+      font: 11px var(--pixel);
+    }
+    .titlebar-name { display: flex; align-items: center; gap: 9px; }
+    .app-icon { display: grid; width: 17px; height: 17px; place-items: center; color: var(--ink); background: var(--accent-blue); font: 700 11px var(--mono); }
+    .window-controls { display: flex; gap: 5px; }
+    .window-controls span { width: 20px; height: 19px; display: grid; place-items: center; border: 1px solid #fff; background: #c0c0c0; color: #111; box-shadow: inset -1px -1px #707070, inset 1px 1px #fff; line-height: 1; pointer-events: none; }
+    .window-controls span:last-child { color: #fff; background: var(--error-red); border-color: var(--error-red); }
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 13px 24px;
+      border-bottom: 2px solid var(--accent-blue);
+      font: 12px var(--mono);
+    }
+    .nav-links { display: flex; gap: 22px; }
+    .nav a { text-decoration: none; }
+    .nav a:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+    .nav-label { color: var(--muted); }
+    .nav { background: #fff; color: #111; }
+    .dialog-window { position: relative; min-width: 0; padding-top: 29px; border: 2px solid var(--blue); background: #f0f0f0; color: #111; box-shadow: inset 1px 1px #fff, 4px 4px #0005; }
+    .dialog-window::before { position: absolute; top: 0; right: 0; left: 0; height: 27px; overflow: hidden; padding: 4px 100px 2px 8px; color: #fff; background: var(--blue); content: attr(data-dialog-title); font: 10px var(--pixel); white-space: nowrap; }
+    .dialog-window::after { content: none; }
+    .dialog-controls { position: absolute; top: 2px; right: 2px; z-index: 4; pointer-events: none; }
+    .back-top { position: fixed; z-index: 20; right: 20px; bottom: 20px; display: grid; width: 46px; height: 46px; place-items: center; border: 1px solid #fff; background: var(--blue); box-shadow: 3px 3px 0 var(--error-red); color: #fff; text-decoration: none; font: 24px/1 var(--mono); transition: transform .16s ease, box-shadow .16s ease; }
+    .back-top:hover { transform: translateY(-3px); box-shadow: 3px 6px 0 var(--error-red); }
+    .back-top:focus-visible { outline: 3px solid var(--error-red); outline-offset: 3px; }
+    .write-me { position: fixed; z-index: 20; right: 78px; bottom: 20px; display: flex; width: min(270px, calc(100vw - 104px)); height: 46px; align-items: center; justify-content: center; overflow: hidden; padding: 0 10px; border: 1px solid #b6d4f5; background: var(--blue-dark); box-shadow: 3px 3px 0 var(--error-red); color: #fff; text-decoration: none; white-space: nowrap; font: 9px var(--pixel); transition: transform .16s ease, background-color .16s ease, box-shadow .16s ease; }
+    .write-me:hover { transform: translateY(-3px); background: #16477b; box-shadow: 3px 6px 0 var(--error-red); }
+    .write-me:focus-visible { outline: 3px solid var(--error-red); outline-offset: 3px; }
+    .hero {
+      display: grid;
+      grid-template-columns: .9fr 1.1fr;
+      min-height: 620px;
+      border-bottom: 2px solid var(--accent-blue);
+    }
+    .hero-copy { position: relative; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: 54px clamp(24px, 5vw, 66px); color: #fff; background: var(--blue); }
+    .eyebrow { margin: 0 0 22px; color: #ffffff; font: 11px var(--mono); text-transform: uppercase; }
+    .hero h1 { max-width: 620px; margin: 0; font: 400 clamp(40px, 5.2vw, 68px)/1.16 var(--pixel); }
+    .hero h1 .accent { position: relative; display: inline-block; color: #fff; text-shadow: 2px 0 #ff0000, -2px 0 #00aaff; }
+    .hero-desc { max-width: 430px; margin: 27px 0 25px; color: #e7efff; font-size: 16px; line-height: 1.55; }
+    .hero-log { margin: 22px 0 0; color: #c1d7f5; font: 10px/1.7 var(--mono); }
+    .emoji-sticker { display: inline-block; width: 22px; height: 22px; margin: 0 3px; object-fit: contain; vertical-align: middle; image-rendering: pixelated; }
+    .hero-log .emoji-sticker { width: 24px; height: 24px; }
+    .hero-log span { color: var(--error-red); }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 10px; }
+    .button {
+      display: inline-flex;
+      min-height: 43px;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 0 16px;
+      border: 1px solid var(--blue-dark);
+      background: var(--blue-dark);
+      color: #fff;
+      text-decoration: none;
+      font: 10px var(--pixel);
+      transition: transform .16s ease, box-shadow .16s ease;
+    }
+    .button:hover { transform: translate(-2px, -2px); box-shadow: 3px 3px 0 var(--accent-blue); }
+    .hero-copy .button { border-color: #fff; background: #fff; color: var(--blue); }
+    .hero-copy .button.secondary { border-color: #b6d4f5; background: transparent; color: #fff; }
+    .checkerboard { background-color: #f0f0f0; background-image: conic-gradient(#111 25%, #f0f0f0 0 50%, #111 0 75%, #f0f0f0 0); background-size: 48px 48px; }
+    .hero-visual { position: relative; min-height: 520px; overflow: hidden; border-left: 1px solid var(--line); background-color: #f0f0f0; background-image: conic-gradient(#111 25%, #f0f0f0 0 50%, #111 0 75%, #f0f0f0 0); background-size: 48px 48px; }
+    .hero-visual img { width: 100%; height: 100%; position: absolute; inset: 0; object-fit: contain; filter: contrast(1.06) saturate(.88); }
+    .hero-visual::after { position: absolute; inset: 0; pointer-events: none; content: ""; background: linear-gradient(115deg, #ff000010, transparent 40%, #4e91df20), repeating-linear-gradient(0deg, #0000 0 3px, #fff1 4px); mix-blend-mode: screen; }
+    .photo-tag { position: absolute; z-index: 1; top: 18px; left: 18px; padding: 8px 10px; color: #fff; background: var(--blue); border-left: 2px solid var(--accent-blue); font: 10px var(--mono); }
+    .photo-caption { position: absolute; z-index: 1; right: 18px; bottom: 18px; max-width: 220px; padding: 10px 12px; color: #e3edf8; background: #101c2aed; border-left: 3px solid var(--error-red); font: 11px/1.45 var(--mono); }
+    .section { padding: 66px clamp(22px, 5vw, 62px); border-bottom: 1px solid var(--line); }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 28px; }
+    .section-kicker { margin: 0 0 9px; color: var(--accent-blue); font: 11px var(--mono); text-transform: uppercase; }
+    h2 { margin: 0; font: 400 clamp(23px, 3vw, 35px)/1.25 var(--pixel); }
+    .section-note { max-width: 260px; margin: 0; color: var(--muted); font: 11px/1.6 var(--mono); }
+    .filter-row { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 18px; }
+    .filter {
+      min-height: 32px;
+      padding: 0 11px;
+      border: 1px solid var(--line);
+      background: transparent;
+      cursor: pointer;
+      font: 9px var(--pixel);
+    }
+    .filter[aria-pressed="true"] { border-color: var(--accent-blue); background: var(--accent-blue); color: #fff; }
+    .project-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .project { position: relative; top: 0; min-width: 0; background: #fff; color: #111; transition: top .34s cubic-bezier(.18, .89, .32, 1.28), box-shadow .24s ease; }
+    .project[hidden] { display: none; }
+    .project-image { height: 340px; position: relative; overflow: hidden; background-color: #f0f0f0; background-image: conic-gradient(#111 25%, #f0f0f0 0 50%, #111 0 75%, #f0f0f0 0); background-size: 48px 48px; border-bottom: 1px solid var(--line); }
+    .project-image img { width: 100%; height: 100%; display: block; object-fit: contain; padding: 12px; filter: contrast(1.02); transition: transform .35s ease; }
+    .project:hover .project-image img { transform: scale(1.035); }
+    .project-index { position: absolute; top: 10px; left: 10px; padding: 6px 8px; color: #fff; background: var(--error-red); font: 10px var(--mono); }
+    .project-info { padding: 15px 15px 17px; background: #f0f0f0; color: #111; }
+    .project-info h3 { margin: 0 0 8px; color: #111; font: 400 15px/1.4 var(--pixel); }
+    .project-info h3 .emoji-sticker { width: 18px; height: 18px; }
+    .project-stickers { display: inline-flex; align-items: center; gap: 2px; margin-left: 5px; vertical-align: middle; }
+    .project-stickers .emoji-sticker { width: 18px; height: 18px; margin: 0; }
+    .project-info p { min-height: 40px; margin: 0 0 13px; color: #333; font-size: 12px; line-height: 1.5; }
+    .project-credit { display: inline-block; margin: 0 0 11px; color: #111; font: 600 11px var(--mono); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    .tag { color: #111; font: 10px var(--mono); }
+    .process-window { border: 2px solid var(--blue); background: #f0f0f0; color: #111; box-shadow: inset 1px 1px #fff, 4px 4px #0005; }
+    .process-topbar { position: relative; display: flex; min-height: 32px; align-items: center; justify-content: space-between; gap: 10px; padding: 0 104px 0 12px; color: #fff; background: var(--blue); font: 10px var(--pixel); }
+    .process-topbar .dialog-controls { top: 3px; right: 3px; }
+    .process-topbar span:last-child { color: #fff; }
+    .process-body { display: grid; grid-template-columns: 1.1fr .9fr; min-height: 310px; background: #fff; }
+    .process-visual { position: relative; min-height: 290px; overflow: hidden; background-color: #f0f0f0; background-image: conic-gradient(#111 25%, #f0f0f0 0 50%, #111 0 75%, #f0f0f0 0); background-size: 48px 48px; }
+    .process-visual::after { position: absolute; inset: 0; pointer-events: none; content: ""; background: repeating-linear-gradient(0deg, transparent 0 3px, #fff1 4px); }
+    .process-readout { position: absolute; z-index: 2; top: 14px; left: 14px; color: var(--accent-blue); font: 10px var(--mono); }
+    .process-readout img { width: 22px; height: 22px; margin-right: 5px; object-fit: contain; vertical-align: middle; image-rendering: pixelated; }
+    .process-object-photo { position: absolute; inset: 0; width: 100%; height: 100%; padding: 24px; object-fit: contain; opacity: .92; transition: filter .35s ease, transform .35s ease; }
+    .process-console[data-stage="idea"] .process-object-photo { filter: saturate(.45); transform: scale(.88) rotate(-1deg); }
+    .process-console[data-stage="model"] .process-object-photo { filter: hue-rotate(-14deg); transform: scale(.94); }
+    .process-console[data-stage="print"] .process-object-photo { filter: contrast(1.18) saturate(1.15); transform: scale(1.02); }
+    .process-console[data-stage="assemble"] .process-object-photo { filter: hue-rotate(14deg) contrast(1.12); transform: scale(.98) rotate(1deg); }
+    .process-copy { display: flex; flex-direction: column; justify-content: center; padding: 30px clamp(18px, 3vw, 38px); color: #111; background: #f0f0f0; }
+    .process-index { margin: 0 0 12px; color: #111; font: 10px var(--mono); }
+    .process-copy h3 { margin: 0 0 12px; color: #111; font: 400 clamp(17px, 2vw, 22px)/1.4 var(--pixel); }
+    .process-copy p:last-of-type { margin: 0; color: #333; font-size: 13px; line-height: 1.6; }
+    .process-progress { height: 8px; margin-top: 24px; border: 1px solid var(--line); background: #101112; }
+    .process-progress span { display: block; width: 25%; height: 100%; background: var(--accent-blue); transition: width .35s steps(4, end); }
+    .process-tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--line); }
+    .process-step { display: flex; min-width: 0; min-height: 58px; align-items: center; gap: 10px; padding: 8px 12px; border: 1px solid #808080; border-right: 0; background: #c0c0c0; color: #111; text-align: left; cursor: pointer; }
+    .process-step:last-child { border-right: 0; }
+    .process-step[aria-selected="true"] { color: #fff; background: var(--blue); }
+    .process-step:focus-visible { position: relative; z-index: 1; outline: 2px solid var(--error-red); outline-offset: -3px; }
+    .process-step span { color: #111; font: 10px var(--mono); }
+    .process-step[aria-selected="true"] span { color: #fff; }
+    .process-step strong { display: inline-flex; align-items: center; gap: 5px; overflow-wrap: anywhere; font: 9px var(--pixel); }
+    .process-step .emoji-sticker { width: 18px; height: 18px; margin: 0; }
+    .about-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 38px; align-items: start; }
+    .about-grid > * { min-width: 0; }
+    .about-text { max-width: 590px; color: #111; font-size: 15px; line-height: 1.7; }
+    .about-text p { margin: 0 0 16px; }
+    .alias-window { position: relative; border: 2px solid var(--blue); background: #f0f0f0; color: #111; box-shadow: inset 1px 1px #fff, 4px 4px #0005; }
+    .alias-title { position: relative; padding: 6px 100px 6px 12px; color: #fff; background: var(--blue); font: 10px var(--pixel); }
+    .alias-title .dialog-controls { top: 2px; right: 2px; }
+    .ascii-avatar { margin: 0; padding: 15px 12px 11px; border-bottom: 1px solid #999; color: var(--blue); background: #e2e8ef; font: 14px/1.08 var(--mono); text-align: center; white-space: pre; }
+    .aliases { display: flex; flex-wrap: wrap; gap: 7px; padding: 15px; background: #f0f0f0; }
+    .alias { padding: 7px 9px; border: 1px dashed #555; color: #111; background: #f0f0f0; font: 11px var(--mono); }
+    .alias:nth-child(3n) { background: #c0c0c0; border-style: solid; }
+    .skills { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+    .skill { min-height: 145px; padding: 16px; border-right: 0; border-bottom: 0; }
+    .dialog-window.skill { padding-top: 42px; border: 2px solid var(--blue); background: #f0f0f0; color: #111; }
+    .skill-icon { display: flex; height: 32px; align-items: center; margin-bottom: 12px; color: var(--accent-blue); font: 20px var(--mono); }
+    .skill-icon .emoji-sticker { width: 30px; height: 30px; margin: 0; }
+    .skill strong { display: block; margin-bottom: 5px; font-size: 13px; }
+    .skill small { color: var(--muted); font: 10px/1.5 var(--mono); }
+    .social-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+    .social-link { position: relative; display: flex; min-width: 0; min-height: 154px; flex-direction: column; align-items: flex-start; gap: 9px; padding: 14px; border: 0; background: #f0f0f0; color: #111; text-decoration: none; transition: transform .16s ease, background-color .16s ease, color .16s ease, box-shadow .16s ease; }
+    .dialog-window.social-link { padding-top: 42px; border: 2px solid var(--blue); }
+    .social-link:hover { transform: translate(-2px, -2px); color: #fff; background: #16477b; box-shadow: 4px 4px 0 var(--error-red); }
+    .social-kind { color: #111; font: 500 10px var(--mono); }
+    .social-kind .emoji-sticker { width: 18px; height: 18px; margin: 0 5px 0 0; }
+    .social-link:hover .social-kind, .social-link:hover small { color: #fff; }
+    .social-link strong { max-width: 100%; overflow-wrap: anywhere; color: #111; font: 500 12px/1.5 var(--pixel); }
+    .social-link small { color: #333; font: 11px/1.45 var(--sans); }
+    .social-arrow { position: absolute; top: 11px; right: 12px; color: var(--error-red); font: 14px var(--mono); }
+    .contact { display: flex; align-items: center; justify-content: space-between; gap: 30px; padding: 54px clamp(22px, 5vw, 62px) 44px; color: #111; background: #f0f0f0; border: 2px solid var(--blue); }
+    .contact::before { position: absolute; top: 0; right: 0; left: 0; height: 27px; overflow: hidden; padding: 4px 100px 2px 8px; color: #fff; background: var(--blue); content: attr(data-dialog-title); font: 10px var(--pixel); white-space: nowrap; }
+    .contact::after { content: none; }
+    .contact .section-kicker, .contact p { color: #333; }
+    .contact h2 { max-width: 520px; color: #111; font-size: clamp(23px, 3vw, 35px); }
+    .contact p { margin: 11px 0 0; font: 11px var(--mono); }
+    .contact a:not(.button) { color: #111; font-weight: 600; }
+    .contact-actions { display: flex; flex: 0 0 auto; flex-wrap: wrap; gap: 9px; }
+    .contact .button { border-color: var(--blue); background: #c0c0c0; color: #111; }
+    .contact .button.secondary { border-color: #808080; background: #c0c0c0; color: #111; }
+    .contact.dialog-window { padding-top: 55px; }
+    .statusbar { display: flex; justify-content: space-between; gap: 12px; padding: 9px 12px; border-top: 1px solid var(--line); color: var(--muted); font: 10px var(--mono); }
+    .status-left { display: flex; gap: 14px; }
+    .glitch-count-value { display: inline-block; color: var(--accent-blue); }
+    @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+      .cursor-echo { position: fixed; z-index: 1000; pointer-events: none; padding: 2px 5px; border-left: 2px solid var(--error-red); background: #07182de8; color: #fff; font: 11px var(--mono); animation: cursor-echo-fade .62s steps(4, end) forwards; }
+      @keyframes cursor-echo-fade { to { opacity: 0; transform: translate(-8px, -18px) scale(.78); } }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .tap-echo { position: fixed; z-index: 1000; top: 0; left: 0; pointer-events: none; padding: 4px 7px; border-left: 2px solid var(--error-red); background: #06152de8; color: #fff; font: 12px var(--mono); animation: tap-burst .82s cubic-bezier(.15, .75, .25, 1) forwards; }
+      @keyframes tap-burst {
+        0% { opacity: 0; transform: translate(-50%, -50%) scale(.2); }
+        18% { opacity: 1; transform: translate(-50%, -50%) scale(1.12); }
+        100% { opacity: 0; transform: translate(calc(-50% + var(--drift-x)), calc(-50% - var(--rise))) rotate(var(--spin)) scale(.72); }
+      }
+    }
+    .glitch-mode .hero h1, .glitch-mode .section h2 { text-shadow: 2px 0 var(--error-red), -2px 0 var(--blue); }
+    .glitch-mode .hero-visual img { filter: saturate(1.25) contrast(1.15) hue-rotate(8deg); }
+    .glitch-mode .window { box-shadow: 7px 6px 0 #ff000060, -3px -2px 0 #4e91df80; }
+    .js-motion .reveal { opacity: 0; transform: translateY(18px); transition: opacity .55s ease, transform .65s cubic-bezier(.2, .7, .2, 1); transition-delay: var(--reveal-delay, 0ms); }
+    .js-motion .reveal.is-visible { opacity: 1; transform: translateY(0); }
+    .js-motion .project { transition: opacity .55s ease, transform .65s cubic-bezier(.2, .7, .2, 1), top .34s cubic-bezier(.18, .89, .32, 1.28), box-shadow .24s ease; transition-delay: var(--reveal-delay, 0ms); }
+    .glitch-hit .hero-visual { animation: screen-tear .42s steps(2, end); }
+    .glitch-hit .hero h1 { animation: text-jolt .42s steps(3, end); }
+    @media (prefers-reduced-motion: no-preference) {
+      .hero-copy > * { animation: boot-in .55s both; }
+      .hero-copy > *:nth-child(2) { animation-delay: .08s; }
+      .hero-copy > *:nth-child(3) { animation-delay: .15s; }
+      .hero-copy > *:nth-child(4) { animation-delay: .22s; }
+      @keyframes boot-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+      @keyframes screen-tear {
+        0%, 100% { clip-path: inset(0); transform: translateX(0); }
+        24% { clip-path: inset(12% 0 66%); transform: translateX(-7px); }
+        48% { clip-path: inset(54% 0 22%); transform: translateX(6px); }
+        72% { clip-path: inset(76% 0 5%); transform: translateX(-3px); }
+      }
+      .project:hover .project-image img { animation: screen-tear .42s steps(2, end); }
+      @media (hover: hover) and (pointer: fine) {
+        .project:is(:hover, :focus-within) { z-index: 3; top: -7px; box-shadow: 0 12px 28px #0005, 4px 4px 0 var(--accent-blue); }
+      }
+      @keyframes text-jolt {
+        0%, 100% { transform: translateX(0); }
+        30% { transform: translateX(4px); }
+        65% { transform: translateX(-3px); }
+      }
+      .hero h1 .accent { animation: title-rgb-glitch 3.8s steps(1, end) infinite; }
+      @keyframes title-rgb-glitch {
+        0%, 91%, 100% { text-shadow: 2px 0 #ff0000, -2px 0 #00aaff; transform: translateX(0); }
+        92% { text-shadow: 5px 0 #ff0000, -4px 0 #00aaff; transform: translateX(2px); }
+        94% { text-shadow: -4px 0 #ff0000, 4px 0 #00aaff; transform: translateX(-2px); }
+        96% { text-shadow: 2px 0 #ff0000, -2px 0 #00aaff; transform: translateX(0); }
+      }
+      .glitch-count-value { animation: count-drop .42s cubic-bezier(.2, .8, .3, 1.3); }
+      @keyframes count-drop {
+        0% { opacity: 0; transform: translateY(-.7em); }
+        65% { opacity: 1; transform: translateY(.12em); }
+        100% { transform: translateY(0); }
+      }
+      .process-console[data-stage="print"] .process-object-photo { animation: print-scan 1.4s steps(4, end) infinite; }
+      @keyframes print-scan { 50% { filter: contrast(1.3) saturate(1.25) hue-rotate(-8deg); } }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
+    }
+    @media (max-width: 760px) {
+      body { padding: 8px; }
+      .sysbar-left span:nth-child(2), .nav-label { display: none; }
+      .nav { padding: 12px 15px; }
+      .nav-links { gap: 13px; }
+      .social-grid, .skills { grid-template-columns: 1fr; }
+      .nav-links a { font-size: 10px; }
+      .hero { grid-template-columns: 1fr; }
+      .hero-copy { padding: 44px 24px 36px; }
+      .hero h1 { font-size: 30px; }
+      .hero-visual { min-height: 340px; border-top: 1px solid var(--line); border-left: 0; }
+      .section { padding: 48px 20px; }
+      .project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .project-image { height: 240px; }
+      .social-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .process-body { grid-template-columns: 1fr; }
+      .process-visual { min-height: 250px; }
+      .about-grid { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+      .skills { grid-template-columns: repeat(2, 1fr); }
+      .contact { align-items: flex-start; flex-direction: column; padding: 34px 20px; }
+    }
+        .aa-art {
+      font-family: var(--pixel);
+      font-size: 13px;
+      line-height: 1.2;
+      white-space: pre;
+      overflow-x: auto;
+      margin: 0;
+      padding: 15px 12px 11px;
+      border-bottom: 1px solid #999;
+      color: var(--blue);
+      background: #e2e8ef;
+      text-align: center;
+    }
+        @media (prefers-reduced-motion: no-preference) {
+      .ambient-echo {
+        position: fixed;
+        z-index: 1000;
+        pointer-events: none;
+        padding: 2px 5px;
+        border-left: 2px solid var(--error-red);
+        background: #07182de8;
+        color: #fff;
+        font: 11px var(--mono);
+        animation: ambient-fade 2.4s ease-out forwards;
+      }
+      @keyframes ambient-fade {
+        0%   { opacity: 0; transform: translateY(0) scale(.7) rotate(0deg); }
+        15%  { opacity: .9; transform: translateY(-10px) scale(1) rotate(0deg); }
+        100% { opacity: 0; transform: translateY(-60px) scale(.85) rotate(8deg); }
+      }
+    }
+    @media (max-width: 470px) {
+      .sysbar { font-size: 9px; }
+      .sysbar-right { gap: 8px; }
+      .nav-links { gap: 9px; }
+      .nav-links a { font-size: 9px; }
+      .write-me { font-size: 8px; }
+      .social-grid, .skills { grid-template-columns: 1fr; }
+      .aa-art { font-size: clamp(7px, 2.2vw, 9px); padding-right: 4px; padding-left: 4px; }
+      .hero-visual { min-height: 285px; }
+      .section-head { align-items: flex-start; flex-direction: column; }
+      .project-grid { grid-template-columns: 1fr; }
+      .project-image { height: 285px; }
+      .process-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .process-step:nth-child(2) { border-right: 0; }
+      .process-step:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+      .process-step { min-height: 52px; }
+      .social-link { min-height: 136px; padding: 11px; }
+      .statusbar { font-size: 9px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="desktop" id="top">
+    <div class="sysbar" aria-label="Статус системы">
+      <div class="sysbar-left"><span>GC_OS 95</span><span>USER: GLITCHCORE</span><span><i class="led"></i> PROFILE: CORRUPTED</span></div>
+      <div class="sysbar-right"><button class="filter" id="glitch-toggle" type="button" aria-pressed="false">GLITCH: OFF</button><span id="clock">--:--</span></div>
+    </div>
+
+    <main class="window">
+      <div class="titlebar">
+        <div class="titlebar-name"><span class="app-icon">G</span><span>GlitchCore.exe — USER PROFILE / FAULT</span></div>
+        <div class="window-controls" aria-hidden="true"><span>_</span><span>□</span><span>×</span></div>
+      </div>
+      <nav class="nav" aria-label="Основная навигация">
+        <span class="nav-label"><img class="emoji-sticker" src="assets/emoji-xp-field-loop.gif" data-motion-src="assets/emoji-xp-field-loop.gif" data-static-src="assets/xp-bliss-wallpaper.png" alt="Анимированное XP-поле"> [ RECOVERY MENU ]</span>
+        <div class="nav-links"><a href="#projects">архив</a><a href="#process">процесс</a><a href="#about">профиль</a><a href="#links">каналы</a></div>
+      </nav>
+
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">SYSTEM NOTIFICATION / 0xID_FAULT</p>
+          <h1 id="hero-title">я глюкор<br><span class="accent">я глюкор</span><br>я глюкор</h1>
+          <p class="hero-desc">GlitchCore detected. ЧЕ ДЕЛАЕШЬ? Придумываю вещи, которых не было, и довожу их от концепта до физического объекта. Глюки чинить не надо =)</p>
+          <div class="cta-row"><a class="button" href="#projects">открыть архив <span aria-hidden="true">↘</span></a><a class="button secondary" href="https://t.me/GlitchCore9" target="_blank" rel="noopener noreferrer">написать автору</a></div>
+          <p class="hero-log"><img class="emoji-sticker" src="assets/emoji-warning.png" alt="">USER_AVATAR.PNG: <span>NOT FOUND</span><br>REALITY_RENDER.EXE: <span>RUNNING...</span> <img class="emoji-sticker" src="assets/emoji-xp-error-loop.gif" data-motion-src="assets/emoji-xp-error-loop.gif" data-static-src="assets/xp-warning-document.png" alt="Анимированное окно Windows Error"></p>
+        </div>
+        <div class="hero-visual">
+          <img src="assets/glitchcore-print.jpg" alt="Физическая 3D-печатная фигурка GlitchCore рядом с окном Fatal Error" fetchpriority="high">
+          <span class="photo-tag">[ GLITCHCORE.SVG → 3MF / 001 ]</span>
+          <span class="photo-caption">FATAL ERROR: 0xID_FAULT<br>physical render: сохранён</span>
+        </div>
+      </section>
+
+      <section class="section" id="projects" aria-labelledby="projects-title">
+        <div class="section-head">
+          <div><p class="section-kicker">01 / quarantine folder</p><h2 id="projects-title">Архив артефактов</h2></div>
+          <p class="section-note">четыре файла найдены<br>ни один не открывается нормально</p>
+        </div>
+        <div class="filter-row" role="group" aria-label="Фильтр проектов">
+          <button class="filter" type="button" data-filter="all" aria-pressed="true">всё</button>
+          <button class="filter" type="button" data-filter="print" aria-pressed="false">физические объекты</button>
+          <button class="filter" type="button" data-filter="art" aria-pressed="false">арт-файлы</button>
+          <button class="filter" type="button" data-filter="archive" aria-pressed="false">найденное</button>
+        </div>
+        <div class="project-grid">
+          <article class="project dialog-window" data-dialog-title="FATAL_ERROR.3MF" data-kind="print">
+            <div class="project-image"><img src="assets/glitchcore-print.jpg" alt="Физическая печатная фигурка GlitchCore с маленьким окном Fatal Error" loading="lazy"><span class="project-index">[ 001 / PRINTED ]</span></div>
+            <div class="project-info"><h3>GLITCHCORE.SVG → 3MF <img class="emoji-sticker" src="assets/emoji-chip.png" alt="Микросхема"></h3><p>Вектор стал физической фигуркой. Случайные глюки оставлены в релизе.</p><a class="project-credit" href="https://t.me/Tnxiu" target="_blank" rel="noopener noreferrer">арт: Tingxiu / Cюшечка ↗</a><span class="tag">#svg_to_stl &nbsp; #layer_by_layer</span></div>
+          </article>
+          <article class="project dialog-window" data-dialog-title="USER_AVATAR.PNG" data-kind="art">
+            <div class="project-image"><img src="assets/glitchcore-avatar-art.jpg" alt="Альтернативный рендер профиля GlitchCore, иллюстрация художницы Tingxiu" loading="lazy"><span class="project-index">[ 002 / USER_AVATAR.PNG ]</span></div>
+            <div class="project-info"><h3>Визуализация личности <img class="emoji-sticker" src="assets/emoji-profile.png" alt="Профиль"></h3><p>Оригинальный профиль повреждён. Альтернативный рендер предоставлен художницей.</p><a class="project-credit" href="https://t.me/Tnxiu" target="_blank" rel="noopener noreferrer">иллюстрация: Tingxiu / Cюшечка ↗</a><span class="tag">#identity_fault &nbsp; #render</span></div>
+          </article>
+          <article class="project dialog-window" data-dialog-title=":3.exe / VISUAL VIRUS" data-kind="art">
+            <div class="project-image"><img src="assets/visual-virus.jpg" alt="Стилизованное системное окно :3.exe, визуальный вирус" loading="lazy"><span class="project-index">[ 003 / 137 KB ]</span></div>
+            <div class="project-info"><h3>:3.exe <img class="emoji-sticker" src="assets/error-dialog-cascade.gif" data-motion-src="assets/error-dialog-cascade.gif" data-static-src="assets/xp-warning-document.png" alt="Анимированный каскад ошибок"></h3><p>Безумное мяу-мяу не переводится. Попытка анализа прервана.</p><a class="project-credit" href="https://t.me/GlitchCore3/21" target="_blank" rel="noopener noreferrer">открыть запись в канале ↗</a><span class="tag">#visual_virus &nbsp; #no_fix_needed</span></div>
+          </article>
+          <article class="project dialog-window" data-dialog-title="SD_CARD_???.SYS" data-kind="archive">
+            <div class="project-image"><img src="assets/sd-card-error.jpg" alt="Глитчевый арт найденной SD-карты с системным предупреждением" loading="lazy"><span class="project-index">[ 004 / UNKNOWN ]</span></div>
+            <div class="project-info"><h3>SD_CARD_??? <img class="emoji-sticker" src="assets/emoji-search.png" alt="Лупа"></h3><p>Не подключай чужие накопители. Система уже знает, что ты искал.</p><a class="project-credit" href="https://t.me/GlitchCore3/20" target="_blank" rel="noopener noreferrer">открыть запись в канале ↗</a><span class="tag">#external_media &nbsp; #do_not_format</span></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="process" aria-labelledby="process-title">
+        <div class="section-head">
+          <div><p class="section-kicker">02 / из головы в руки</p><h2 id="process-title">Как рождается штука</h2></div>
+          <p class="section-note">четыре этапа, пара сбоев<br>и одна новая вещь</p>
+        </div>
+        <div class="process-window process-console" id="process-console" data-stage="idea">
+          <div class="process-topbar"><span>MAKER_FLOW.exe</span><span id="process-status">СТАДИЯ 01 / 04</span></div>
+          <div class="process-body">
+            <div class="process-visual" aria-hidden="true">
+              <span class="process-readout" id="process-visual-label"><img src="assets/xp-hourglass-dialog.png" alt=""><span id="process-visual-name">IDEA.DAT</span></span>
+              <img class="process-object-photo" src="assets/glitchcore-print.jpg" alt="">
+            </div>
+            <div class="process-copy" id="process-details" role="tabpanel" aria-labelledby="step-idea" tabindex="0">
+              <p class="process-index" id="process-index">01 / 04</p>
+              <h3 id="process-step-title">Сначала: «а что если?»</h3>
+              <p id="process-step-description">В голове появляется идея. Обычно в самый неудобный момент и обязательно без блокнота рядом.</p>
+              <div class="process-progress" id="process-progress" role="progressbar" aria-label="Этап создания" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1"><span id="process-progress-fill"></span></div>
+            </div>
+          </div>
+          <div class="process-tabs" role="tablist" aria-label="Этапы создания">
+            <button class="process-step" id="step-idea" type="button" role="tab" aria-selected="true" aria-controls="process-details" tabindex="0" data-process-stage="idea"><span>01</span><strong><img class="emoji-sticker" src="assets/emoji-lightbulb.png" alt="">идея</strong></button>
+            <button class="process-step" id="step-model" type="button" role="tab" aria-selected="false" aria-controls="process-details" tabindex="-1" data-process-stage="model"><span>02</span><strong><img class="emoji-sticker" src="assets/emoji-help-book.png" alt="">модель</strong></button>
+            <button class="process-step" id="step-print" type="button" role="tab" aria-selected="false" aria-controls="process-details" tabindex="-1" data-process-stage="print"><span>03</span><strong><img class="emoji-sticker" src="assets/emoji-clapper.png" alt="">печать</strong></button>
+            <button class="process-step" id="step-assemble" type="button" role="tab" aria-selected="false" aria-controls="process-details" tabindex="-1" data-process-stage="assemble"><span>04</span><strong><img class="emoji-sticker" src="assets/emoji-plug.png" alt="">сборка</strong></button>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="about" aria-labelledby="about-title">
+        <div class="section-head"><div><p class="section-kicker">03 / автор файла</p><h2 id="about-title">Это всё я, Glitch Core</h2></div></div>
+        <div class="about-grid">
+          <div class="about-text">
+            <p><strong>[ FATAL ERROR: 0xID_FAULT ]</strong><br>Файл <code>GLITCHCORE_ID.SYS</code> повреждён. НАЗЫВАЙ МЕНЯ: глюкор / глитч / глюкорня / попкорн / глюня.exe.</p>
+            <p>Я придумываю штуки и довожу их от концепт-арта до физического объекта: SVG → STL → 3MF → слой за слоем. Шум и глюки оставляю, если они классные. То, что мешает работать, чиню. Иногда.</p>
+            <p>3D-моделирование, печать, концепт-арт, электроника, радиомоделирование, Arduino, робототехника, одежда и подбор образов. Слишком много интересов — это тоже часть бага.</p>
+          </div>
+             <div class="alias-window"><div class="alias-title">GLITCHCORE_ID.SYS / recovery</div><pre class="aa-art">
+           /\_/\\
+          ( o.o )
+           > ^ <
+        .---------.
+        | :3.exe  |
+        '---------'
+</pre><div class="aliases">
+</pre>
+            :3.exe</pre><div class="aliases"><span class="alias">глюкор</span><span class="alias">попкорн</span><span class="alias">глитчкор</span><span class="alias">глюк</span><span class="alias">глюкорня</span><span class="alias">глиня</span><span class="alias">глитч</span><span class="alias">глюня</span><span class="alias">и другие.exe</span>
+        </div>
+      </section>
+
+      <section class="section" aria-label="Что я умею">
+        <div class="section-head"><div><p class="section-kicker">04 / loaded modules</p><h2>Чем заражена система</h2></div><p class="section-note">модулей больше, чем<br>оперативной памяти</p></div>
+        <div class="skills">
+          <div class="skill dialog-window" data-dialog-title="3D_PRINT.exe"><span class="skill-icon" aria-hidden="true"><img class="emoji-sticker" src="assets/emoji-pc.png" alt=""></span><strong>Форма и печать</strong><small>концепт → STL → реальный объект</small></div>
+          <div class="skill dialog-window" data-dialog-title="IO_PORTS.sys"><span class="skill-icon" aria-hidden="true"><img class="emoji-sticker" src="assets/emoji-atom.png" alt=""></span><strong>Электроника</strong><small>Arduino, датчики, радиомодели</small></div>
+          <div class="skill dialog-window" data-dialog-title="CONCEPT_ART.exe"><span class="skill-icon" aria-hidden="true"><img class="emoji-sticker" src="assets/emoji-notepad.png" alt=""></span><strong>Концепт-арт</strong><small>идея, форма, детали, характер</small></div>
+          <div class="skill dialog-window" data-dialog-title="STYLE_PATCH.exe"><span class="skill-icon" aria-hidden="true"><img class="emoji-sticker" src="assets/emoji-win95-smile.png" alt=""></span><strong>Свой образ</strong><small>одежда, аксессуары и странные идеи</small></div>
+        </div>
+      </section>
+
+      <section class="section" id="links" aria-labelledby="links-title">
+        <div class="section-head">
+          <div><p class="section-kicker">05 / внешние устройства</p><h2 id="links-title">Найти меня в сети</h2></div>
+          <p class="section-note">блог — черновики и процесс<br>телега — написать автору</p>
+        </div>
+        <div class="social-grid">
+          <a class="social-link dialog-window" data-dialog-title="TELEGRAM / CHANNEL" href="https://t.me/GlitchCore3" target="_blank" rel="noopener noreferrer"><span class="social-kind"><img class="emoji-sticker" src="assets/emoji-chat.png" alt="">TELEGRAM / CHANNEL</span><strong>GlitchCore</strong><small>Работы, системные логи и глитч-объекты.</small><span class="social-arrow" aria-hidden="true">↗</span></a>
+          <a class="social-link dialog-window" data-dialog-title="TELEGRAM / WORKLOG" href="https://t.me/GlitchCoreBlog" target="_blank" rel="noopener noreferrer"><span class="social-kind"><img class="emoji-sticker" src="assets/emoji-clipboard.png" alt="">TELEGRAM / WORKLOG</span><strong>GlitchCoreBlog</strong><small>Черновики, тест-печати, баги и починка без фильтров.</small><span class="social-arrow" aria-hidden="true">↗</span></a>
+          <a class="social-link dialog-window" data-dialog-title="TELEGRAM / DM" href="https://t.me/GlitchCore9" target="_blank" rel="noopener noreferrer"><span class="social-kind"><img class="emoji-sticker" src="assets/emoji-phone.png" alt="">TELEGRAM / DM</span><strong>написать автору</strong><small>Идеи, вопросы и просто поздороваться.</small><span class="social-arrow" aria-hidden="true">↗</span></a>
+          <a class="social-link dialog-window" data-dialog-title="VK / PROFILE" href="https://vk.com/glitchcore9" target="_blank" rel="noopener noreferrer"><span class="social-kind"><img class="emoji-sticker" src="assets/emoji-globe.png" alt="">VK / PROFILE</span><strong>ВКонтакте</strong><small>Мой уголок во ВКонтакте.</small><span class="social-arrow" aria-hidden="true">↗</span></a>
+          <a class="social-link dialog-window" data-dialog-title="TIKTOK / MEMES" href="https://www.tiktok.com/@glitchcore9?lang=ru-RU" target="_blank" rel="noopener noreferrer"><span class="social-kind"><img class="emoji-sticker" src="assets/emoji-film.png" alt="">TIKTOK / MEMES</span><strong>glitchcore9</strong><small>Кидай мемы, иногда я их вижу.</small><span class="social-arrow" aria-hidden="true">↗</span></a>
+        </div>
+      </section>
+
+      <section class="contact dialog-window" data-dialog-title="CONTACT.exe" id="contact" aria-labelledby="contact-title">
+        <div><p class="section-kicker">06 / открыть канал связи (ПРИЁМ АУУУ)</p><h2 id="contact-title">Есть идея?<br>Давай придумаем ещё страннее.</h2><p>чекай отзывы кибердемон: <a href="https://t.me/GlitchCore3/13" target="_blank" rel="noopener noreferrer">посмотреть (нет блин не посмотреть!)</a></p></div>
+        <div class="contact-actions"><a class="button" href="https://t.me/GlitchCore9" target="_blank" rel="noopener noreferrer">написать Глюне <span aria-hidden="true">↗</span></a><a class="button secondary" href="https://t.me/GlitchCoreBlog" target="_blank" rel="noopener noreferrer">смотреть процесс <span aria-hidden="true">↗</span></a></div>
+      </section>
+      <footer class="statusbar"><div class="status-left"><span><i class="led"></i> PROFILE: CORRUPTED</span><span>глитчей: <span id="glitch-count">0</span></span></div><span>errors were features all along</span></footer>
+    </main>
+  </div>
+  <a class="write-me" href="https://t.me/GlitchCore9" target="_blank" rel="noopener noreferrer" aria-label="Напиши мне в Telegram" title="Напиши мне в Telegram">НАПИШИ МНЕ НАПИШИ МНЕ</a>
+  <a class="back-top" href="#top" aria-label="Вернуться наверх" title="Вернуться наверх">↑</a>
+
+  <script>
+    const clock = document.querySelector('#clock');
+    const glitchToggle = document.querySelector('#glitch-toggle');
+    const glitchCount = document.querySelector('#glitch-count');
+    const filterButtons = document.querySelectorAll('[data-filter]');
+    const projects = document.querySelectorAll('.project');
+    const processConsole = document.querySelector('#process-console');
+    const processTabs = [...document.querySelectorAll('[data-process-stage]')];
+    const cursorSymbols = [':3', '=)', '(─‿‿─)', '^-^'];
+    let nextCursorSymbol = 0;
+    const processStages = [
+      { id: 'idea', label: 'IDEA.DAT', title: 'Сначала: «а что если?»', description: 'Идея появилась. Блокнот, конечно, не рядом. Фиксирую как умею и иду придумывать форму.' },
+      { id: 'model', label: 'MODEL.3MF', title: 'SVG → STL → 3MF', description: 'Концепт превращается в модель. Проверяю форму, детали и как это будет жить не только на экране.' },
+      { id: 'print', label: 'LAYER_BY_LAYER.exe', title: 'Печать слой за слоем', description: 'Запускаю принтер. Случайный шум иногда становится частью объекта; то, что мешает ему работать, чиню.' },
+      { id: 'assemble', label: 'BUILD.NEXT', title: 'Следующий проект', description: 'Следующая идея уже загружается. Подробности появятся, когда пройдёт тестирование.' }
+    ];
+
+    function addWindowControls(windowElement) {
+      if (windowElement.querySelector(':scope > .dialog-controls')) return;
+
+      const controls = document.createElement('span');
+      controls.className = 'window-controls dialog-controls';
+      controls.setAttribute('aria-hidden', 'true');
+
+      ['_', '□', '×'].forEach((symbol) => {
+        const control = document.createElement('span');
+        control.textContent = symbol;
+        controls.append(control);
+      });
+
+      windowElement.append(controls);
+    }
+
+    document.querySelectorAll('.dialog-window, .process-topbar, .alias-title').forEach(addWindowControls);
+
+    function updateClock() {
+      clock.textContent = new Intl.DateTimeFormat('ru-RU', { hour: '2-digit', minute: '2-digit' }).format(new Date());
+    }
+
+    updateClock();
+    setInterval(updateClock, 30_000);
+
+    const motionPreviews = document.querySelectorAll('[data-motion-src][data-static-src]');
+    const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    function syncMotionPreviews() {
+      motionPreviews.forEach((preview) => {
+        const source = motionPreference.matches ? preview.dataset.staticSrc : preview.dataset.motionSrc;
+        if (preview.getAttribute('src') !== source) preview.setAttribute('src', source);
+      });
+    }
+
+    syncMotionPreviews();
+    motionPreference.addEventListener('change', syncMotionPreviews);
+
+    glitchToggle.addEventListener('click', () => {
+      const enabled = glitchToggle.getAttribute('aria-pressed') !== 'true';
+      glitchToggle.setAttribute('aria-pressed', String(enabled));
+      glitchToggle.textContent = `GLITCH: ${enabled ? 'ON' : 'OFF'}`;
+      document.body.classList.toggle('glitch-mode', enabled);
+      document.body.classList.remove('glitch-hit');
+      void document.body.offsetWidth;
+      document.body.classList.add('glitch-hit');
+      window.setTimeout(() => document.body.classList.remove('glitch-hit'), 450);
+      const countValue = document.createElement('span');
+      countValue.className = 'glitch-count-value';
+      countValue.textContent = String(Number(glitchCount.textContent) + 1);
+      glitchCount.replaceChildren(countValue);
+    });
+
+    if (window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)').matches) {
+      let lastCursorEcho = 0;
+
+      document.addEventListener('pointermove', (event) => {
+        const now = performance.now();
+        if (now - lastCursorEcho < 85) return;
+        lastCursorEcho = now;
+
+        const echo = document.createElement('span');
+        echo.className = 'cursor-echo';
+        echo.setAttribute('aria-hidden', 'true');
+        echo.textContent = cursorSymbols[nextCursorSymbol];
+        echo.style.left = `${event.clientX + 10}px`;
+        echo.style.top = `${event.clientY + 12}px`;
+        document.body.append(echo);
+        nextCursorSymbol = (nextCursorSymbol + 1) % cursorSymbols.length;
+        window.setTimeout(() => echo.remove(), 700);
+      });
+    }
+
+    if (window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+      document.addEventListener('pointerdown', (event) => {
+        if (event.pointerType !== 'touch' || event.target.closest('a, button, input, select, textarea, [role="tab"], [role="button"]')) return;
+
+        const echoCount = 3 + Math.floor(Math.random() * 2);
+        for (let index = 0; index < echoCount; index += 1) {
+          const echo = document.createElement('span');
+          echo.className = 'tap-echo';
+          echo.setAttribute('aria-hidden', 'true');
+          echo.textContent = cursorSymbols[nextCursorSymbol];
+          echo.style.left = `${event.clientX}px`;
+          echo.style.top = `${event.clientY}px`;
+          echo.style.setProperty('--drift-x', `${Math.round(Math.random() * 120 - 60)}px`);
+          echo.style.setProperty('--rise', `${Math.round(Math.random() * 55 + 45)}px`);
+          echo.style.setProperty('--spin', `${Math.round(Math.random() * 36 - 18)}deg`);
+          echo.style.animationDelay = `${index * 35}ms`;
+          document.body.append(echo);
+          nextCursorSymbol = (nextCursorSymbol + 1) % cursorSymbols.length;
+          window.setTimeout(() => echo.remove(), 950);
+        }
+      }, { passive: true });
+    }
+
+    filterButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const selected = button.dataset.filter;
+        filterButtons.forEach((filterButton) => filterButton.setAttribute('aria-pressed', String(filterButton === button)));
+        projects.forEach((project) => {
+          project.hidden = selected !== 'all' && !project.dataset.kind.split(' ').includes(selected);
+        });
+      });
+    });
+
+    function setProcessStage(index, focusTab = false) {
+      const stage = processStages[index];
+      const tab = processTabs[index];
+      processConsole.dataset.stage = stage.id;
+      document.querySelector('#process-status').textContent = `СТАДИЯ ${String(index + 1).padStart(2, '0')} / 04`;
+      document.querySelector('#process-visual-name').textContent = stage.label;
+      document.querySelector('#process-index').textContent = `${String(index + 1).padStart(2, '0')} / 04`;
+      document.querySelector('#process-step-title').textContent = stage.title;
+      document.querySelector('#process-step-description').textContent = stage.description;
+      document.querySelector('#process-details').setAttribute('aria-labelledby', tab.id);
+      document.querySelector('#process-progress').setAttribute('aria-valuenow', String(index + 1));
+      document.querySelector('#process-progress-fill').style.width = `${((index + 1) / processStages.length) * 100}%`;
+
+      processTabs.forEach((processTab, tabIndex) => {
+        const selected = tabIndex === index;
+        processTab.setAttribute('aria-selected', String(selected));
+        processTab.tabIndex = selected ? 0 : -1;
+      });
+
+      if (focusTab) tab.focus();
+    }
+
+    processTabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => setProcessStage(index));
+      tab.addEventListener('keydown', (event) => {
+        let nextIndex;
+        if (event.key === 'ArrowRight' || event.key === 'ArrowDown') nextIndex = (index + 1) % processTabs.length;
+        if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') nextIndex = (index - 1 + processTabs.length) % processTabs.length;
+        if (event.key === 'Home') nextIndex = 0;
+        if (event.key === 'End') nextIndex = processTabs.length - 1;
+        if (nextIndex !== undefined) {
+          event.preventDefault();
+          setProcessStage(nextIndex, true);
+        }
+      });
+    });
+
+    if (window.matchMedia('(prefers-reduced-motion: no-preference)').matches && 'IntersectionObserver' in window) {
+      document.querySelectorAll('.project-grid, .skills').forEach((group) => {
+        [...group.children].forEach((item, index) => item.style.setProperty('--reveal-delay', `${index * 85}ms`));
+      });
+
+      const revealItems = document.querySelectorAll('.section-head, .project, .process-window, .about-text, .alias-window, .skill, .social-link, .contact > div, .contact-actions');
+      revealItems.forEach((item) => item.classList.add('reveal'));
+      document.documentElement.classList.add('js-motion');
+
+      const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -24px 0px' });
+
+      revealItems.forEach((item) => revealObserver.observe(item));
+    }
+        if (window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+      const ambientSymbols = [':3', ':)', '0x', '^_^', '?!', '404', '>_<', 'o_O', ':/', '…'];
+      let ambientTimer;
+
+      function spawnAmbientEcho() {
+        if (document.hidden) return;
+
+        const echo = document.createElement('span');
+        echo.className = 'ambient-echo';
+        echo.setAttribute('aria-hidden', 'true');
+        echo.textContent = ambientSymbols[Math.floor(Math.random() * ambientSymbols.length)];
+        echo.style.left = `${Math.random() * (window.innerWidth - 40)}px`;
+        echo.style.top = `${Math.random() * (window.innerHeight - 40)}px`;
+        echo.style.animationDuration = `${2 + Math.random() * 1.5}s`;
+        document.body.append(echo);
+        window.setTimeout(() => echo.remove(), 4000);
+
+        ambientTimer = window.setTimeout(spawnAmbientEcho, 200 + Math.random() * 3000);
+      }
+
+      ambientTimer = window.setTimeout(spawnAmbientEcho, 2500);
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          window.clearTimeout(ambientTimer);
+        } else {
+          ambientTimer = window.setTimeout(spawnAmbientEcho, 800);
+        }
+      });
+    }
+  </script>
+</body>
+</html>
+
