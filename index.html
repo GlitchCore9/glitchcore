@@ -257,6 +257,73 @@
     .statusbar { display: flex; justify-content: space-between; gap: 12px; padding: 9px 12px; border-top: 1px solid var(--line); color: var(--muted); font: 10px var(--mono); }
     .status-left { display: flex; gap: 14px; }
     .glitch-count-value { display: inline-block; color: var(--accent-blue); }
+    .error-window-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 2500;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .error-window {
+      position: absolute;
+      min-width: 150px;
+      max-width: min(32vw, 280px);
+      padding: 0;
+      border: 2px solid var(--error-red);
+      background: rgba(255, 255, 255, 0.96);
+      color: #111;
+      box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.35), 0 0 0 2px rgba(255, 0, 0, 0.15);
+      transform: translateY(-12px) scale(.84);
+      opacity: 0;
+      animation: error-window-pop .38s cubic-bezier(.2, .8, .3, 1.25) forwards, error-window-fade .9s ease-in forwards 1.25s;
+    }
+    .error-window .error-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 6px 8px 5px 10px;
+      border-bottom: 2px solid rgba(255, 0, 0, 0.75);
+      background: #d9d9d9;
+      color: #111;
+      font: 10px var(--pixel);
+      text-transform: uppercase;
+    }
+    .error-window .error-header .xmark {
+      display: inline-block;
+      min-width: 18px;
+      text-align: center;
+      color: var(--error-red);
+      font-weight: 700;
+    }
+    .error-window .error-body {
+      padding: 12px 12px 10px;
+      font: 11px var(--mono);
+      line-height: 1.55;
+    }
+    .error-window .error-body strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--error-red);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    .error-window .error-body .error-code {
+      display: block;
+      margin-top: 7px;
+      color: var(--blue);
+    }
+    @keyframes error-window-pop {
+      0% { opacity: 0; transform: translateY(-20px) scale(.78) rotate(-2deg); }
+      70% { opacity: 1; transform: translateY(0) scale(1.04) rotate(1deg); }
+      100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+    }
+    @keyframes error-window-fade {
+      to {
+        opacity: 0;
+        transform: translateY(20px) scale(.88) rotate(6deg);
+      }
+    }
     @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
       .cursor-echo { position: fixed; z-index: 1000; pointer-events: none; padding: 2px 5px; border-left: 2px solid var(--error-red); background: #07182de8; color: #fff; font: 11px var(--mono); animation: cursor-echo-fade .62s steps(4, end) forwards; }
       @keyframes cursor-echo-fade { to { opacity: 0; transform: translate(-8px, -18px) scale(.78); } }
@@ -591,6 +658,52 @@
     syncMotionPreviews();
     motionPreference.addEventListener('change', syncMotionPreviews);
 
+    function spawnErrorWindows() {
+      let layer = document.querySelector('.error-window-layer');
+      if (!layer) {
+        layer = document.createElement('div');
+        layer.className = 'error-window-layer';
+        document.body.appendChild(layer);
+      }
+
+      const variants = [
+        ['SYSTEM ERROR', 'fatal fault', '0xID_FAULT', 'memory leak detected'],
+        ['PROFILE CORRUPTED', 'user state drift', '0xGLITCH', 'trace anomaly in process'],
+        ['WINDOW RECURSION', 'duplicate instance', '0xDUPLICATE', 'reboot recommended'],
+        ['STACK OVERFLOW', 'recovery loop', '0xLOOP', 'kernel noise rising'],
+        ['AUDIO DISTORTION', 'signal mismatch', '0xNOISE', 'ignore and continue']
+      ];
+
+      const count = 7 + Math.floor(Math.random() * 4);
+      for (let index = 0; index < count; index += 1) {
+        const windowCard = document.createElement('div');
+        const variant = variants[Math.floor(Math.random() * variants.length)];
+        const left = 10 + Math.random() * 70;
+        const top = 14 + Math.random() * 62;
+        const width = 160 + Math.random() * 90;
+
+        windowCard.className = 'error-window';
+        windowCard.style.left = `${left}%`;
+        windowCard.style.top = `${top}%`;
+        windowCard.style.width = `${width}px`;
+        windowCard.style.zIndex = String(2500 + index);
+        windowCard.style.animationDelay = `${index * 0.06}s`;
+
+        windowCard.innerHTML = `
+          <div class="error-header"><span>ERROR</span><span class="xmark">×</span></div>
+          <div class="error-body">
+            <strong>${variant[0]}</strong>
+            <div>${variant[1]}</div>
+            <span class="error-code">${variant[2]}</span>
+            <div>${variant[3]}</div>
+          </div>
+        `;
+
+        layer.appendChild(windowCard);
+        window.setTimeout(() => windowCard.remove(), 2200);
+      }
+    }
+
     glitchToggle.addEventListener('click', () => {
       const enabled = glitchToggle.getAttribute('aria-pressed') !== 'true';
       glitchToggle.setAttribute('aria-pressed', String(enabled));
@@ -599,6 +712,7 @@
       document.body.classList.remove('glitch-hit');
       void document.body.offsetWidth;
       document.body.classList.add('glitch-hit');
+      if (enabled) spawnErrorWindows();
       window.setTimeout(() => document.body.classList.remove('glitch-hit'), 450);
       const countValue = document.createElement('span');
       countValue.className = 'glitch-count-value';
