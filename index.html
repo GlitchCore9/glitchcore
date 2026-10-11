@@ -275,7 +275,7 @@
       box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.35), 0 0 0 2px rgba(255, 0, 0, 0.15);
       transform: translateY(-12px) scale(.84);
       opacity: 0;
-      animation: error-window-pop .38s cubic-bezier(.2, .8, .3, 1.25) forwards, error-window-fade .9s ease-in forwards 1.25s;
+      animation: error-window-pop .24s steps(3, end) forwards, error-window-fade .55s steps(4, end) forwards 1s;
     }
     .error-window .error-header {
       display: flex;
@@ -323,6 +323,9 @@
         opacity: 0;
         transform: translateY(20px) scale(.88) rotate(6deg);
       }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .error-window { opacity: 1; transform: none; animation: none; }
     }
     @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
       .cursor-echo { position: fixed; z-index: 1000; pointer-events: none; padding: 2px 5px; border-left: 2px solid var(--error-red); background: #07182de8; color: #fff; font: 11px var(--mono); animation: cursor-echo-fade .62s steps(4, end) forwards; }
@@ -674,20 +677,21 @@
         ['AUDIO DISTORTION', 'signal mismatch', '0xNOISE', 'ignore and continue']
       ];
 
-      const count = 7 + Math.floor(Math.random() * 4);
+      const count = 18 + Math.floor(Math.random() * 7);
       for (let index = 0; index < count; index += 1) {
         const windowCard = document.createElement('div');
         const variant = variants[Math.floor(Math.random() * variants.length)];
-        const left = 10 + Math.random() * 70;
-        const top = 14 + Math.random() * 62;
-        const width = 160 + Math.random() * 90;
+        const left = 18 + Math.random() * 58;
+        const top = 18 + Math.random() * 58;
+        const width = 150 + Math.random() * 100;
 
         windowCard.className = 'error-window';
         windowCard.style.left = `${left}%`;
         windowCard.style.top = `${top}%`;
         windowCard.style.width = `${width}px`;
         windowCard.style.zIndex = String(2500 + index);
-        windowCard.style.animationDelay = `${index * 0.06}s`;
+        const delay = index * (18 + Math.random() * 28);
+        windowCard.style.animationDelay = `${delay}ms, ${delay + 700}ms`;
 
         windowCard.innerHTML = `
           <div class="error-header"><span>ERROR</span><span class="xmark">×</span></div>
@@ -700,7 +704,7 @@
         `;
 
         layer.appendChild(windowCard);
-        window.setTimeout(() => windowCard.remove(), 2200);
+        window.setTimeout(() => windowCard.remove(), delay + 1650);
       }
     }
 
@@ -712,7 +716,7 @@
       document.body.classList.remove('glitch-hit');
       void document.body.offsetWidth;
       document.body.classList.add('glitch-hit');
-      if (enabled) spawnErrorWindows();
+      spawnErrorWindows();
       window.setTimeout(() => document.body.classList.remove('glitch-hit'), 450);
       const countValue = document.createElement('span');
       countValue.className = 'glitch-count-value';
