@@ -236,15 +236,10 @@
     .skill-icon .emoji-sticker { width: 30px; height: 30px; margin: 0; }
     .skill strong { display: block; margin-bottom: 5px; font-size: 13px; }
     .skill small { color: var(--muted); font: 10px/1.5 var(--mono); }
-    .sticker-shelf { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--line); }
-    .sticker-shelf-heading { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 10px; color: var(--muted); font: 10px var(--mono); }
-    .sticker-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
-    .sticker-item { display: flex; min-width: 0; min-height: 124px; flex-direction: column; align-items: center; justify-content: center; gap: 6px; margin: 0; padding: 9px 6px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: #f0f0f0; text-align: center; }
-    .lottie-sticker { position: relative; display: grid; width: 64px; max-width: 100%; aspect-ratio: 1; flex: none; place-items: center; color: var(--muted); }
+    .lottie-sticker { position: relative; display: inline-block; width: 1em; height: 1em; color: var(--muted); vertical-align: middle; }
     .lottie-sticker::after { content: "TGS"; font: 9px var(--mono); }
     .lottie-sticker.is-loaded::after { content: none; }
     .lottie-sticker svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-    .sticker-item figcaption { color: #333; font: 9px/1.35 var(--mono); overflow-wrap: anywhere; }
     .social-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
     .social-link { position: relative; display: flex; min-width: 0; min-height: 154px; flex-direction: column; align-items: flex-start; gap: 9px; padding: 14px; border: 0; background: #f0f0f0; color: #111; text-decoration: none; transition: transform .16s ease, background-color .16s ease, color .16s ease, box-shadow .16s ease; }
     .dialog-window.social-link { padding-top: 42px; border: 2px solid var(--blue); }
@@ -475,7 +470,6 @@
       .process-visual { min-height: 250px; }
       .about-grid { grid-template-columns: minmax(0, 1fr); gap: 22px; }
       .skills { grid-template-columns: repeat(2, 1fr); }
-      .sticker-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .contact { align-items: flex-start; flex-direction: column; padding: 34px 20px; }
     }
         .aa-art {
@@ -650,20 +644,6 @@
           <div class="skill dialog-window" data-dialog-title="CONCEPT_ART.exe"><span class="skill-icon" aria-hidden="true"><img class="emoji-sticker" src="assets/emoji-notepad.png" alt=""></span><strong>Концепт-арт</strong><small>идея, форма, детали, характер</small></div>
           <div class="skill dialog-window" data-dialog-title="STYLE_PATCH.exe"><span class="skill-icon" aria-hidden="true"><img class="emoji-sticker" src="assets/emoji-win95-smile.png" alt=""></span><strong>Свой образ</strong><small>одежда, аксессуары и странные идеи</small></div>
         </div>
-        <div class="sticker-shelf">
-          <div class="sticker-shelf-heading"><span>STICKER_CACHE / 09</span><span>LOTTIE / TGS</span></div>
-          <div class="sticker-grid" role="list" aria-label="Анимированные стикеры">
-            <figure class="sticker-item" role="listitem"><div class="lottie-sticker" data-lottie-src="assets/запрещено анимация.json" role="img" aria-label="Стикер запрещено"></div><figcaption>запрещено</figcaption></figure>
-            <figure class="sticker-item" role="listitem"><div class="lottie-sticker" data-lottie-src="assets/знак предупреждения желтый трясется анимация.json" role="img" aria-label="Жёлтый трясущийся знак предупреждения"></div><figcaption>предупреждение / жёлтый</figcaption></figure>
-            <figure class="sticker-item" role="listitem"><div class="lottie-sticker" data-lottie-src="assets/знак предупреждения красный крутится.json" role="img" aria-label="Красный вращающийся знак предупреждения"></div><figcaption>предупреждение / красный</figcaption></figure>
-            <figure class="sticker-item" role="listitem"><div class="lottie-sticker" data-lottie-src="assets/курсор + окно анимация.json" role="img" aria-label="Анимированный курсор и окно"></div><figcaption>курсор + окно</figcaption></figure>
-            <figure class="sticker-item" role="listitem"><div class="lottie-sticker" data-lottie-src="assets/пиксельная матрица веселый смайлик анимация.json" role="img" aria-label="Весёлый смайлик на пиксельной матрице"></div><figcaption>матрица / радость</figcaption></figure>
-            <figure class="sticker-item" role="listitem"><div class="lottie-sticker" data-lottie-src="assets/пиксельная матрица грустный смайлик анимация.json" role="img" aria-label="Грустный смайлик на пиксельной матрице"></div><figcaption>матрица / грусть</figcaption></figure>
-            <figure class="sticker-item" role="listitem"><div class="lottie-sticker" data-lottie-src="assets/планета крутится анимация 360 градусов.json" role="img" aria-label="Вращающаяся планета"></div><figcaption>планета / 360°</figcaption></figure>
-            <figure class="sticker-item" role="listitem"><div class="lottie-sticker" data-lottie-src="assets/смайлик крутится.json" role="img" aria-label="Вращающийся смайлик"></div><figcaption>смайлик / вращение</figcaption></figure>
-            <figure class="sticker-item" role="listitem"><div class="lottie-sticker" data-lottie-src="assets/шахматная доска мигает быстро.json" role="img" aria-label="Быстро мигающая шахматная доска"></div><figcaption>шахматка / мигание</figcaption></figure>
-          </div>
-        </div>
       </section>
 
       <section class="section" id="links" aria-labelledby="links-title">
@@ -691,7 +671,6 @@
   <a class="write-me" href="https://t.me/GlitchCore9" target="_blank" rel="noopener noreferrer" aria-label="Напиши мне в Telegram" title="Напиши мне в Telegram">НАПИШИ МНЕ НАПИШИ МНЕ</a>
   <a class="back-top" href="#top" aria-label="Вернуться наверх" title="Вернуться наверх">↑</a>
 
-  <script src="https://cdn.jsdelivr.net/npm/lottie-web@5.13.0/build/player/lottie.min.js"></script>
   <script>
     const clock = document.querySelector('#clock');
     const glitchToggle = document.querySelector('#glitch-toggle');
@@ -795,21 +774,37 @@
       }
     }
 
-    if ('IntersectionObserver' in window) {
-      const lottieObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          const sticker = entry.target;
-          sticker.dataset.inView = String(entry.isIntersecting);
-          if (entry.isIntersecting) loadLottieSticker(sticker);
-          else lottieAnimations.get(sticker)?.pause();
+    function observeLottieStickers() {
+      if ('IntersectionObserver' in window) {
+        const lottieObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            const sticker = entry.target;
+            sticker.dataset.inView = String(entry.isIntersecting);
+            if (entry.isIntersecting) loadLottieSticker(sticker);
+            else lottieAnimations.get(sticker)?.pause();
+          });
+        }, { rootMargin: '120px' });
+        lottieStickers.forEach((sticker) => lottieObserver.observe(sticker));
+      } else {
+        lottieStickers.forEach((sticker) => {
+          sticker.dataset.inView = 'true';
+          loadLottieSticker(sticker);
         });
-      }, { rootMargin: '120px' });
-      lottieStickers.forEach((sticker) => lottieObserver.observe(sticker));
-    } else {
-      lottieStickers.forEach((sticker) => {
-        sticker.dataset.inView = 'true';
-        loadLottieSticker(sticker);
-      });
+      }
+    }
+
+    if (lottieStickers.length) {
+      if (window.lottie) {
+        observeLottieStickers();
+      } else {
+        const lottieScript = document.createElement('script');
+        lottieScript.src = 'https://cdn.jsdelivr.net/npm/lottie-web@5.13.0/build/player/lottie.min.js';
+        lottieScript.addEventListener('load', observeLottieStickers, { once: true });
+        lottieScript.addEventListener('error', () => {
+          lottieStickers.forEach((sticker) => sticker.classList.add('is-unavailable'));
+        }, { once: true });
+        document.head.append(lottieScript);
+      }
     }
 
     motionPreference.addEventListener('change', () => {
