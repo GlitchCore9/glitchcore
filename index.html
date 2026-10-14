@@ -348,7 +348,6 @@
     .js-motion .reveal.is-visible { opacity: 1; transform: translateY(0); }
     .js-motion .project { transition: opacity .55s ease, transform .65s cubic-bezier(.2, .7, .2, 1), top .34s cubic-bezier(.18, .89, .32, 1.28), box-shadow .24s ease; transition-delay: var(--reveal-delay, 0ms); }
     .glitch-hit .hero-visual { animation: screen-tear .42s steps(2, end); }
-    .glitch-hit .hero h1 { animation: text-jolt .42s steps(3, end); }
     @media (prefers-reduced-motion: no-preference) {
       .hero-copy > * { animation: boot-in .55s both; }
       .hero-copy > *:nth-child(2) { animation-delay: .08s; }
@@ -387,11 +386,6 @@
       .project:hover .project-image > img.glitch-channel-cyan { animation: rgb-tear-cyan var(--tear-duration) steps(7, end) infinite; animation-delay: var(--cyan-delay); }
       @media (hover: hover) and (pointer: fine) {
         .project:is(:hover, :focus-within) { z-index: 3; top: -7px; box-shadow: 0 12px 28px #0005, 4px 4px 0 var(--accent-blue); }
-      }
-      @keyframes text-jolt {
-        0%, 100% { transform: translateX(0); }
-        30% { transform: translateX(4px); }
-        65% { transform: translateX(-3px); }
       }
       .hero h1 .accent { animation: title-rgb-glitch 3.8s steps(1, end) infinite; }
       @keyframes title-rgb-glitch {
