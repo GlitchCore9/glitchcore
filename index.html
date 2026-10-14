@@ -349,6 +349,53 @@
     .js-motion .project { transition: opacity .55s ease, transform .65s cubic-bezier(.2, .7, .2, 1), top .34s cubic-bezier(.18, .89, .32, 1.28), box-shadow .24s ease; transition-delay: var(--reveal-delay, 0ms); }
     .glitch-hit .hero-visual { animation: screen-tear .42s steps(2, end); }
     @media (prefers-reduced-motion: no-preference) {
+      .random-glitch-word { position: relative; display: inline-block; white-space: nowrap; }
+      .random-glitch-word::before, .random-glitch-word::after { position: absolute; inset: 0; pointer-events: none; content: attr(data-glitch-text); opacity: 0; }
+      .random-glitch-word.is-glitching { animation: random-word-jitter .38s steps(4, end); }
+      .random-glitch-word.glitch-flicker { animation: random-word-flicker .42s steps(4, end); }
+      .random-glitch-word.glitch-rgb::before, .random-glitch-word.glitch-slice::before { color: #f00; }
+      .random-glitch-word.glitch-rgb::after, .random-glitch-word.glitch-slice::after { color: #00aaff; }
+      .random-glitch-word.glitch-rgb::before { animation: random-word-red .38s steps(3, end); }
+      .random-glitch-word.glitch-rgb::after { animation: random-word-cyan .38s steps(3, end); }
+      .random-glitch-word.glitch-slice::before { animation: random-word-slice-red .38s steps(4, end); }
+      .random-glitch-word.glitch-slice::after { animation: random-word-slice-cyan .38s steps(4, end); }
+      @keyframes random-word-jitter {
+        0%, 100% { transform: translateX(0) skewX(0); }
+        25% { transform: translateX(-3px) skewX(-5deg); }
+        50% { transform: translateX(4px) skewX(3deg); }
+        75% { transform: translateX(-2px) skewX(-2deg); }
+      }
+      @keyframes random-word-flicker {
+        0%, 100% { opacity: 1; text-shadow: none; }
+        25%, 65% { opacity: .35; text-shadow: 2px 0 #f00, -2px 0 #00aaff; }
+        45%, 80% { opacity: 1; }
+      }
+      @keyframes random-word-red {
+        0%, 100% { opacity: 0; transform: translateX(0); }
+        25% { opacity: .9; transform: translateX(-3px); }
+        60% { opacity: .75; transform: translateX(4px); }
+        80% { opacity: .9; transform: translateX(-2px); }
+      }
+      @keyframes random-word-cyan {
+        0%, 100% { opacity: 0; transform: translateX(0); }
+        25% { opacity: .9; transform: translateX(3px); }
+        60% { opacity: .75; transform: translateX(-4px); }
+        80% { opacity: .9; transform: translateX(2px); }
+      }
+      @keyframes random-word-slice-red {
+        0%, 100% { opacity: 0; clip-path: inset(0); transform: translateX(0); }
+        22% { opacity: .9; clip-path: inset(21% 0 55%); transform: translateX(-4px); }
+        56% { opacity: .85; clip-path: inset(58% 0 16%); transform: translateX(5px); }
+        82% { opacity: .9; clip-path: inset(8% 0 76%); transform: translateX(-3px); }
+      }
+      @keyframes random-word-slice-cyan {
+        0%, 100% { opacity: 0; clip-path: inset(0); transform: translateX(0); }
+        22% { opacity: .9; clip-path: inset(21% 0 55%); transform: translateX(4px); }
+        56% { opacity: .85; clip-path: inset(58% 0 16%); transform: translateX(-5px); }
+        82% { opacity: .9; clip-path: inset(8% 0 76%); transform: translateX(3px); }
+      }
+    }
+    @media (prefers-reduced-motion: no-preference) {
       .hero-copy > * { animation: boot-in .55s both; }
       .hero-copy > *:nth-child(2) { animation-delay: .08s; }
       .hero-copy > *:nth-child(3) { animation-delay: .15s; }
@@ -875,6 +922,54 @@
       }, { threshold: 0.12, rootMargin: '0px 0px -24px 0px' });
 
       revealItems.forEach((item) => revealObserver.observe(item));
+    }
+    if (window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+      const textWalker = document.createTreeWalker(document.querySelector('.desktop'), NodeFilter.SHOW_TEXT);
+      const candidates = [];
+      while (textWalker.nextNode()) {
+        const textNode = textWalker.currentNode;
+        const parent = textNode.parentElement;
+        if (!parent || parent.closest('h1, button, script, style, textarea, select, code, .window-controls, .dialog-controls, #process-details, [hidden], [aria-hidden="true"]')) continue;
+        const match = /[\p{L}\p{N}][\p{L}\p{N}_-]{3,}/u.exec(textNode.textContent);
+        if (match) candidates.push({ textNode, start: match.index, length: match[0].length });
+      }
+
+      for (let index = candidates.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [candidates[index], candidates[swapIndex]] = [candidates[swapIndex], candidates[index]];
+      }
+
+      const glitchWords = candidates.slice(0, 18).map(({ textNode, start, length }) => {
+        const selected = textNode.splitText(start);
+        selected.splitText(length);
+        const word = document.createElement('span');
+        word.className = 'random-glitch-word';
+        word.textContent = selected.textContent;
+        word.dataset.glitchText = selected.textContent;
+        selected.replaceWith(word);
+        return word;
+      });
+      const glitchEffects = ['glitch-rgb', 'glitch-slice', 'glitch-flicker'];
+      let previousGlitchWord;
+      let wordGlitchTimer;
+
+      function triggerRandomWordGlitch() {
+        if (document.hidden || !glitchWords.length) return;
+        const availableWords = glitchWords.filter((word) => word !== previousGlitchWord && word.isConnected);
+        if (!availableWords.length) return;
+        const word = availableWords[Math.floor(Math.random() * availableWords.length)];
+        const effect = glitchEffects[Math.floor(Math.random() * glitchEffects.length)];
+        word.classList.add('is-glitching', effect);
+        previousGlitchWord = word;
+        window.setTimeout(() => word.classList.remove('is-glitching', effect), 480);
+        wordGlitchTimer = window.setTimeout(triggerRandomWordGlitch, 550 + Math.random() * 1900);
+      }
+
+      wordGlitchTimer = window.setTimeout(triggerRandomWordGlitch, 1200 + Math.random() * 1600);
+      document.addEventListener('visibilitychange', () => {
+        window.clearTimeout(wordGlitchTimer);
+        if (!document.hidden) wordGlitchTimer = window.setTimeout(triggerRandomWordGlitch, 800 + Math.random() * 1200);
+      });
     }
         if (window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
       const ambientSymbols = [':3', ':)', '0x', '^_^', '?!', '404', '>_<', 'o_O', ':/', '…'];
