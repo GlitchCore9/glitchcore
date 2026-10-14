@@ -171,7 +171,25 @@
       font: 9px var(--pixel);
     }
     .filter[aria-pressed="true"] { border-color: var(--accent-blue); background: var(--accent-blue); color: #fff; }
-    #glitch-toggle { border-color: var(--error-red); background: var(--error-red); color: #fff; }
+    #glitch-toggle { width: 90px; border-color: var(--error-red); background: var(--error-red); color: #fff; }
+    #glitch-toggle .glitch-toggle-text { position: relative; display: inline-block; white-space: nowrap; animation: glitch-toggle-pulse 1.15s ease-in-out infinite; }
+    #glitch-toggle .glitch-toggle-channel { position: absolute; inset: 0; pointer-events: none; opacity: 0; }
+    #glitch-toggle .glitch-toggle-channel-red { color: #ffb0b0; animation: glitch-toggle-red .9s steps(1, end) infinite; }
+    #glitch-toggle .glitch-toggle-channel-cyan { color: #a8edff; animation: glitch-toggle-cyan .9s steps(1, end) infinite; }
+    @keyframes glitch-toggle-pulse {
+      0%, 100% { opacity: .8; transform: scale(1); text-shadow: none; }
+      50% { opacity: 1; transform: scale(1.04); text-shadow: 1px 0 #ffb0b0, -1px 0 #a8edff; }
+    }
+    @keyframes glitch-toggle-red {
+      0%, 78%, 86%, 100% { opacity: 0; transform: translateX(0); }
+      80% { opacity: .95; transform: translateX(-2px) skewX(-8deg); }
+      83% { opacity: .8; transform: translateX(2px); }
+    }
+    @keyframes glitch-toggle-cyan {
+      0%, 80%, 88%, 100% { opacity: 0; transform: translateX(0); }
+      82% { opacity: .95; transform: translateX(2px) skewX(8deg); }
+      85% { opacity: .8; transform: translateX(-2px); }
+    }
     .glitch-hint { color: #ff6b6b; font: 9px var(--pixel); white-space: nowrap; }
     .project-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
     .project { position: relative; top: 0; min-width: 0; background: #fff; color: #111; transition: top .34s cubic-bezier(.18, .89, .32, 1.28), box-shadow .24s ease; }
@@ -531,7 +549,7 @@
   <div class="desktop" id="top">
     <div class="sysbar" aria-label="Статус системы">
       <div class="sysbar-left"><span>GC_OS 95</span><span>USER: GLITCHCORE</span><span><i class="led"></i> PROFILE: CORRUPTED</span></div>
-      <div class="sysbar-right"><span class="glitch-hint">нажми на меня →</span><button class="filter" id="glitch-toggle" type="button" aria-pressed="false">GLITCH: OFF</button><span id="clock">--:--</span></div>
+      <div class="sysbar-right"><span class="glitch-hint">нажми на меня →</span><button class="filter" id="glitch-toggle" type="button" aria-pressed="false"><span class="glitch-toggle-text"><span class="glitch-toggle-main">GLITCH: OFF</span><span class="glitch-toggle-channel glitch-toggle-channel-red" aria-hidden="true">GLITCH: OFF</span><span class="glitch-toggle-channel glitch-toggle-channel-cyan" aria-hidden="true">GLITCH: OFF</span></span></button><span id="clock">--:--</span></div>
     </div>
 
     <main class="window">
@@ -677,6 +695,8 @@
   <script>
     const clock = document.querySelector('#clock');
     const glitchToggle = document.querySelector('#glitch-toggle');
+    const glitchToggleText = glitchToggle.querySelector('.glitch-toggle-main');
+    const glitchToggleChannels = glitchToggle.querySelectorAll('.glitch-toggle-channel');
     const filterButtons = document.querySelectorAll('[data-filter]');
     const projects = document.querySelectorAll('.project');
     const processConsole = document.querySelector('#process-console');
@@ -877,7 +897,9 @@
     glitchToggle.addEventListener('click', () => {
       const enabled = glitchToggle.getAttribute('aria-pressed') !== 'true';
       glitchToggle.setAttribute('aria-pressed', String(enabled));
-      glitchToggle.textContent = `GLITCH: ${enabled ? 'ON' : 'OFF'}`;
+      const label = `GLITCH: ${enabled ? 'ON' : 'OFF'}`;
+      glitchToggleText.textContent = label;
+      glitchToggleChannels.forEach((channel) => { channel.textContent = label; });
       document.body.classList.toggle('glitch-mode', enabled);
       document.body.classList.remove('glitch-hit');
       void document.body.offsetWidth;
