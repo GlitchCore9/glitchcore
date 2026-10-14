@@ -172,6 +172,7 @@
     }
     .filter[aria-pressed="true"] { border-color: var(--accent-blue); background: var(--accent-blue); color: #fff; }
     #glitch-toggle { border-color: var(--error-red); background: var(--error-red); color: #fff; }
+    .glitch-hint { color: #ff6b6b; font: 9px var(--pixel); white-space: nowrap; }
     .project-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
     .project { position: relative; top: 0; min-width: 0; background: #fff; color: #111; transition: top .34s cubic-bezier(.18, .89, .32, 1.28), box-shadow .24s ease; }
     .project[hidden] { display: none; }
@@ -507,6 +508,7 @@
     @media (max-width: 470px) {
       .sysbar { font-size: 9px; }
       .sysbar-right { gap: 8px; }
+      .glitch-hint { display: none; }
       .nav-links { gap: 9px; }
       .nav-links a { font-size: 9px; }
       .write-me { font-size: 8px; }
@@ -529,7 +531,7 @@
   <div class="desktop" id="top">
     <div class="sysbar" aria-label="Статус системы">
       <div class="sysbar-left"><span>GC_OS 95</span><span>USER: GLITCHCORE</span><span><i class="led"></i> PROFILE: CORRUPTED</span></div>
-      <div class="sysbar-right"><button class="filter" id="glitch-toggle" type="button" aria-pressed="false">GLITCH: OFF</button><span id="clock">--:--</span></div>
+      <div class="sysbar-right"><span class="glitch-hint">нажми на меня →</span><button class="filter" id="glitch-toggle" type="button" aria-pressed="false">GLITCH: OFF</button><span id="clock">--:--</span></div>
     </div>
 
     <main class="window">
