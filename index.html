@@ -1032,13 +1032,13 @@
         word.classList.add('is-glitching', effect);
         previousGlitchWord = word;
         window.setTimeout(() => word.classList.remove('is-glitching', effect), 480);
-        wordGlitchTimer = window.setTimeout(triggerRandomWordGlitch, 550 + Math.random() * 1900);
+        wordGlitchTimer = window.setTimeout(triggerRandomWordGlitch, 520 + Math.random() * 720);
       }
 
-      wordGlitchTimer = window.setTimeout(triggerRandomWordGlitch, 1200 + Math.random() * 1600);
+      wordGlitchTimer = window.setTimeout(triggerRandomWordGlitch, 500 + Math.random() * 800);
       document.addEventListener('visibilitychange', () => {
         window.clearTimeout(wordGlitchTimer);
-        if (!document.hidden) wordGlitchTimer = window.setTimeout(triggerRandomWordGlitch, 800 + Math.random() * 1200);
+        if (!document.hidden) wordGlitchTimer = window.setTimeout(triggerRandomWordGlitch, 400 + Math.random() * 600);
       });
     }
         if (window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
