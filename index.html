@@ -164,8 +164,9 @@
     .bsod-face { position: absolute; z-index: 2; top: 6%; left: 7.5%; color: #e8efd5; font: 76px/1 var(--sans); text-shadow: 1px 1px 0 #06152d, -1px -1px 0 #06152d, 0 2px 4px #06152d; pointer-events: none; }
     .bsod-copy-motion { position: absolute; z-index: 2; top: 25%; left: 7.5%; width: min(76%, 530px); color: #fff; -webkit-text-stroke: .35px #06152d; text-shadow: 1px 1px 0 #06152d, -1px -1px 0 #06152d, 0 2px 4px #06152d; pointer-events: none; animation: bsod-text-drift 4.4s ease-in-out infinite; }
     .bsod-message { margin: 0 0 15px; font: 400 15px/1.35 var(--sans); }
-    .bsod-error { margin: 0; color: #f0edcc; font: 11px/1.5 var(--pixel); }
+    .bsod-error { margin: 0; color: #f0edcc; font: 700 14px/1.5 var(--pixel); text-shadow: 2px 0 #06152d, -2px 0 #06152d, 0 2px #06152d, 0 -2px #06152d; }
     .bsod-copy-glitch.is-glitching { animation: bsod-text-glitch .44s steps(4, end); }
+    .bsod-code-404 { position: absolute; z-index: 4; right: 6%; bottom: 5%; color: #e8efd5; font: 84px/1 var(--pixel); text-shadow: 4px 4px 0 #06152d, -2px 0 #06152d, 0 -2px #06152d; pointer-events: none; }
     @keyframes bsod-text-drift { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(8px); } }
     @keyframes bsod-text-glitch {
       0%, 100% { clip-path: inset(0); transform: translateX(0); text-shadow: 0 1px 2px #003b68; }
@@ -513,7 +514,8 @@
       .bsod-face { top: 7%; font-size: 58px; }
       .bsod-copy-motion { top: 30%; left: 7%; width: 86%; }
       .bsod-message { font-size: 13px; }
-      .bsod-error { font-size: 9px; }
+      .bsod-error { font-size: 12px; }
+      .bsod-code-404 { right: 5%; bottom: 5%; font-size: 54px; }
       .hero-visual .mascot-overlay { bottom: 20%; left: 50.8%; width: min(64%, 320px); height: 68%; }
       .section { padding: 48px 20px; }
       .project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -607,6 +609,7 @@
           <img class="hero-background" src="assets/hero-halftone-blue.jpg" alt="" aria-hidden="true" fetchpriority="high">
           <span class="bsod-face" aria-hidden="true">:(</span>
           <div class="bsod-copy-motion"><div class="bsod-copy-glitch"><p class="bsod-message">На компьютере возникла проблема, которую он не смог решить,<br>и теперь его нужно перезагрузить.</p><p class="bsod-error">Найти информацию об ошибке в интернете: HAL_INITIALIZATION_FAILED</p></div></div>
+          <span class="bsod-code-404" aria-hidden="true">404</span>
           <img class="mascot-overlay" src="assets/mascot-cutout-full.png" alt="" aria-hidden="true" fetchpriority="high">
         </div>
       </section>
