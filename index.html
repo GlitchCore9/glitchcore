@@ -159,7 +159,21 @@
     .checkerboard { background-color: #f0f0f0; background-image: conic-gradient(#111 25%, #f0f0f0 0 50%, #111 0 75%, #f0f0f0 0); background-size: 48px 48px; }
     .hero-visual { position: relative; min-height: 700px; overflow: hidden; border-left: 1px solid var(--line); background: #eaf1fa; }
     .hero-visual img { width: 100%; height: 100%; position: absolute; inset: 0; object-fit: cover; filter: contrast(1.06) saturate(.88); }
-    .hero-visual .mascot-overlay { z-index: 2; top: auto; right: auto; bottom: 10%; left: 50.8%; width: min(63%, 450px); height: 80%; object-fit: contain; object-position: center bottom; filter: drop-shadow(0 4px 3px #06152d66); transform: translate3d(calc(-50% + var(--mascot-pointer-x, 0px)), calc(var(--mascot-pointer-y, 0px) + var(--mascot-scroll-y, 0px)), 0) rotate(calc(45deg + var(--mascot-rotation, 0deg))); transform-origin: center 50%; translate: 0 0; animation: mascot-float 3.2s ease-in-out infinite; transition: transform .16s ease-out; pointer-events: none; will-change: transform, translate, clip-path, filter; }
+    .hero-visual .hero-background { z-index: 0; }
+    .hero-visual::after { z-index: 1; }
+    .bsod-face { position: absolute; z-index: 2; top: 6%; left: 7.5%; color: #e8efd5; font: 76px/1 var(--sans); text-shadow: 1px 1px 0 #06152d, -1px -1px 0 #06152d, 0 2px 4px #06152d; pointer-events: none; }
+    .bsod-copy-motion { position: absolute; z-index: 2; top: 25%; left: 7.5%; width: min(76%, 530px); color: #fff; -webkit-text-stroke: .35px #06152d; text-shadow: 1px 1px 0 #06152d, -1px -1px 0 #06152d, 0 2px 4px #06152d; pointer-events: none; animation: bsod-text-drift 4.4s ease-in-out infinite; }
+    .bsod-message { margin: 0 0 15px; font: 400 15px/1.35 var(--sans); }
+    .bsod-error { margin: 0; font: 10px/1.4 var(--mono); }
+    .bsod-copy-glitch.is-glitching { animation: bsod-text-glitch .44s steps(4, end); }
+    @keyframes bsod-text-drift { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(8px); } }
+    @keyframes bsod-text-glitch {
+      0%, 100% { clip-path: inset(0); transform: translateX(0); text-shadow: 0 1px 2px #003b68; }
+      24% { clip-path: inset(0 0 58%); transform: translateX(-5px) skewX(-2deg); text-shadow: -3px 0 #ff4c76, 3px 0 #61e7ff; }
+      52% { clip-path: inset(44% 0 25%); transform: translateX(4px); text-shadow: 3px 0 #ff4c76, -3px 0 #61e7ff; }
+      78% { clip-path: inset(76% 0 0); transform: translateX(-3px) skewX(2deg); }
+    }
+    .hero-visual .mascot-overlay { z-index: 3; top: auto; right: auto; bottom: 10%; left: 50.8%; width: min(63%, 450px); height: 80%; object-fit: contain; object-position: center bottom; filter: drop-shadow(0 4px 3px #06152d66); transform: translate3d(calc(-50% + var(--mascot-pointer-x, 0px)), calc(var(--mascot-pointer-y, 0px) + var(--mascot-scroll-y, 0px)), 0) rotate(calc(45deg + var(--mascot-rotation, 0deg))); transform-origin: center 50%; translate: 0 0; animation: mascot-float 3.2s ease-in-out infinite; transition: transform .16s ease-out; pointer-events: none; will-change: transform, translate, clip-path, filter; }
     .hero-visual .mascot-overlay.is-glitching { animation: mascot-float 3.2s ease-in-out infinite, mascot-glitch .48s steps(5, end); }
     @keyframes mascot-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -6px; } }
     @keyframes mascot-glitch {
@@ -170,8 +184,6 @@
       78% { clip-path: inset(20% 0 61%); filter: hue-rotate(-18deg) contrast(1.3); }
     }
     .hero-visual::after { position: absolute; inset: 0; pointer-events: none; content: ""; background: linear-gradient(115deg, #ff000010, transparent 40%, #4e91df20), repeating-linear-gradient(0deg, #0000 0 3px, #fff1 4px); mix-blend-mode: screen; }
-    .photo-tag { position: absolute; z-index: 1; top: 18px; left: 18px; padding: 8px 10px; color: #fff; background: var(--blue); border-left: 2px solid var(--accent-blue); font: 10px var(--mono); }
-    .photo-caption { position: absolute; z-index: 1; right: 18px; bottom: 18px; max-width: 220px; padding: 10px 12px; color: #e3edf8; background: #101c2aed; border-left: 3px solid var(--error-red); font: 11px/1.45 var(--mono); }
     .section { padding: 66px clamp(22px, 5vw, 62px); border-bottom: 1px solid var(--line); }
     .section-head { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 28px; }
     .section-kicker { margin: 0 0 9px; color: var(--accent-blue); font: 11px var(--mono); text-transform: uppercase; }
@@ -498,6 +510,10 @@
       .hero-copy { padding: 44px 24px 36px; }
       .hero h1 { font-size: 30px; }
       .hero-visual { min-height: 440px; border-top: 1px solid var(--line); border-left: 0; }
+      .bsod-face { top: 7%; font-size: 58px; }
+      .bsod-copy-motion { top: 30%; left: 7%; width: 86%; }
+      .bsod-message { font-size: 13px; }
+      .bsod-error { font-size: 9px; }
       .hero-visual .mascot-overlay { bottom: 20%; left: 50.8%; width: min(64%, 320px); height: 68%; }
       .section { padding: 48px 20px; }
       .project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -588,10 +604,10 @@
           <p class="hero-log">USER_AVATAR.PNG: <span>NOT FOUND</span><br>REALITY_RENDER.EXE: <span>RUNNING...</span></p>
         </div>
         <div class="hero-visual">
-          <img src="assets/hero-halftone-blue.jpg" alt="Синий полутоновый узор из точек, вращающихся вокруг центра" fetchpriority="high">
+          <img class="hero-background" src="assets/hero-halftone-blue.jpg" alt="" aria-hidden="true" fetchpriority="high">
+          <span class="bsod-face" aria-hidden="true">:(</span>
+          <div class="bsod-copy-motion"><div class="bsod-copy-glitch"><p class="bsod-message">На компьютере возникла проблема, которую он не смог решить,<br>и теперь его нужно перезагрузить.</p><p class="bsod-error">Найти информацию об ошибке в интернете: HAL_INITIALIZATION_FAILED</p></div></div>
           <img class="mascot-overlay" src="assets/mascot-cutout-full.png" alt="" aria-hidden="true" fetchpriority="high">
-          <span class="photo-tag">[ HALFTONE.NOISE / 001 ]</span>
-          <span class="photo-caption">HALFTONE SIGNAL: 0xBLUE<br>визуальный шум сохранён</span>
         </div>
       </section>
 
@@ -901,6 +917,29 @@
         mascotOverlay.classList.add('is-glitching');
         window.setTimeout(() => mascotOverlay.classList.remove('is-glitching'), 520);
       }, 5000);
+
+      const bsodCopyGlitch = heroVisual.querySelector('.bsod-copy-glitch');
+      let bsodGlitchTimer;
+      let bsodGlitchEndTimer;
+
+      function scheduleBsodTextGlitch(delay) {
+        bsodGlitchTimer = window.setTimeout(() => {
+          if (document.hidden) return;
+          bsodCopyGlitch.classList.remove('is-glitching');
+          void bsodCopyGlitch.offsetWidth;
+          bsodCopyGlitch.classList.add('is-glitching');
+          bsodGlitchEndTimer = window.setTimeout(() => bsodCopyGlitch.classList.remove('is-glitching'), 500);
+          scheduleBsodTextGlitch(2800 + Math.random() * 3700);
+        }, delay);
+      }
+
+      scheduleBsodTextGlitch(1800 + Math.random() * 2600);
+      document.addEventListener('visibilitychange', () => {
+        window.clearTimeout(bsodGlitchTimer);
+        window.clearTimeout(bsodGlitchEndTimer);
+        bsodCopyGlitch.classList.remove('is-glitching');
+        if (!document.hidden) scheduleBsodTextGlitch(900 + Math.random() * 1900);
+      });
     }
 
     function spawnErrorWindows() {
