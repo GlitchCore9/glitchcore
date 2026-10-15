@@ -159,8 +159,9 @@
     .checkerboard { background-color: #f0f0f0; background-image: conic-gradient(#111 25%, #f0f0f0 0 50%, #111 0 75%, #f0f0f0 0); background-size: 48px 48px; }
     .hero-visual { position: relative; min-height: 520px; overflow: hidden; border-left: 1px solid var(--line); background: #eaf1fa; }
     .hero-visual img { width: 100%; height: 100%; position: absolute; inset: 0; object-fit: cover; filter: contrast(1.06) saturate(.88); }
-    .hero-visual .mascot-overlay { z-index: 2; top: auto; right: auto; bottom: 0; left: 50%; width: min(76%, 470px); height: 94%; object-fit: contain; object-position: center bottom; filter: drop-shadow(0 4px 3px #06152d66); transform: translate3d(calc(-50% + var(--mascot-pointer-x, 0px)), calc(var(--mascot-pointer-y, 0px) + var(--mascot-scroll-y, 0px)), 0) rotate(var(--mascot-rotation, 0deg)); transform-origin: center 72%; transition: transform .16s ease-out; pointer-events: none; will-change: transform, clip-path, filter; }
-    .hero-visual .mascot-overlay.is-glitching { animation: mascot-glitch .48s steps(5, end); }
+    .hero-visual .mascot-overlay { z-index: 2; top: auto; right: auto; bottom: 15%; left: 50%; width: min(54%, 420px); height: 72%; object-fit: contain; object-position: center bottom; filter: drop-shadow(0 4px 3px #06152d66); transform: translate3d(calc(-50% + var(--mascot-pointer-x, 0px)), calc(var(--mascot-pointer-y, 0px) + var(--mascot-scroll-y, 0px)), 0) rotate(calc(45deg + var(--mascot-rotation, 0deg))); transform-origin: center 50%; translate: 0 0; animation: mascot-float 3.2s ease-in-out infinite; transition: transform .16s ease-out; pointer-events: none; will-change: transform, translate, clip-path, filter; }
+    .hero-visual .mascot-overlay.is-glitching { animation: mascot-float 3.2s ease-in-out infinite, mascot-glitch .48s steps(5, end); }
+    @keyframes mascot-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -6px; } }
     @keyframes mascot-glitch {
       0%, 100% { clip-path: inset(0); filter: drop-shadow(0 4px 3px #06152d66); }
       18% { clip-path: inset(12% 0 70%); filter: drop-shadow(-5px 0 #f00) drop-shadow(5px 0 #00aaff); }
@@ -497,6 +498,7 @@
       .hero-copy { padding: 44px 24px 36px; }
       .hero h1 { font-size: 30px; }
       .hero-visual { min-height: 340px; border-top: 1px solid var(--line); border-left: 0; }
+      .hero-visual .mascot-overlay { bottom: 18%; width: min(64%, 260px); height: 64%; }
       .section { padding: 48px 20px; }
       .project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .project-image { height: 240px; }
@@ -547,7 +549,7 @@
       .write-me { font-size: 8px; }
       .social-grid, .skills { grid-template-columns: 1fr; }
       .aa-art { font-size: clamp(7px, 2.2vw, 9px); padding-right: 4px; padding-left: 4px; }
-      .hero-visual { min-height: 285px; }
+      .hero-visual { min-height: 340px; }
       .section-head { align-items: flex-start; flex-direction: column; }
       .project-grid { grid-template-columns: 1fr; }
       .project-image { height: 285px; }
@@ -870,7 +872,7 @@
       function updateMascotScroll() {
         const bounds = heroVisual.getBoundingClientRect();
         const progress = Math.max(-1, Math.min(1, (window.innerHeight / 2 - (bounds.top + bounds.height / 2)) / window.innerHeight));
-        mascotOverlay.style.setProperty('--mascot-scroll-y', `${progress * 26}px`);
+        mascotOverlay.style.setProperty('--mascot-scroll-y', `${progress * 12}px`);
       }
 
       heroVisual.addEventListener('pointermove', (event) => {
@@ -878,7 +880,7 @@
         const horizontal = Math.max(-1, Math.min(1, (event.clientX - bounds.left) / bounds.width * 2 - 1));
         const vertical = Math.max(-1, Math.min(1, (event.clientY - bounds.top) / bounds.height * 2 - 1));
         mascotOverlay.style.setProperty('--mascot-pointer-x', `${horizontal * 15}px`);
-        mascotOverlay.style.setProperty('--mascot-pointer-y', `${vertical * 9}px`);
+        mascotOverlay.style.setProperty('--mascot-pointer-y', `${vertical * 4}px`);
         mascotOverlay.style.setProperty('--mascot-rotation', `${horizontal * 1.5}deg`);
       }, { passive: true });
 
