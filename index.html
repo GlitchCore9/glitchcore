@@ -159,6 +159,15 @@
     .checkerboard { background-color: #f0f0f0; background-image: conic-gradient(#111 25%, #f0f0f0 0 50%, #111 0 75%, #f0f0f0 0); background-size: 48px 48px; }
     .hero-visual { position: relative; min-height: 520px; overflow: hidden; border-left: 1px solid var(--line); background: #eaf1fa; }
     .hero-visual img { width: 100%; height: 100%; position: absolute; inset: 0; object-fit: cover; filter: contrast(1.06) saturate(.88); }
+    .hero-visual .mascot-overlay { z-index: 2; top: auto; right: auto; bottom: 0; left: 50%; width: min(76%, 470px); height: 94%; object-fit: contain; object-position: center bottom; filter: drop-shadow(0 4px 3px #06152d66); transform: translate3d(calc(-50% + var(--mascot-pointer-x, 0px)), calc(var(--mascot-pointer-y, 0px) + var(--mascot-scroll-y, 0px)), 0) rotate(var(--mascot-rotation, 0deg)); transform-origin: center 72%; transition: transform .16s ease-out; pointer-events: none; will-change: transform, clip-path, filter; }
+    .hero-visual .mascot-overlay.is-glitching { animation: mascot-glitch .48s steps(5, end); }
+    @keyframes mascot-glitch {
+      0%, 100% { clip-path: inset(0); filter: drop-shadow(0 4px 3px #06152d66); }
+      18% { clip-path: inset(12% 0 70%); filter: drop-shadow(-5px 0 #f00) drop-shadow(5px 0 #00aaff); }
+      36% { clip-path: inset(38% 0 40%); filter: hue-rotate(24deg) contrast(1.4); }
+      58% { clip-path: inset(72% 0 16%); filter: drop-shadow(5px 0 #f00) drop-shadow(-5px 0 #00aaff); }
+      78% { clip-path: inset(20% 0 61%); filter: hue-rotate(-18deg) contrast(1.3); }
+    }
     .hero-visual::after { position: absolute; inset: 0; pointer-events: none; content: ""; background: linear-gradient(115deg, #ff000010, transparent 40%, #4e91df20), repeating-linear-gradient(0deg, #0000 0 3px, #fff1 4px); mix-blend-mode: screen; }
     .photo-tag { position: absolute; z-index: 1; top: 18px; left: 18px; padding: 8px 10px; color: #fff; background: var(--blue); border-left: 2px solid var(--accent-blue); font: 10px var(--mono); }
     .photo-caption { position: absolute; z-index: 1; right: 18px; bottom: 18px; max-width: 220px; padding: 10px 12px; color: #e3edf8; background: #101c2aed; border-left: 3px solid var(--error-red); font: 11px/1.45 var(--mono); }
@@ -578,6 +587,7 @@
         </div>
         <div class="hero-visual">
           <img src="assets/hero-halftone-blue.jpg" alt="Синий полутоновый узор из точек, вращающихся вокруг центра" fetchpriority="high">
+          <img class="mascot-overlay" src="assets/mascot-cutout.png" alt="" aria-hidden="true" fetchpriority="high">
           <span class="photo-tag">[ HALFTONE.NOISE / 001 ]</span>
           <span class="photo-caption">HALFTONE SIGNAL: 0xBLUE<br>визуальный шум сохранён</span>
         </div>
@@ -852,6 +862,44 @@
 
     syncMotionPreviews();
     motionPreference.addEventListener('change', syncMotionPreviews);
+
+    const heroVisual = document.querySelector('.hero-visual');
+    const mascotOverlay = heroVisual.querySelector('.mascot-overlay');
+
+    if (!motionPreference.matches) {
+      function updateMascotScroll() {
+        const bounds = heroVisual.getBoundingClientRect();
+        const progress = Math.max(-1, Math.min(1, (window.innerHeight / 2 - (bounds.top + bounds.height / 2)) / window.innerHeight));
+        mascotOverlay.style.setProperty('--mascot-scroll-y', `${progress * 26}px`);
+      }
+
+      heroVisual.addEventListener('pointermove', (event) => {
+        const bounds = heroVisual.getBoundingClientRect();
+        const horizontal = Math.max(-1, Math.min(1, (event.clientX - bounds.left) / bounds.width * 2 - 1));
+        const vertical = Math.max(-1, Math.min(1, (event.clientY - bounds.top) / bounds.height * 2 - 1));
+        mascotOverlay.style.setProperty('--mascot-pointer-x', `${horizontal * 15}px`);
+        mascotOverlay.style.setProperty('--mascot-pointer-y', `${vertical * 9}px`);
+        mascotOverlay.style.setProperty('--mascot-rotation', `${horizontal * 1.5}deg`);
+      }, { passive: true });
+
+      heroVisual.addEventListener('pointerleave', () => {
+        mascotOverlay.style.setProperty('--mascot-pointer-x', '0px');
+        mascotOverlay.style.setProperty('--mascot-pointer-y', '0px');
+        mascotOverlay.style.setProperty('--mascot-rotation', '0deg');
+      }, { passive: true });
+
+      window.addEventListener('scroll', updateMascotScroll, { passive: true });
+      window.addEventListener('resize', updateMascotScroll);
+      updateMascotScroll();
+
+      window.setInterval(() => {
+        if (document.hidden) return;
+        mascotOverlay.classList.remove('is-glitching');
+        void mascotOverlay.offsetWidth;
+        mascotOverlay.classList.add('is-glitching');
+        window.setTimeout(() => mascotOverlay.classList.remove('is-glitching'), 520);
+      }, 5000);
+    }
 
     function spawnErrorWindows() {
       let layer = document.querySelector('.error-window-layer');
