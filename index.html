@@ -157,8 +157,8 @@
     .hero-copy .button.secondary .button-window-back { border-color: #d9e8ff; background: var(--blue); }
     .hero-copy .button.secondary .button-window { border-color: #d9e8ff; background: var(--blue); color: #fff; }
     .checkerboard { background-color: #f0f0f0; background-image: conic-gradient(#111 25%, #f0f0f0 0 50%, #111 0 75%, #f0f0f0 0); background-size: 48px 48px; }
-    .hero-visual { position: relative; min-height: 520px; overflow: hidden; border-left: 1px solid var(--line); background-color: #f0f0f0; background-image: conic-gradient(#111 25%, #f0f0f0 0 50%, #111 0 75%, #f0f0f0 0); background-size: 48px 48px; }
-    .hero-visual img { width: 100%; height: 100%; position: absolute; inset: 0; object-fit: contain; filter: contrast(1.06) saturate(.88); }
+    .hero-visual { position: relative; min-height: 520px; overflow: hidden; border-left: 1px solid var(--line); background: #eaf1fa; }
+    .hero-visual img { width: 100%; height: 100%; position: absolute; inset: 0; object-fit: cover; filter: contrast(1.06) saturate(.88); }
     .hero-visual::after { position: absolute; inset: 0; pointer-events: none; content: ""; background: linear-gradient(115deg, #ff000010, transparent 40%, #4e91df20), repeating-linear-gradient(0deg, #0000 0 3px, #fff1 4px); mix-blend-mode: screen; }
     .photo-tag { position: absolute; z-index: 1; top: 18px; left: 18px; padding: 8px 10px; color: #fff; background: var(--blue); border-left: 2px solid var(--accent-blue); font: 10px var(--mono); }
     .photo-caption { position: absolute; z-index: 1; right: 18px; bottom: 18px; max-width: 220px; padding: 10px 12px; color: #e3edf8; background: #101c2aed; border-left: 3px solid var(--error-red); font: 11px/1.45 var(--mono); }
@@ -577,9 +577,9 @@
           <p class="hero-log">USER_AVATAR.PNG: <span>NOT FOUND</span><br>REALITY_RENDER.EXE: <span>RUNNING...</span></p>
         </div>
         <div class="hero-visual">
-          <img src="assets/glitchcore-print.jpg" alt="Физическая 3D-печатная фигурка GlitchCore рядом с окном Fatal Error" fetchpriority="high">
-          <span class="photo-tag">[ GLITCHCORE.SVG → 3MF / 001 ]</span>
-          <span class="photo-caption">FATAL ERROR: 0xID_FAULT<br>physical render: сохранён</span>
+          <img src="assets/hero-halftone-blue.jpg" alt="Синий полутоновый узор из точек, вращающихся вокруг центра" fetchpriority="high">
+          <span class="photo-tag">[ HALFTONE.NOISE / 001 ]</span>
+          <span class="photo-caption">HALFTONE SIGNAL: 0xBLUE<br>визуальный шум сохранён</span>
         </div>
       </section>
 
