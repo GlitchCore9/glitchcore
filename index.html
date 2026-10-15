@@ -124,8 +124,10 @@
       border-bottom: 2px solid var(--accent-blue);
     }
     .hero-copy { --hero-title-size: clamp(40px, 5.2vw, 68px); position: relative; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: 54px clamp(24px, 5vw, 66px); color: #fff; background: var(--blue); }
-    .eyebrow { margin: 0 0 22px; color: #ffffff; font: 11px var(--mono); text-transform: uppercase; }
-    .hero-title-art { display: block; width: 8ch; max-width: 100%; height: auto; margin: 0 0 12px; object-fit: contain; font: 400 var(--hero-title-size)/1 var(--pixel); }
+    .hero-title-frame { position: relative; width: 8ch; max-width: 100%; margin: 0 0 12px; }
+    .hero-title-art { display: block; width: 100%; height: auto; object-fit: contain; font: 400 var(--hero-title-size)/1 var(--pixel); }
+    .hero-delete-hotspot { position: absolute; top: 74%; right: 4%; width: 32%; height: 18%; padding: 0; border: 0; background: transparent; color: transparent; cursor: pointer; touch-action: manipulation; }
+    .hero-delete-hotspot:focus-visible { outline: 2px solid #fff; outline-offset: -4px; background: #ffffff1c; }
     .hero h1 { max-width: 620px; margin: 0; font: 400 var(--hero-title-size)/1.16 var(--pixel); }
     .hero h1 .accent { position: relative; display: inline-block; color: #fff; text-shadow: 2px 0 #ff0000, -2px 0 #00aaff; }
     .hero-desc { max-width: 430px; margin: 27px 0 25px; color: #e7efff; font-size: 16px; line-height: 1.55; }
@@ -158,7 +160,7 @@
     .hero-copy .button.secondary .button-window-back { border-color: #d9e8ff; background: var(--blue); }
     .hero-copy .button.secondary .button-window { border-color: #d9e8ff; background: var(--blue); color: #fff; }
     .checkerboard { background-color: #f0f0f0; background-image: conic-gradient(#111 25%, #f0f0f0 0 50%, #111 0 75%, #f0f0f0 0); background-size: 48px 48px; }
-    .hero-visual { position: relative; min-height: 700px; overflow: hidden; border-left: 1px solid var(--line); background: #eaf1fa; }
+    .hero-visual { --tear-1: -16px; --tear-2: 12px; --tear-3: -22px; --tear-4: 18px; --tear-5: -11px; --tear-6: 24px; position: relative; min-height: 700px; overflow: hidden; border-left: 1px solid var(--line); background: #eaf1fa; }
     .hero-visual img { width: 100%; height: 100%; position: absolute; inset: 0; object-fit: cover; filter: contrast(1.06) saturate(.88); }
     .hero-visual .hero-background { z-index: 0; }
     .hero-visual::after { z-index: 1; }
@@ -200,26 +202,6 @@
       font: 9px var(--pixel);
     }
     .filter[aria-pressed="true"] { border-color: var(--accent-blue); background: var(--accent-blue); color: #fff; }
-    #glitch-toggle { width: 90px; border-color: var(--error-red); background: var(--error-red); color: #fff; }
-    #glitch-toggle .glitch-toggle-text { position: relative; display: inline-block; white-space: nowrap; animation: glitch-toggle-pulse 1.15s ease-in-out infinite; }
-    #glitch-toggle .glitch-toggle-channel { position: absolute; inset: 0; pointer-events: none; opacity: 0; }
-    #glitch-toggle .glitch-toggle-channel-red { color: #ffb0b0; animation: glitch-toggle-red .9s steps(1, end) infinite; }
-    #glitch-toggle .glitch-toggle-channel-cyan { color: #a8edff; animation: glitch-toggle-cyan .9s steps(1, end) infinite; }
-    @keyframes glitch-toggle-pulse {
-      0%, 100% { opacity: .8; transform: scale(1); text-shadow: none; }
-      50% { opacity: 1; transform: scale(1.04); text-shadow: 1px 0 #ffb0b0, -1px 0 #a8edff; }
-    }
-    @keyframes glitch-toggle-red {
-      0%, 78%, 86%, 100% { opacity: 0; transform: translateX(0); }
-      80% { opacity: .95; transform: translateX(-2px) skewX(-8deg); }
-      83% { opacity: .8; transform: translateX(2px); }
-    }
-    @keyframes glitch-toggle-cyan {
-      0%, 80%, 88%, 100% { opacity: 0; transform: translateX(0); }
-      82% { opacity: .95; transform: translateX(2px) skewX(8deg); }
-      85% { opacity: .8; transform: translateX(-2px); }
-    }
-    .glitch-hint { color: #ff6b6b; font: 9px var(--pixel); white-space: nowrap; }
     .project-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
     .project { position: relative; top: 0; min-width: 0; background: #fff; color: #111; transition: top .34s cubic-bezier(.18, .89, .32, 1.28), box-shadow .24s ease; }
     .project[hidden] { display: none; }
@@ -560,7 +542,6 @@
     @media (max-width: 470px) {
       .sysbar { font-size: 9px; }
       .sysbar-right { gap: 8px; }
-      .glitch-hint { display: none; }
       .nav-links { gap: 9px; }
       .nav-links a { font-size: 9px; }
       .write-me { font-size: 8px; }
@@ -583,7 +564,7 @@
   <div class="desktop" id="top">
     <div class="sysbar" aria-label="Статус системы">
       <div class="sysbar-left"><span>GC_OS 95</span><span>USER: GLITCHCORE</span><span><i class="led"></i> PROFILE: CORRUPTED</span></div>
-      <div class="sysbar-right"><span class="glitch-hint">нажми на меня →</span><button class="filter" id="glitch-toggle" type="button" aria-pressed="false"><span class="glitch-toggle-text"><span class="glitch-toggle-main">GLITCH: OFF</span><span class="glitch-toggle-channel glitch-toggle-channel-red" aria-hidden="true">GLITCH: OFF</span><span class="glitch-toggle-channel glitch-toggle-channel-cyan" aria-hidden="true">GLITCH: OFF</span></span></button><span id="clock">--:--</span></div>
+      <div class="sysbar-right"><span id="clock">--:--</span></div>
     </div>
 
     <main class="window">
@@ -598,7 +579,7 @@
 
       <section class="hero" aria-labelledby="hero-title">
         <div class="hero-copy">
-          <img class="hero-title-art" src="assets/hero-title-error.jpg" alt="Синее окно Fatal Error с сообщением об ошибке" fetchpriority="high">
+          <div class="hero-title-frame"><img class="hero-title-art" src="assets/hero-title-error.jpg" alt="Синее окно Fatal Error с сообщением об ошибке" fetchpriority="high"><button class="hero-delete-hotspot" type="button" aria-label="Удалить"></button></div>
           <h1 id="hero-title">я глюкор<br><span class="accent">я глюкор</span><br>я глюкор</h1>
           <p class="hero-desc">GlitchCore detected. ЧЕ ДЕЛАЕШЬ? Придумываю вещи, которых не было, и довожу их от концепта до физического объекта. Глюки чинить не надо =)</p>
           <div class="cta-row"><a class="button" href="#projects"><span class="button-window-back button-window-back-far" aria-hidden="true"></span><span class="button-window-back button-window-back-near" aria-hidden="true"></span><span class="button-window">открыть архив <span aria-hidden="true">↘</span></span></a><a class="button secondary" href="https://t.me/GlitchCore9" target="_blank" rel="noopener noreferrer"><span class="button-window-back button-window-back-far" aria-hidden="true"></span><span class="button-window-back button-window-back-near" aria-hidden="true"></span><span class="button-window">написать автору</span></a></div>
@@ -730,9 +711,7 @@
 
   <script>
     const clock = document.querySelector('#clock');
-    const glitchToggle = document.querySelector('#glitch-toggle');
-    const glitchToggleText = glitchToggle.querySelector('.glitch-toggle-main');
-    const glitchToggleChannels = glitchToggle.querySelectorAll('.glitch-toggle-channel');
+    const heroDeleteHotspot = document.querySelector('.hero-delete-hotspot');
     const filterButtons = document.querySelectorAll('[data-filter]');
     const projects = document.querySelectorAll('.project');
     const processConsole = document.querySelector('#process-console');
@@ -991,18 +970,16 @@
       }
     }
 
-    glitchToggle.addEventListener('click', () => {
-      const enabled = glitchToggle.getAttribute('aria-pressed') !== 'true';
-      glitchToggle.setAttribute('aria-pressed', String(enabled));
-      const label = `GLITCH: ${enabled ? 'ON' : 'OFF'}`;
-      glitchToggleText.textContent = label;
-      glitchToggleChannels.forEach((channel) => { channel.textContent = label; });
-      document.body.classList.toggle('glitch-mode', enabled);
+    let glitchModeTimer;
+    heroDeleteHotspot.addEventListener('click', () => {
+      document.body.classList.add('glitch-mode');
       document.body.classList.remove('glitch-hit');
       void document.body.offsetWidth;
       document.body.classList.add('glitch-hit');
       spawnErrorWindows();
       window.setTimeout(() => document.body.classList.remove('glitch-hit'), 450);
+      window.clearTimeout(glitchModeTimer);
+      glitchModeTimer = window.setTimeout(() => document.body.classList.remove('glitch-mode'), 1600);
     });
 
     if (window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)').matches) {
