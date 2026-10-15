@@ -123,9 +123,10 @@
       min-height: 620px;
       border-bottom: 2px solid var(--accent-blue);
     }
-    .hero-copy { position: relative; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: 54px clamp(24px, 5vw, 66px); color: #fff; background: var(--blue); }
+    .hero-copy { --hero-title-size: clamp(40px, 5.2vw, 68px); position: relative; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: 54px clamp(24px, 5vw, 66px); color: #fff; background: var(--blue); }
     .eyebrow { margin: 0 0 22px; color: #ffffff; font: 11px var(--mono); text-transform: uppercase; }
-    .hero h1 { max-width: 620px; margin: 0; font: 400 clamp(40px, 5.2vw, 68px)/1.16 var(--pixel); }
+    .hero-title-art { display: block; width: 8ch; max-width: 100%; height: auto; margin: 0 0 12px; object-fit: contain; font: 400 var(--hero-title-size)/1 var(--pixel); }
+    .hero h1 { max-width: 620px; margin: 0; font: 400 var(--hero-title-size)/1.16 var(--pixel); }
     .hero h1 .accent { position: relative; display: inline-block; color: #fff; text-shadow: 2px 0 #ff0000, -2px 0 #00aaff; }
     .hero-desc { max-width: 430px; margin: 27px 0 25px; color: #e7efff; font-size: 16px; line-height: 1.55; }
     .hero-log { margin: 22px 0 0; color: #c1d7f5; font: 10px/1.7 var(--mono); }
@@ -508,8 +509,7 @@
       .social-grid, .skills { grid-template-columns: 1fr; }
       .nav-links a { font-size: 10px; }
       .hero { grid-template-columns: 1fr; }
-      .hero-copy { padding: 44px 24px 36px; }
-      .hero h1 { font-size: 30px; }
+      .hero-copy { --hero-title-size: 30px; padding: 44px 24px 36px; }
       .hero-visual { min-height: 440px; border-top: 1px solid var(--line); border-left: 0; }
       .bsod-face { top: 7%; font-size: 58px; }
       .bsod-copy-motion { top: 30%; left: 7%; width: 86%; }
@@ -598,7 +598,7 @@
 
       <section class="hero" aria-labelledby="hero-title">
         <div class="hero-copy">
-          <p class="eyebrow">SYSTEM NOTIFICATION / 0xID_FAULT</p>
+          <img class="hero-title-art" src="assets/hero-title-error.jpg" alt="Синее окно Fatal Error с сообщением об ошибке" fetchpriority="high">
           <h1 id="hero-title">я глюкор<br><span class="accent">я глюкор</span><br>я глюкор</h1>
           <p class="hero-desc">GlitchCore detected. ЧЕ ДЕЛАЕШЬ? Придумываю вещи, которых не было, и довожу их от концепта до физического объекта. Глюки чинить не надо =)</p>
           <div class="cta-row"><a class="button" href="#projects"><span class="button-window-back button-window-back-far" aria-hidden="true"></span><span class="button-window-back button-window-back-near" aria-hidden="true"></span><span class="button-window">открыть архив <span aria-hidden="true">↘</span></span></a><a class="button secondary" href="https://t.me/GlitchCore9" target="_blank" rel="noopener noreferrer"><span class="button-window-back button-window-back-far" aria-hidden="true"></span><span class="button-window-back button-window-back-near" aria-hidden="true"></span><span class="button-window">написать автору</span></a></div>
