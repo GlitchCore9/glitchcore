@@ -499,7 +499,10 @@
       .social-grid, .skills { grid-template-columns: 1fr; }
       .nav-links a { font-size: 10px; }
       .hero { grid-template-columns: 1fr; }
-      .hero-copy { --hero-title-size: 30px; padding: 44px 24px 36px; }
+      .hero-copy { --hero-title-size: 30px; align-items: stretch; padding: 38px 18px 32px; text-align: center; }
+      .hero-title-frame { width: min(100%, 520px); }
+      .hero-desc { max-width: none; }
+      .hero-copy .cta-row { justify-content: space-between; gap: 12px; }
       .hero-visual { min-height: 440px; border-top: 1px solid var(--line); border-left: 0; }
       .bsod-face { top: 7%; font-size: 58px; }
       .bsod-copy-motion { top: 30%; left: 7%; width: 86%; }
@@ -566,6 +569,9 @@
       .process-step { min-height: 52px; }
       .social-link { min-height: 136px; padding: 11px; }
       .statusbar { font-size: 9px; }
+    }
+    @media (max-width: 350px) {
+      .hero-copy .cta-row { justify-content: center; }
     }
   </style>
 </head>
