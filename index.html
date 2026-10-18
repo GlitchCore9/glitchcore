@@ -94,6 +94,7 @@
     .window-controls span { width: 20px; height: 19px; display: grid; place-items: center; border: 1px solid #fff; background: #c0c0c0; color: #111; box-shadow: inset -1px -1px #707070, inset 1px 1px #fff; line-height: 1; pointer-events: none; }
     .window-controls span:last-child { color: #fff; background: var(--error-red); border-color: var(--error-red); }
     .nav {
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -102,7 +103,11 @@
       border-bottom: 2px solid var(--accent-blue);
       font: 12px var(--mono);
     }
-    .nav-links { display: flex; gap: 22px; }
+    .nav-links { position: absolute; left: 50%; display: flex; align-items: stretch; gap: 4px; transform: translateX(-50%); }
+    .nav-links a { display: flex; min-width: 76px; min-height: 78px; flex-direction: column; align-items: center; justify-content: flex-start; gap: 4px; padding: 6px 4px; border: 1px solid transparent; color: inherit; text-align: center; text-decoration: none; font: 9px/1.25 var(--mono); overflow-wrap: anywhere; }
+    .nav-shortcut-icon { display: block; width: 38px; height: 38px; flex: 0 0 38px; object-fit: contain; image-rendering: pixelated; }
+    .nav .nav-links a:hover, .nav .nav-links a:focus-visible { border-color: #7da8d7; background: #d9eafc; color: var(--blue); text-decoration: none; }
+    .nav .nav-links a:focus-visible { outline: 2px solid var(--error-red); outline-offset: -3px; }
     .nav a { text-decoration: none; }
     .nav a:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
     .nav-label { color: var(--muted); }
@@ -242,6 +247,18 @@
     .process-console[data-stage="model"] .process-object-photo { filter: hue-rotate(-14deg); transform: scale(.94); }
     .process-console[data-stage="print"] .process-object-photo { filter: contrast(1.18) saturate(1.15); transform: scale(1.02); }
     .process-console[data-stage="assemble"] .process-object-photo { filter: hue-rotate(14deg) contrast(1.12); transform: scale(.98) rotate(1deg); }
+    .process-console[data-stage="idea"] .process-body { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); }
+    .process-console[data-stage="idea"] .process-visual { min-height: 0; aspect-ratio: 7 / 8; }
+    .process-console[data-stage="idea"] .process-object-photo { padding: 0; opacity: 1; object-fit: cover; filter: none; transform: none; }
+    .process-console[data-stage="model"] .process-body { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); }
+    .process-console[data-stage="model"] .process-visual { min-height: 0; aspect-ratio: 7 / 8; }
+    .process-console[data-stage="model"] .process-object-photo { padding: 0; opacity: 1; filter: none; transform: none; }
+    .process-console[data-stage="print"] .process-body { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); }
+    .process-console[data-stage="print"] .process-visual { min-height: 0; aspect-ratio: 3 / 4; }
+    .process-console[data-stage="print"] .process-object-photo { padding: 0; opacity: 1; object-fit: cover; filter: none; transform: none; }
+    .process-console[data-stage="assemble"] .process-body { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); }
+    .process-console[data-stage="assemble"] .process-visual { min-height: 0; aspect-ratio: 3 / 4; }
+    .process-console[data-stage="assemble"] .process-object-photo { padding: 0; opacity: 1; object-fit: cover; filter: none; transform: none; }
     .process-copy { display: flex; flex-direction: column; justify-content: center; padding: 30px clamp(18px, 3vw, 38px); color: #111; background: #f0f0f0; }
     .process-index { margin: 0 0 12px; color: #111; font: 10px var(--mono); }
     .process-copy h3 { margin: 0 0 12px; color: #111; font: 400 clamp(17px, 2vw, 22px)/1.4 var(--pixel); }
@@ -261,13 +278,8 @@
     .about-grid > * { min-width: 0; }
     .about-text { max-width: 590px; color: #111; font-size: 15px; line-height: 1.7; }
     .about-text p { margin: 0 0 16px; }
-    .alias-window { position: relative; border: 2px solid var(--blue); background: #f0f0f0; color: #111; box-shadow: inset 1px 1px #fff, 4px 4px #0005; }
-    .alias-title { position: relative; padding: 6px 100px 6px 12px; color: #fff; background: var(--blue); font: 10px var(--pixel); }
-    .alias-title .dialog-controls { top: 2px; right: 2px; }
-    .ascii-avatar { margin: 0; padding: 15px 12px 11px; border-bottom: 1px solid #999; color: var(--blue); background: #e2e8ef; font: 14px/1.08 var(--mono); text-align: center; white-space: pre; }
-    .aliases { display: flex; flex-wrap: wrap; gap: 7px; padding: 15px; background: #f0f0f0; }
-    .alias { padding: 7px 9px; border: 1px dashed #555; color: #111; background: #f0f0f0; font: 11px var(--mono); }
-    .alias:nth-child(3n) { background: #c0c0c0; border-style: solid; }
+    .alias-window { position: relative; width: min(100%, 420px); margin: 0 auto; overflow: hidden; border: 2px solid var(--blue); background: #f0f0f0; color: #111; box-shadow: inset 1px 1px #fff, 4px 4px #0005; }
+    .alias-window .hero-title-frame { width: 100%; max-width: none; margin: 0; }
     .skills { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
     .skill { min-height: 145px; padding: 16px; border-right: 0; border-bottom: 0; }
     .dialog-window.skill { padding-top: 42px; border: 2px solid var(--blue); background: #f0f0f0; color: #111; }
@@ -297,7 +309,6 @@
     .contact p { margin: 11px 0 0; font: 11px var(--mono); }
     .contact a:not(.button) { color: #111; font-weight: 600; }
     #contact p:not(.section-kicker), #contact p:not(.section-kicker) a { color: #111; text-shadow: 0 0 1px #fff, 1px 0 #fff, -1px 0 #fff, 0 1px #fff, 0 -1px #fff; }
-    .contact-actions { display: flex; flex: 0 0 auto; flex-wrap: wrap; gap: 9px; }
     .contact .button { border-color: var(--blue); background: #c0c0c0; color: #111; }
     .contact .button.secondary { border-color: #808080; background: #c0c0c0; color: #111; }
     .contact.dialog-window { padding-top: 55px; }
@@ -494,8 +505,10 @@
     @media (max-width: 760px) {
       body { padding: 8px; }
       .sysbar-left span:nth-child(2), .nav-label { display: none; }
-      .nav { padding: 12px 15px; }
-      .nav-links { gap: 13px; }
+      .nav { padding: 12px 10px; }
+      .nav-links { position: static; display: grid; width: 100%; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 3px; transform: none; }
+      .nav-links a { min-width: 0; min-height: 69px; padding: 4px 2px; }
+      .nav-shortcut-icon { width: 32px; height: 32px; flex-basis: 32px; }
       .social-grid, .skills { grid-template-columns: 1fr; }
       .nav-links a { font-size: 10px; }
       .hero { grid-template-columns: 1fr; }
@@ -514,23 +527,14 @@
       .project-image { height: 240px; }
       .social-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .process-body { grid-template-columns: 1fr; }
+      .process-console[data-stage="idea"] .process-body { grid-template-columns: 1fr; }
+      .process-console[data-stage="model"] .process-body { grid-template-columns: 1fr; }
+      .process-console[data-stage="print"] .process-body { grid-template-columns: 1fr; }
+      .process-console[data-stage="assemble"] .process-body { grid-template-columns: 1fr; }
       .process-visual { min-height: 250px; }
       .about-grid { grid-template-columns: minmax(0, 1fr); gap: 22px; }
       .skills { grid-template-columns: repeat(2, 1fr); }
       .contact { align-items: flex-start; flex-direction: column; padding: 34px 20px; }
-    }
-        .aa-art {
-      font-family: var(--pixel);
-      font-size: 13px;
-      line-height: 1.2;
-      white-space: pre;
-      overflow-x: auto;
-      margin: 0;
-      padding: 15px 12px 11px;
-      border-bottom: 1px solid #999;
-      color: var(--blue);
-      background: #e2e8ef;
-      text-align: center;
     }
         @media (prefers-reduced-motion: no-preference) {
       .ambient-echo {
@@ -553,12 +557,13 @@
     @media (max-width: 470px) {
       .sysbar { font-size: 9px; }
       .sysbar-right { gap: 8px; }
+      .hero-copy { --hero-title-size: 58px; }
       .ok-sticker-burst { width: 42px; height: 42px; }
-      .nav-links { gap: 9px; }
+      .nav-links { gap: 2px; }
       .nav-links a { font-size: 9px; }
+      .nav-shortcut-icon { width: 30px; height: 30px; flex-basis: 30px; }
       .write-me { font-size: 8px; }
       .social-grid, .skills { grid-template-columns: 1fr; }
-      .aa-art { font-size: clamp(7px, 2.2vw, 9px); padding-right: 4px; padding-left: 4px; }
       .hero-visual { min-height: 440px; }
       .section-head { align-items: flex-start; flex-direction: column; }
       .project-grid { grid-template-columns: 1fr; }
@@ -569,6 +574,12 @@
       .process-step { min-height: 52px; }
       .social-link { min-height: 136px; padding: 11px; }
       .statusbar { font-size: 9px; }
+    }
+    @media (max-width: 360px) {
+      .hero-copy { --hero-title-size: 46px; }
+    }
+    @media (max-width: 300px) {
+      .hero-copy { --hero-title-size: 36px; }
     }
     @media (max-width: 350px) {
       .hero-copy .cta-row { justify-content: center; }
@@ -589,14 +600,19 @@
       </div>
       <nav class="nav" aria-label="Основная навигация">
         <span class="nav-label"><img class="emoji-sticker" src="assets/emoji-xp-field-loop.gif" data-motion-src="assets/emoji-xp-field-loop.gif" data-static-src="assets/xp-bliss-wallpaper.png" alt="Анимированное XP-поле"> [ RECOVERY MENU ]</span>
-        <div class="nav-links"><a href="#projects">архив</a><a href="#process">процесс</a><a href="#about">профиль</a><a href="#links">каналы</a></div>
+        <div class="nav-links">
+          <a href="#projects"><img class="nav-shortcut-icon" src="assets/папка.webp" alt="" aria-hidden="true"><span>архив</span></a>
+          <a href="#process"><img class="nav-shortcut-icon" src="assets/лоток с документами и за ней планета.webp" alt="" aria-hidden="true"><span>процесс</span></a>
+          <a href="#about"><img class="nav-shortcut-icon" src="assets/смайлик пиксельный из вин xp (один из любимых моих).webp" alt="" aria-hidden="true"><span>профиль</span></a>
+          <a href="#links"><img class="nav-shortcut-icon" src="assets/планета земля пиксельная.webp" alt="" aria-hidden="true"><span>каналы</span></a>
+          <a href="resume.html"><img class="nav-shortcut-icon" src="assets/xp-warning-document.png" alt="" aria-hidden="true"><span>резюме</span></a>
+        </div>
       </nav>
 
       <section class="hero" aria-labelledby="hero-title">
         <div class="hero-copy">
-          <div class="hero-title-frame"><img class="hero-title-art" src="assets/hero-title-error.jpg" alt="Синее окно Fatal Error с сообщением об ошибке" fetchpriority="high"><button class="hero-ok-hotspot" type="button" aria-label="ОК"></button><button class="hero-delete-hotspot" type="button" aria-label="Удалить"></button></div>
           <h1 id="hero-title">я глюкор<br><span class="accent">я глюкор</span><br>я глюкор</h1>
-          <p class="hero-desc">GlitchCore detected. ЧЕ ДЕЛАЕШЬ? Придумываю вещи, которых не было, и довожу их от концепта до физического объекта. Глюки чинить не надо =)</p>
+          <p class="hero-desc">Привет! Я Глитчкор. Я тот, кто воплотит любую идею. Не знаешь, чего хочешь? Придумаем. Глюки чинить не надо <img class="emoji-sticker" src="assets/emoji-win95-smile.png" alt="" aria-hidden="true"></p>
           <div class="cta-row"><a class="button" href="#projects"><span class="button-window-back button-window-back-far" aria-hidden="true"></span><span class="button-window-back button-window-back-near" aria-hidden="true"></span><span class="button-window">открыть архив <span aria-hidden="true">↘</span></span></a><a class="button secondary" href="https://t.me/GlitchCore9" target="_blank" rel="noopener noreferrer"><span class="button-window-back button-window-back-far" aria-hidden="true"></span><span class="button-window-back button-window-back-near" aria-hidden="true"></span><span class="button-window">написать автору</span></a></div>
           <p class="hero-log">USER_AVATAR.PNG: <span>NOT FOUND</span><br>REALITY_RENDER.EXE: <span>RUNNING...</span></p>
         </div>
@@ -605,14 +621,13 @@
           <span class="bsod-face" aria-hidden="true">:(</span>
           <div class="bsod-copy-motion"><div class="bsod-copy-glitch"><p class="bsod-message">На компьютере возникла проблема, которую он не смог решить,<br>и теперь его нужно перезагрузить.</p></div></div>
           <span class="bsod-code-404" aria-hidden="true">404</span>
-          <img class="mascot-overlay" src="assets/mascot-cutout-full.png" alt="" aria-hidden="true" fetchpriority="high">
+          <img class="mascot-overlay" src="assets/mascot-with-tail.png" alt="" aria-hidden="true" fetchpriority="high">
         </div>
       </section>
 
       <section class="section" id="projects" aria-labelledby="projects-title">
         <div class="section-head">
           <div><p class="section-kicker">01 / quarantine folder</p><h2 id="projects-title">Архив артефактов</h2></div>
-          <p class="section-note">четыре файла найдены<br>ни один не открывается нормально</p>
         </div>
         <div class="filter-row" role="group" aria-label="Фильтр проектов">
           <button class="filter" type="button" data-filter="all" aria-pressed="true">всё</button>
@@ -642,28 +657,28 @@
 
       <section class="section" id="process" aria-labelledby="process-title">
         <div class="section-head">
-          <div><p class="section-kicker">02 / из головы в руки</p><h2 id="process-title">Как рождается штука</h2></div>
-          <p class="section-note">четыре этапа, пара сбоев<br>и одна новая вещь</p>
+          <div><p class="section-kicker">02 / образ → исследование → создание</p><h2 id="process-title">Как идея становится вещью</h2></div>
+          <p class="section-note">От первого образа<br>до вещи, которую можно взять в руки</p>
         </div>
         <div class="process-window process-console" id="process-console" data-stage="idea">
-          <div class="process-topbar"><span>MAKER_FLOW.exe</span><span id="process-status">СТАДИЯ 01 / 04</span></div>
+          <div class="process-topbar"><span>IDEA_TO_MATTER.exe</span><span id="process-status">СТАДИЯ 01 / 04</span></div>
           <div class="process-body">
             <div class="process-visual" aria-hidden="true">
               <span class="process-readout" id="process-visual-label"><img src="assets/xp-hourglass-dialog.png" alt=""><span id="process-visual-name">IDEA.DAT</span></span>
-              <img class="process-object-photo" src="assets/glitchcore-print.jpg" alt="">
+              <img class="process-object-photo" src="assets/mascot-idea.jpg" alt="">
             </div>
             <div class="process-copy" id="process-details" role="tabpanel" aria-labelledby="step-idea" tabindex="0">
               <p class="process-index" id="process-index">01 / 04</p>
-              <h3 id="process-step-title">Сначала: «а что если?»</h3>
-              <p id="process-step-description">В голове появляется идея. Обычно в самый неудобный момент и обязательно без блокнота рядом.</p>
+              <h3 id="process-step-title">Всё начинается с образа</h3>
+              <p id="process-step-description">Зацепиться может изображение, рисунок, знакомая вещь или то, чего ещё не существует. Образ становится отправной точкой: хочется понять, как воплотить его в реальности.</p>
               <div class="process-progress" id="process-progress" role="progressbar" aria-label="Этап создания" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1"><span id="process-progress-fill"></span></div>
             </div>
           </div>
           <div class="process-tabs" role="tablist" aria-label="Этапы создания">
-            <button class="process-step" id="step-idea" type="button" role="tab" aria-selected="true" aria-controls="process-details" tabindex="0" data-process-stage="idea"><span>01</span><strong><img class="emoji-sticker" src="assets/emoji-lightbulb.png" alt="">идея</strong></button>
-            <button class="process-step" id="step-model" type="button" role="tab" aria-selected="false" aria-controls="process-details" tabindex="-1" data-process-stage="model"><span>02</span><strong><img class="emoji-sticker" src="assets/emoji-help-book.png" alt="">модель</strong></button>
-            <button class="process-step" id="step-print" type="button" role="tab" aria-selected="false" aria-controls="process-details" tabindex="-1" data-process-stage="print"><span>03</span><strong><img class="emoji-sticker" src="assets/emoji-clapper.png" alt="">печать</strong></button>
-            <button class="process-step" id="step-assemble" type="button" role="tab" aria-selected="false" aria-controls="process-details" tabindex="-1" data-process-stage="assemble"><span>04</span><strong><img class="emoji-sticker" src="assets/emoji-plug.png" alt="">сборка</strong></button>
+            <button class="process-step" id="step-idea" type="button" role="tab" aria-selected="true" aria-controls="process-details" tabindex="0" data-process-stage="idea"><span>01</span><strong><img class="emoji-sticker" src="assets/emoji-lightbulb.png" alt="">образ</strong></button>
+            <button class="process-step" id="step-model" type="button" role="tab" aria-selected="false" aria-controls="process-details" tabindex="-1" data-process-stage="model"><span>02</span><strong><img class="emoji-sticker" src="assets/emoji-help-book.png" alt="">исследование</strong></button>
+            <button class="process-step" id="step-print" type="button" role="tab" aria-selected="false" aria-controls="process-details" tabindex="-1" data-process-stage="print"><span>03</span><strong><img class="emoji-sticker" src="assets/emoji-clapper.png" alt="">прототип</strong></button>
+            <button class="process-step" id="step-assemble" type="button" role="tab" aria-selected="false" aria-controls="process-details" tabindex="-1" data-process-stage="assemble"><span>04</span><strong><img class="emoji-sticker" src="assets/emoji-plug.png" alt="">реализация</strong></button>
           </div>
         </div>
       </section>
@@ -672,37 +687,30 @@
         <div class="section-head"><div><p class="section-kicker">03 / автор файла</p><h2 id="about-title">Это всё я, Glitch Core</h2></div></div>
         <div class="about-grid">
           <div class="about-text">
-            <p><strong>[ FATAL ERROR: 0xID_FAULT ]</strong><br>Файл <code>GLITCHCORE_ID.SYS</code> повреждён. НАЗЫВАЙ МЕНЯ: глюкор / глитч / глюкорня / попкорн / глюня.exe.</p>
-            <p>Я придумываю штуки и довожу их от концепт-арта до физического объекта: SVG → STL → 3MF → слой за слоем. Шум и глюки оставляю, если они классные. То, что мешает работать, чиню. Иногда.</p>
-            <p>3D-моделирование, печать, концепт-арт, электроника, радиомоделирование, Arduino, робототехника, одежда и подбор образов. Слишком много интересов — это тоже часть бага.</p>
+            <p>Мои направления: программирование и автоматизация, 3D-моделирование и печать, электронные устройства и радиомоделирование, робототехника, концепт-арт. Люблю соединять цифровое и физическое; новые программы и инструменты осваиваю по мере задачи.</p>
           </div>
-             <div class="alias-window"><div class="alias-title">GLITCHCORE_ID.SYS / recovery</div><pre class="aa-art">
-           /\_/\\
-          ( o.o )
-           > ^ <
-        .---------.
-        | :3.exe  |
-        '---------'
-</pre><div class="aliases">
-</pre>
-            :3.exe</pre><div class="aliases"><span class="alias">глюкор</span><span class="alias">попкорн</span><span class="alias">глитчкор</span><span class="alias">глюк</span><span class="alias">глюкорня</span><span class="alias">глиня</span><span class="alias">глитч</span><span class="alias">глюня</span><span class="alias">и другие.exe</span>
-        </div>
+          <div class="alias-window">
+            <div class="hero-title-frame">
+              <img class="hero-title-art" src="assets/hero-title-error.jpg" alt="Синее окно Fatal Error с кнопками ОК и Удалить" loading="lazy">
+              <button class="hero-ok-hotspot" type="button" aria-label="ОК"></button>
+              <button class="hero-delete-hotspot" type="button" aria-label="Удалить"></button>
+            </div>
+          </div>
       </section>
 
       <section class="section" aria-label="Что я умею">
         <div class="section-head"><div><p class="section-kicker">04 / loaded modules</p><h2>Чем заражена система</h2></div><p class="section-note">модулей больше, чем<br>оперативной памяти</p></div>
         <div class="skills">
-          <div class="skill dialog-window" data-dialog-title="3D_PRINT.exe"><span class="skill-icon" aria-hidden="true"><img class="emoji-sticker" src="assets/emoji-pc.png" alt=""></span><strong>Форма и печать</strong><small>концепт → STL → реальный объект</small></div>
-          <div class="skill dialog-window" data-dialog-title="IO_PORTS.sys"><span class="skill-icon" aria-hidden="true"><img class="emoji-sticker" src="assets/emoji-atom.png" alt=""></span><strong>Электроника</strong><small>Arduino, датчики, радиомодели</small></div>
-          <div class="skill dialog-window" data-dialog-title="CONCEPT_ART.exe"><span class="skill-icon" aria-hidden="true"><img class="emoji-sticker" src="assets/emoji-notepad.png" alt=""></span><strong>Концепт-арт</strong><small>идея, форма, детали, характер</small></div>
-          <div class="skill dialog-window" data-dialog-title="STYLE_PATCH.exe"><span class="skill-icon" aria-hidden="true"><img class="emoji-sticker" src="assets/emoji-win95-smile.png" alt=""></span><strong>Свой образ</strong><small>одежда, аксессуары и странные идеи</small></div>
+          <div class="skill dialog-window" data-dialog-title="AUTOMATION.exe"><span class="skill-icon" aria-hidden="true"><img class="emoji-sticker" src="assets/emoji-pc.png" alt=""></span><strong>Код и автоматизация</strong><small>вайбкодинг</small></div>
+          <div class="skill dialog-window" data-dialog-title="IO_PORTS.sys"><span class="skill-icon" aria-hidden="true"><img class="emoji-sticker" src="assets/emoji-atom.png" alt=""></span><strong>Электронные устройства</strong><small>микрокомпьютеры, датчики, радиоуправление</small></div>
+          <div class="skill dialog-window" data-dialog-title="3D_PRINT.exe"><span class="skill-icon" aria-hidden="true"><img class="emoji-sticker" src="assets/emoji-notepad.png" alt=""></span><strong>3D-проектирование и печать</strong><small>из модели → в печатаемый объект</small></div>
+          <div class="skill dialog-window" data-dialog-title="CONCEPT_ART.exe"><span class="skill-icon" aria-hidden="true"><img class="emoji-sticker" src="assets/emoji-win95-smile.png" alt=""></span><strong>Концепт и дизайн</strong><small>идея, форма, детали, характер</small></div>
         </div>
       </section>
 
       <section class="section" id="links" aria-labelledby="links-title">
         <div class="section-head">
           <div><p class="section-kicker">05 / внешние устройства</p><h2 id="links-title">Найти меня в сети</h2></div>
-          <p class="section-note">блог — черновики и процесс<br>телега — написать автору</p>
         </div>
         <div class="social-grid">
           <a class="social-link dialog-window" data-dialog-title="TELEGRAM / CHANNEL" href="https://t.me/GlitchCore3" target="_blank" rel="noopener noreferrer"><span class="social-kind"><img class="emoji-sticker" src="assets/emoji-chat.png" alt="">TELEGRAM / CHANNEL</span><strong>GlitchCore</strong><small>Работы, системные логи и глитч-объекты.</small><span class="social-arrow" aria-hidden="true">↗</span></a>
@@ -715,8 +723,7 @@
       </section>
 
       <section class="contact dialog-window" data-dialog-title="CONTACT.exe" id="contact" aria-labelledby="contact-title">
-        <div><p class="section-kicker">06 / открыть канал связи (ПРИЁМ АУУУ)</p><h2 id="contact-title">Есть идея?<br>Давай придумаем ещё страннее.</h2><p>рабочий телефон: <a href="tel:+79933097518">+7 (993) 309-75-18</a><br>звонки принимаю ежедневно с 15:00 до 22:00</p><p>чекай отзывы кибердемон: <a href="https://t.me/GlitchCore3/13" target="_blank" rel="noopener noreferrer">посмотреть (нет блин не посмотреть!)</a></p></div>
-        <div class="contact-actions"><a class="button" href="https://t.me/GlitchCore9" target="_blank" rel="noopener noreferrer">написать Глюне <span aria-hidden="true">↗</span></a><a class="button secondary" href="https://t.me/GlitchCoreBlog" target="_blank" rel="noopener noreferrer">смотреть процесс <span aria-hidden="true">↗</span></a></div>
+        <div><p class="section-kicker">06 / открыть канал связи</p><h2 id="contact-title">Есть идея?<br>Давай придумаем ещё страннее.</h2><p>чекай отзывы кибердемон: <a href="https://t.me/GlitchCore3/13" target="_blank" rel="noopener noreferrer">посмотреть (нет блин не посмотреть!)</a></p></div>
       </section>
       <footer class="statusbar"><div class="status-left"><span><i class="led"></i> PROFILE: CORRUPTED</span></div><span>errors were features all along</span></footer>
     </main>
@@ -731,14 +738,15 @@
     const filterButtons = document.querySelectorAll('[data-filter]');
     const projects = document.querySelectorAll('.project');
     const processConsole = document.querySelector('#process-console');
+    const processObjectPhoto = document.querySelector('.process-object-photo');
     const processTabs = [...document.querySelectorAll('[data-process-stage]')];
     const cursorSymbols = [':3', '=)', '(─‿‿─)', '^-^'];
     let nextCursorSymbol = 0;
     const processStages = [
-      { id: 'idea', label: 'IDEA.DAT', title: 'Сначала: «а что если?»', description: 'Идея появилась. Блокнот, конечно, не рядом. Фиксирую как умею и иду придумывать форму.' },
-      { id: 'model', label: 'MODEL.3MF', title: 'SVG → STL → 3MF', description: 'Концепт превращается в модель. Проверяю форму, детали и как это будет жить не только на экране.' },
-      { id: 'print', label: 'LAYER_BY_LAYER.exe', title: 'Печать слой за слоем', description: 'Запускаю принтер. Случайный шум иногда становится частью объекта; то, что мешает ему работать, чиню.' },
-      { id: 'assemble', label: 'BUILD.NEXT', title: 'Следующий проект', description: 'Следующая идея уже загружается. Подробности появятся, когда пройдёт тестирование.' }
+      { id: 'idea', label: 'REFERENCE.png', image: 'assets/mascot-idea.jpg', title: 'Всё начинается с образа', description: 'Зацепиться может изображение, рисунок, знакомая вещь или то, чего ещё не существует. Образ становится отправной точкой: хочется понять, как воплотить его в реальности.' },
+      { id: 'model', label: 'RESEARCH.log', image: 'assets/mascot-research.jpg', title: 'Ищу, как это устроено', description: 'Изучаю материалы, механизмы и доступные технологии, ищу похожие решения и разбираю, как их адаптировать. Интернет и нейросети помогают быстрее проверить гипотезы и найти маршрут.' },
+      { id: 'print', label: 'PROTOTYPE.3D', image: 'assets/mascot-prototype.jpg', title: 'Экспериментирую с прототипом', description: 'Перехожу к модели: меняю форму, детали и конструкцию, добавляю собственные решения. Проверяю, что можно упростить, усилить или сделать функциональнее.' },
+      { id: 'assemble', label: 'MATERIALIZE.exe', image: 'assets/mascot-materialized.jpg', title: 'Материализую идею', description: 'Изготавливаю и собираю результат: подготавливаю модель к печати, печатаю детали, соединяю компоненты и довожу до вещи, которую можно увидеть и проверить в работе.' }
     ];
 
     function addWindowControls(windowElement) {
@@ -757,7 +765,7 @@
       windowElement.append(controls);
     }
 
-    document.querySelectorAll('.dialog-window, .process-topbar, .alias-title').forEach(addWindowControls);
+    document.querySelectorAll('.dialog-window, .process-topbar').forEach(addWindowControls);
 
     const glitchProfiles = [
       { duration: '.46s', tear: [-10, 7, -14, 11, -8, 16], red: [-16, 13, -20, 16, -11, 21], cyan: [16, -13, 20, -16, 11, -21], redDelay: '-.08s', cyanDelay: '-.23s' },
@@ -1084,6 +1092,7 @@
       const stage = processStages[index];
       const tab = processTabs[index];
       processConsole.dataset.stage = stage.id;
+      processObjectPhoto.src = stage.image;
       document.querySelector('#process-status').textContent = `СТАДИЯ ${String(index + 1).padStart(2, '0')} / 04`;
       document.querySelector('#process-visual-name').textContent = stage.label;
       document.querySelector('#process-index').textContent = `${String(index + 1).padStart(2, '0')} / 04`;
@@ -1122,7 +1131,7 @@
         [...group.children].forEach((item, index) => item.style.setProperty('--reveal-delay', `${index * 85}ms`));
       });
 
-      const revealItems = document.querySelectorAll('.section-head, .project, .process-window, .about-text, .alias-window, .skill, .social-link, .contact > div, .contact-actions');
+      const revealItems = document.querySelectorAll('.section-head, .project, .process-window, .about-text, .alias-window, .skill, .social-link, .contact > div');
       revealItems.forEach((item) => item.classList.add('reveal'));
       document.documentElement.classList.add('js-motion');
 

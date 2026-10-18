@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101112">
+  <meta name="description" content="Цифровые решения и физические прототипы: 3D-моделирование и печать, электроника, программирование и автоматизация.">
+  <title>Иван Глюкор — цифровые инструменты и прототипы</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    @font-face {
+      font-family: "Monocraft";
+      src: url("https://cdn.jsdelivr.net/gh/IdreesInc/Monocraft@main/dist/Monocraft-ttf/Monocraft.ttf") format("truetype");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
+    :root {
+      color-scheme: light;
+      --paper: #18395e;
+      --window: #f0f0f0;
+      --ink: #111;
+      --muted: #4b4b4b;
+      --line: #154f9b;
+      --accent-blue: #0078d7;
+      --blue: #0000aa;
+      --blue-dark: #06152d;
+      --mono: "DM Mono", "Courier New", monospace;
+      --sans: "Space Grotesk", "Trebuchet MS", sans-serif;
+      --pixel: "Monocraft", "Courier New", monospace;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      padding: 18px;
+      color: var(--ink);
+      background-color: var(--paper);
+      background-image:
+        linear-gradient(45deg, #07182dcc 25%, transparent 25%, transparent 75%, #07182dcc 75%),
+        linear-gradient(45deg, #07182dcc 25%, transparent 25%, transparent 75%, #07182dcc 75%),
+        radial-gradient(100% 55% at 4% 100%, #65a735 0 48%, transparent 49%),
+        radial-gradient(100% 54% at 96% 100%, #397c26 0 47%, transparent 48%),
+        linear-gradient(180deg, #155da2 0%, #80bde6 54%, #4f922a 55%, #72ae36 100%);
+      background-size: 44px 44px, 44px 44px, 100vw 50vh, 100vw 50vh, 100vw 100vh;
+      background-position: 0 0, 22px 22px, -18vw 50vh, 42vw 49vh, 0 0;
+      background-attachment: fixed;
+      background-repeat: repeat, repeat, no-repeat, no-repeat, no-repeat;
+      font-family: var(--sans);
+    }
+    a { color: inherit; }
+    .desktop { width: min(1200px, 100%); margin: 0 auto; }
+    .sysbar { display: flex; min-height: 34px; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; padding: 0 10px; color: #e8eee5; background: var(--blue-dark); font: 11px var(--mono); }
+    .led { display: inline-block; width: 8px; height: 8px; margin-right: 6px; border-radius: 50%; background: var(--accent-blue); box-shadow: 0 0 8px #4e91df80; }
+    .window { overflow: hidden; border: 2px solid var(--blue); background: var(--window); box-shadow: 0 0 0 1px #000, 8px 8px 0 #0008; }
+    .titlebar { display: flex; height: 38px; align-items: center; justify-content: space-between; gap: 12px; padding: 0 9px 0 13px; border-bottom: 2px solid var(--accent-blue); background: var(--blue); color: #fff; font: 11px var(--pixel); }
+    .titlebar-name { display: flex; min-width: 0; align-items: center; gap: 9px; }
+    .app-icon { display: grid; width: 17px; height: 17px; flex: 0 0 auto; place-items: center; background: var(--accent-blue); color: var(--ink); font: 700 11px var(--mono); }
+    .window-controls { display: flex; flex: 0 0 auto; gap: 5px; }
+    .window-controls span { display: grid; width: 20px; height: 19px; place-items: center; border: 1px solid #fff; background: #c0c0c0; color: #111; box-shadow: inset -1px -1px #707070, inset 1px 1px #fff; line-height: 1; }
+    .window-controls span:last-child { border-color: #f00; background: #f00; color: #fff; }
+    .nav { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 13px 24px; border-bottom: 2px solid var(--accent-blue); background: #fff; font: 12px var(--mono); }
+    .nav-label { flex: 0 0 auto; color: var(--muted); }
+    .nav-links { position: absolute; left: 50%; display: flex; align-items: stretch; justify-content: flex-end; gap: 4px; transform: translateX(-50%); }
+    .nav a { text-decoration: none; }
+    .nav-links a { display: flex; min-width: 76px; min-height: 78px; flex-direction: column; align-items: center; justify-content: flex-start; gap: 4px; padding: 6px 4px; border: 1px solid transparent; color: inherit; text-align: center; text-decoration: none; font: 9px/1.25 var(--mono); overflow-wrap: anywhere; }
+    .nav-shortcut-icon { display: block; width: 38px; height: 38px; flex: 0 0 38px; object-fit: contain; image-rendering: pixelated; }
+    .nav .nav-links a:hover, .nav .nav-links a:focus-visible { border-color: #7da8d7; background: #d9eafc; color: var(--blue); text-decoration: none; }
+    .nav .nav-links a:focus-visible { outline: 2px solid var(--error-red); outline-offset: -3px; }
+    .nav-links [aria-current="page"] { border-color: #a9bfd8; background: #e4effb; color: var(--accent-blue); }
+    .resume-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(250px, 330px); gap: 36px; padding: clamp(28px, 6vw, 68px); border-bottom: 1px solid var(--line); background: var(--blue); color: #fff; }
+    .eyebrow, .section-kicker { margin: 0 0 12px; color: #b9d8ff; font: 11px var(--mono); text-transform: uppercase; }
+    h1 { max-width: 680px; margin: 0; font: 400 clamp(30px, 5vw, 58px)/1.18 var(--pixel); }
+    .resume-role { margin: 15px 0 0; color: #fff; font-size: 20px; font-weight: 600; }
+    .resume-lead { max-width: 650px; margin: 18px 0 0; color: #e7efff; font-size: 15px; line-height: 1.7; }
+    .resume-contact { align-self: end; padding: 21px; border: 1px solid #d9e8ff; background: #06152d; color: #fff; }
+    .resume-contact h2 { margin: 0 0 14px; color: #b9d8ff; font: 400 13px var(--pixel); }
+    .resume-contact p { margin: 9px 0 0; font: 12px/1.7 var(--mono); overflow-wrap: anywhere; }
+    .resume-contact a { text-underline-offset: 3px; }
+    .resume-section { padding: 42px clamp(22px, 5vw, 62px); border-bottom: 1px solid var(--line); }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 22px; }
+    .section-kicker { margin-bottom: 8px; color: var(--accent-blue); }
+    h2 { margin: 0; font: 400 clamp(20px, 3vw, 30px)/1.3 var(--pixel); }
+    .section-note { max-width: 280px; margin: 0; color: var(--muted); font: 11px/1.6 var(--mono); }
+    .summary { max-width: 880px; margin: 0; color: #222; font-size: 15px; line-height: 1.75; }
+    .skills { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+    .skill { min-width: 0; padding: 16px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: #f0f0f0; }
+    .skill h3 { margin: 0 0 7px; font-size: 14px; }
+    .skill p { margin: 0; color: #333; font-size: 12px; line-height: 1.6; }
+    .build-flow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0; padding: 0; border-top: 1px solid var(--line); border-left: 1px solid var(--line); list-style: none; }
+    .build-flow li { min-width: 0; padding: 17px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: #f0f0f0; }
+    .build-flow b { display: block; margin-bottom: 11px; color: var(--accent-blue); font: 11px var(--mono); }
+    .build-flow strong { display: block; margin-bottom: 7px; font-size: 13px; }
+    .build-flow span { color: #444; font-size: 11px; line-height: 1.55; }
+    .resume-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px clamp(22px, 5vw, 62px); background: #e2e8ef; font: 11px var(--mono); }
+    .resume-footer a { color: var(--blue); text-underline-offset: 3px; }
+    .resume-alias-section { padding: 28px clamp(22px, 5vw, 62px); border-top: 1px solid var(--line); }
+    .resume-alias-window { width: 100%; margin: 0; overflow: hidden; border: 2px solid var(--blue); background: #f0f0f0; box-shadow: inset 1px 1px #fff, 4px 4px #0005; }
+    .resume-alias-title { padding: 6px 12px; background: var(--blue); color: #fff; text-align: center; font: 10px var(--pixel); }
+    .resume-mascot-video { display: block; width: 100%; height: auto; background: #e2e8ef; object-fit: contain; }
+    .resume-video-sound { display: block; margin: 12px auto 0; padding: 8px 12px; border: 1px solid var(--blue); background: #f0f0f0; color: #111; cursor: pointer; font: 11px var(--mono); }
+    .resume-aa-art { margin: 0; padding: 15px 12px 11px; border-bottom: 1px solid #999; background: #e2e8ef; color: var(--blue); text-align: center; font: 14px/1.2 var(--mono); white-space: pre; overflow-x: auto; }
+    .resume-aliases { display: flex; flex-wrap: nowrap; justify-content: safe center; gap: 7px; overflow-x: auto; padding: 15px; background: #f0f0f0; scrollbar-width: thin; }
+    .resume-alias { padding: 7px 9px; border: 1px dashed #555; background: #f0f0f0; color: #111; font: 11px var(--mono); }
+    .resume-alias:nth-child(3n) { border-style: solid; background: #c0c0c0; }
+    @media (max-width: 760px) {
+      body { padding: 8px; }
+      .nav { align-items: flex-start; flex-direction: column; gap: 10px; padding: 12px 15px; }
+      .nav-label { display: none; }
+      .nav-links { position: static; display: grid; width: 100%; grid-template-columns: repeat(5, minmax(0, 1fr)); justify-content: initial; gap: 3px; transform: none; }
+      .nav-links a { min-width: 0; min-height: 69px; padding: 4px 2px; }
+      .nav-shortcut-icon { width: 32px; height: 32px; flex-basis: 32px; }
+      .resume-hero { grid-template-columns: 1fr; gap: 24px; padding: 30px 22px; }
+      .resume-contact { width: 100%; }
+      .build-flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 560px) {
+      .nav-links { gap: 2px; }
+      .nav-links a { font-size: 9px; }
+      .nav-shortcut-icon { width: 30px; height: 30px; flex-basis: 30px; }
+      .resume-aliases { flex-wrap: wrap; justify-content: center; overflow-x: visible; }
+      .skills { grid-template-columns: 1fr; }
+      .build-flow { grid-template-columns: 1fr; }
+      .section-head { align-items: flex-start; flex-direction: column; }
+      .resume-footer { align-items: flex-start; flex-direction: column; }
+    }
+    @media print {
+      @page { margin: 14mm; }
+      body { padding: 0; background: #fff; }
+      .sysbar, .titlebar, .nav, .resume-footer { display: none; }
+      .desktop { width: 100%; }
+      .window { overflow: visible; border: 0; box-shadow: none; }
+      .resume-hero { break-inside: avoid; padding: 20px 0; background: #fff; color: #111; }
+      .resume-hero .eyebrow, .resume-lead { color: #333; }
+      .resume-contact { border-color: #777; background: #fff; color: #111; }
+      .resume-contact h2 { color: #111; }
+      .resume-section { padding: 20px 0; }
+      .build-flow li, .skill { break-inside: avoid; }
+      a { text-decoration: none; }
+      * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+  <div class="desktop">
+    <div class="sysbar" aria-label="Статус системы">
+      <span>GC_OS 95&nbsp;&nbsp; USER: GLITCHCORE</span>
+      <span><i class="led" aria-hidden="true"></i> RESUME: READY</span>
+    </div>
+    <main class="window">
+      <div class="titlebar">
+        <div class="titlebar-name"><span class="app-icon" aria-hidden="true">G</span><span>GlitchCore.exe — CURRICULUM VITAE</span></div>
+        <div class="window-controls" aria-hidden="true"><span>_</span><span>□</span><span>×</span></div>
+      </div>
+      <nav class="nav" aria-label="Основная навигация">
+        <span class="nav-label">[ RECOVERY MENU ]</span>
+        <div class="nav-links">
+          <a href="index.html#projects"><img class="nav-shortcut-icon" src="assets/папка.webp" alt="" aria-hidden="true"><span>архив</span></a>
+          <a href="index.html#process"><img class="nav-shortcut-icon" src="assets/лоток с документами и за ней планета.webp" alt="" aria-hidden="true"><span>процесс</span></a>
+          <a href="index.html#about"><img class="nav-shortcut-icon" src="assets/смайлик пиксельный из вин xp (один из любимых моих).webp" alt="" aria-hidden="true"><span>профиль</span></a>
+          <a href="index.html#links"><img class="nav-shortcut-icon" src="assets/планета земля пиксельная.webp" alt="" aria-hidden="true"><span>каналы</span></a>
+          <a href="resume.html" aria-current="page"><img class="nav-shortcut-icon" src="assets/xp-warning-document.png" alt="" aria-hidden="true"><span>резюме</span></a>
+        </div>
+      </nav>
+
+      <header class="resume-hero">
+        <div>
+          <p class="eyebrow">IDEA → WORKING THING / BUILD_MODE</p>
+          <h1>Иван Глюкор</h1>
+          <p class="resume-role">Создаю цифровые и физические объекты</p>
+          <p class="resume-lead">Придумываю и собираю то, для чего ещё нет готового сценария: программы, автоматизации, электронные устройства и материальные объекты. Выбираю инструменты не по привычке, а по тому, что нужно получить.</p>
+        </div>
+        <aside class="resume-contact" aria-label="Контакты">
+          <h2>CONTACT.exe</h2>
+          <p>Telegram: <a href="https://t.me/GlitchCore9" target="_blank" rel="noopener noreferrer">@GlitchCore9</a></p>
+          <p>Рабочий телефон: <a href="tel:+79933097518">+7 (993) 309-75-18</a></p>
+        </aside>
+      </header>
+
+      <section class="resume-section" aria-labelledby="summary-title">
+        <div class="section-head">
+          <div><p class="section-kicker">01 / operating_system</p><h2 id="summary-title">Вижу задачу целиком</h2></div>
+          <p class="section-note">Не один инструмент,<br>а весь путь к результату</p>
+        </div>
+        <p class="summary">Смотрю на задачу целиком: что сейчас делают вручную, что можно упростить и каким способом довести идею до работающего результата. Если нужен цифровой инструмент — продумываю логику, подбираю язык и собираю решение; если нужна вещь — прохожу путь от исследования и модели до печати и сборки. Быстро осваиваю недостающие инструменты, использую AI как ускоритель разработки и проверяю результат на практике.</p>
+      </section>
+
+      <section class="resume-section" aria-labelledby="skills-title">
+        <div class="section-head">
+          <div><p class="section-kicker">02 / capability_stack</p><h2 id="skills-title">Зоны силы</h2></div>
+        </div>
+        <div class="skills">
+          <article class="skill"><h3>Программирование и автоматизация</h3><p>Создаю инструменты под задачу: скрипты, программы, ботов и автоматизированные сценарии. Подбираю язык и способ реализации, ускоряю разработку с помощью AI.</p></article>
+          <article class="skill"><h3>Проектирование решения целиком</h3><p>Разбираю задачу от исходных условий до результата: какие данные нужны, какие шаги можно убрать и как связать интерфейс, логику, сервисы или устройство в один рабочий процесс.</p></article>
+          <article class="skill"><h3>3D-проектирование</h3><p>Подбираю инструмент под задачу: КОМПАС-3D, Blender или генеративные модели. Дорабатываю сырую геометрию, перестраиваю детали и превращаю модель в технически печатаемое изделие.</p></article>
+          <article class="skill"><h3>Электронные устройства и радиомодели</h3><p>Не привязываюсь к одной платформе: под идею подбираю микрокомпьютер, датчики, исполнительные механизмы и радиоканал, пишу код и собираю устройство. Комбинирую электронику и программирование под конкретную задачу.</p></article>
+          <article class="skill"><h3>Быстрое освоение технологий</h3><p>Сам нахожу документацию, разбираюсь в незнакомой программе или устройстве и сразу применяю новое знание на практике.</p></article>
+          <article class="skill"><h3>От идеи до готового решения</h3><p>Не бросаю задачу на уровне концепта: собираю, тестирую, нахожу слабые места, дорабатываю и передаю результат в использовании.</p></article>
+        </div>
+      </section>
+
+      <section class="resume-section" aria-labelledby="approach-title">
+        <div class="section-head">
+          <div><p class="section-kicker">03 / IDEA_TO_MATTER</p><h2 id="approach-title">От увиденного образа — к вещи в руках</h2></div>
+          <p class="section-note">Исследую. Придумываю.<br>Материализую.</p>
+        </div>
+        <ol class="build-flow">
+          <li><b>01 / SPOT THE IDEA</b><strong>Цепляюсь за образ</strong><span>Это может быть находка на Pinterest, рисунок, существующий предмет или вещь, которой пока нет. Образ запускает вопрос: «а что, если сделать это по-настоящему?»</span></li>
+          <li><b>02 / RESEARCH & INVENT</b><strong>Ищу способ воплотить</strong><span>Изучаю материалы, конструкции и технологии, ищу информацию в сети, подключаю нейросети и свожу разрозненные подсказки в свой план реализации.</span></li>
+          <li><b>03 / MODEL & EXPERIMENT</b><strong>Собираю идею по частям</strong><span>Моделирую прототип, проверяю форму и устройство, меняю детали и добавляю новые решения. Не подгоняю задумку под первый вариант — развиваю её, пока она не заработает.</span></li>
+          <li><b>04 / MAKE IT MATERIAL</b><strong>Превращаю замысел в реальность</strong><span>Печатаю детали, собираю электронику, пишу код и свожу части вместе. Финал — не картинка и не файл, а материализованная идея, которую можно увидеть, взять в руки и проверить.</span></li>
+        </ol>
+      </section>
+
+      <footer class="resume-footer">
+        <span><i class="led" aria-hidden="true"></i> RESUME: READY</span>
+        <a href="index.html">← Вернуться на GlitchCore.exe</a>
+      </footer>
+      <section class="resume-alias-section" aria-label="Аватар и прозвища">
+        <div class="resume-alias-window">
+          <div class="resume-alias-title">GLITCHCORE_ID.SYS / recovery</div>
+          <video class="resume-mascot-video" id="resume-mascot-video" src="assets/mascot-resume.mp4" poster="assets/mascot-with-tail.png" controls playsinline preload="metadata" aria-label="Видео с маскотом"></video>
+          <button class="resume-video-sound" id="resume-video-sound" type="button" hidden>Включить звук</button>
+          <div class="resume-aliases"><span class="resume-alias">глюкор</span><span class="resume-alias">попкорн</span><span class="resume-alias">глитчкор</span><span class="resume-alias">глюк</span><span class="resume-alias">глюкорня</span><span class="resume-alias">глиня</span><span class="resume-alias">глитч</span><span class="resume-alias">глюня</span><span class="resume-alias">и другие.exe</span></div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script>
+    const resumeMascotVideo = document.querySelector('#resume-mascot-video');
+    const resumeVideoSound = document.querySelector('#resume-video-sound');
+
+    if (resumeMascotVideo && resumeVideoSound) {
+      async function playResumeMascot() {
+        if (!resumeMascotVideo.paused) return;
+
+        resumeMascotVideo.muted = false;
+        try {
+          await resumeMascotVideo.play();
+          resumeVideoSound.hidden = true;
+        } catch {
+          resumeMascotVideo.muted = true;
+          try {
+            await resumeMascotVideo.play();
+          } catch {
+            resumeVideoSound.hidden = false;
+            return;
+          }
+          resumeVideoSound.hidden = false;
+        }
+      }
+
+      resumeVideoSound.addEventListener('click', async () => {
+        resumeMascotVideo.muted = false;
+        try {
+          await resumeMascotVideo.play();
+          resumeVideoSound.hidden = true;
+        } catch {
+          resumeVideoSound.hidden = false;
+        }
+      });
+
+      new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting) {
+          playResumeMascot();
+        } else {
+          resumeMascotVideo.pause();
+        }
+      }, { threshold: 0.2 }).observe(resumeMascotVideo);
+    }
+  </script>
+</body>
+</html>
