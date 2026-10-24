@@ -141,9 +141,9 @@
       14% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0deg); }
       100% { opacity: 0; transform: translate(calc(-50% + var(--burst-x)), calc(-50% + var(--burst-y))) scale(.68) rotate(var(--burst-rotation)); }
     }
-    .hero h1 { max-width: 620px; margin: 0; font: 400 var(--hero-title-size)/1.16 var(--pixel); }
+    .hero h1 { max-width: 620px; margin: 0; font: 400 57px/1.16 var(--pixel); text-align: right; }
     .hero h1 .accent { position: relative; display: inline-block; color: #fff; text-shadow: 2px 0 #ff0000, -2px 0 #00aaff; }
-    .hero-desc { max-width: 430px; margin: 27px 0 25px; color: #e7efff; font-size: 16px; line-height: 1.55; }
+    .hero-desc { max-width: 430px; margin: 27px 0 25px; color: #e7efff; font-size: 16px; line-height: 1.55; text-align: justify; }
     .hero-log { margin: 22px 0 0; color: #c1d7f5; font: 10px/1.7 var(--mono); }
     .emoji-sticker { display: inline-block; width: 22px; height: 22px; margin: 0 3px; object-fit: contain; vertical-align: middle; image-rendering: pixelated; }
     .hero-log .emoji-sticker { width: 24px; height: 24px; }
@@ -204,6 +204,10 @@
     .section-head { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 28px; }
     .section-kicker { margin: 0 0 9px; color: var(--accent-blue); font: 11px var(--mono); text-transform: uppercase; }
     h2 { margin: 0; font: 400 clamp(23px, 3vw, 35px)/1.25 var(--pixel); }
+    .section-title-note { margin-left: 8px; border: 1px solid var(--ink); color: var(--ink); font: 18px/1.5 var(--mono); }
+    .about-section-head > div { width: 100%; }
+    #about-title { font-size: 35px; text-align: center; }
+    .skills-title { text-align: left; }
     .section-note { max-width: 260px; margin: 0; color: var(--muted); font: 11px/1.6 var(--mono); }
     .filter-row { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 18px; }
     .filter {
@@ -278,8 +282,17 @@
     .about-grid > * { min-width: 0; }
     .about-text { max-width: 590px; color: #111; font-size: 15px; line-height: 1.7; }
     .about-text p { margin: 0 0 16px; }
+    .about-text strong { color: var(--accent-blue); font: 600 14px var(--pixel); }
     .alias-window { position: relative; width: min(100%, 420px); margin: 0 auto; overflow: hidden; border: 2px solid var(--blue); background: #f0f0f0; color: #111; box-shadow: inset 1px 1px #fff, 4px 4px #0005; }
     .alias-window .hero-title-frame { width: 100%; max-width: none; margin: 0; }
+    .resume-alias-section { margin-top: 48px; }
+    .resume-alias-window { width: 100%; margin: 0; overflow: hidden; border: 2px solid var(--blue); background: #f0f0f0; box-shadow: inset 1px 1px #fff, 4px 4px #0005; }
+    .resume-alias-title { padding: 6px 12px; background: var(--blue); color: #fff; text-align: center; font: 10px var(--pixel); }
+    .resume-mascot-video { display: block; width: 100%; height: auto; background: #e2e8ef; object-fit: contain; }
+    .resume-video-sound { display: block; margin: 12px auto 0; padding: 8px 12px; border: 1px solid var(--blue); background: #f0f0f0; color: #111; cursor: pointer; font: 11px var(--mono); }
+    .resume-aliases { display: flex; flex-wrap: nowrap; justify-content: safe center; gap: 7px; overflow-x: auto; padding: 15px; background: #f0f0f0; scrollbar-width: thin; }
+    .resume-alias { padding: 7px 9px; border: 1px dashed #555; background: #f0f0f0; color: #111; font: 11px var(--mono); }
+    .resume-alias:nth-child(3n) { border-style: solid; background: #c0c0c0; }
     .skills { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
     .skill { min-height: 145px; padding: 16px; border-right: 0; border-bottom: 0; }
     .dialog-window.skill { padding-top: 42px; border: 2px solid var(--blue); background: #f0f0f0; color: #111; }
@@ -302,8 +315,39 @@
     .social-link small { color: #333; font: 11px/1.45 var(--sans); }
     .social-arrow { position: absolute; top: 11px; right: 12px; color: var(--error-red); font: 14px var(--mono); }
     .contact { display: flex; align-items: center; justify-content: space-between; gap: 30px; padding: 54px clamp(22px, 5vw, 62px) 44px; color: #111; background-color: #f0f0f0; background-image: url("assets/contact-clouds-grass.jpg"); background-position: center; background-size: cover; background-repeat: no-repeat; border: 2px solid var(--blue); }
-    .contact::before { position: absolute; top: 0; right: 0; left: 0; height: 27px; overflow: hidden; padding: 4px 100px 2px 8px; color: #fff; background: var(--blue); content: attr(data-dialog-title); font: 10px var(--pixel); white-space: nowrap; }
-    .contact::after { content: none; }
+    .contact::before { position: absolute; z-index: 3; top: 0; right: 0; left: 0; height: 27px; overflow: hidden; padding: 4px 100px 2px 8px; color: #fff; background: var(--blue); content: attr(data-dialog-title); font: 10px var(--pixel); white-space: nowrap; }
+    .contact::after {
+      position: absolute;
+      z-index: 1;
+      top: 29px;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      content: "";
+      pointer-events: none;
+      background-image: url("assets/contact-clouds-grass-glitch.jpg"), url("assets/contact-clouds-grass-glitch2.jpg");
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      opacity: 0;
+      animation: contact-photo-glitch 10s steps(1, end) infinite;
+    }
+    .contact > div { position: relative; z-index: 2; }
+    @keyframes contact-photo-glitch {
+      0%, 42%, 100% { opacity: 0; clip-path: inset(0); transform: translateX(0); background-image: url("assets/contact-clouds-grass-glitch.jpg"); }
+      42.1% { opacity: .95; clip-path: inset(35% 0 47%); transform: translateX(-7px); background-image: url("assets/contact-clouds-grass-glitch.jpg"); }
+      42.5% { opacity: 1; clip-path: inset(5% 0 78%); transform: translateX(5px); background-image: url("assets/contact-clouds-grass-glitch.jpg"); }
+      43% { opacity: 1; clip-path: inset(0); transform: translateX(-2px); background-image: url("assets/contact-clouds-grass-glitch.jpg"); }
+      45% { opacity: .9; clip-path: inset(62% 0 12%); transform: translateX(7px); background-image: url("assets/contact-clouds-grass-glitch.jpg"); }
+      45.5% { opacity: 1; clip-path: inset(28% 0 55%); transform: translateX(-4px); background-image: url("assets/contact-clouds-grass-glitch.jpg"); }
+      46%, 92% { opacity: 0; clip-path: inset(0); transform: translateX(0); }
+      92.1% { opacity: .95; clip-path: inset(15% 0 65%); transform: translateX(9px); background-image: url("assets/contact-clouds-grass-glitch2.jpg"); }
+      92.5% { opacity: 1; clip-path: inset(42% 0 38%); transform: translateX(-6px); background-image: url("assets/contact-clouds-grass-glitch2.jpg"); }
+      93% { opacity: 1; clip-path: inset(0); transform: translateX(3px); background-image: url("assets/contact-clouds-grass-glitch2.jpg"); }
+      95% { opacity: .9; clip-path: inset(20% 0 55%); transform: translateX(-8px); background-image: url("assets/contact-clouds-grass-glitch2.jpg"); }
+      95.5% { opacity: 1; clip-path: inset(70% 0 8%); transform: translateX(5px); background-image: url("assets/contact-clouds-grass-glitch2.jpg"); }
+      96% { opacity: 0; clip-path: inset(0); transform: translateX(0); }
+    }
     .contact .section-kicker, .contact p { color: #333; }
     .contact h2 { max-width: 520px; color: #111; font-size: clamp(23px, 3vw, 35px); }
     .contact p { margin: 11px 0 0; font: 11px var(--mono); }
@@ -383,6 +427,7 @@
     }
     @media (prefers-reduced-motion: reduce) {
       .error-window { opacity: 1; transform: none; animation: none; }
+      .contact::after { animation: none; opacity: 0; }
     }
     @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
       .cursor-echo { position: fixed; z-index: 1000; pointer-events: none; padding: 2px 5px; border-left: 2px solid var(--error-red); background: #07182de8; color: #fff; font: 11px var(--mono); animation: cursor-echo-fade .62s steps(4, end) forwards; }
@@ -523,6 +568,7 @@
       .bsod-code-404 { right: 5%; bottom: 5%; font-size: 54px; }
       .hero-visual .mascot-overlay { bottom: 20%; left: 50.8%; width: min(64%, 320px); height: 68%; }
       .section { padding: 48px 20px; }
+      .section-title-note { display: block; margin: 5px 0 0; }
       .project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .project-image { height: 240px; }
       .social-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -604,7 +650,7 @@
           <a href="#projects"><img class="nav-shortcut-icon" src="assets/папка.webp" alt="" aria-hidden="true"><span>архив</span></a>
           <a href="#process"><img class="nav-shortcut-icon" src="assets/лоток с документами и за ней планета.webp" alt="" aria-hidden="true"><span>процесс</span></a>
           <a href="#about"><img class="nav-shortcut-icon" src="assets/смайлик пиксельный из вин xp (один из любимых моих).webp" alt="" aria-hidden="true"><span>профиль</span></a>
-          <a href="#links"><img class="nav-shortcut-icon" src="assets/планета земля пиксельная.webp" alt="" aria-hidden="true"><span>каналы</span></a>
+          <a href="#links"><img class="nav-shortcut-icon" src="assets/планета земля пиксельная.webp" alt="" aria-hidden="true"><span>контактная информация</span></a>
           <a href="resume.html"><img class="nav-shortcut-icon" src="assets/xp-warning-document.png" alt="" aria-hidden="true"><span>резюме</span></a>
         </div>
       </nav>
@@ -627,7 +673,7 @@
 
       <section class="section" id="projects" aria-labelledby="projects-title">
         <div class="section-head">
-          <div><p class="section-kicker">01 / quarantine folder</p><h2 id="projects-title">Архив артефактов</h2></div>
+          <div><p class="section-kicker">01 / quarantine folder</p><h2 id="projects-title">Архив артефактов <span class="section-title-note">(этот блок еще в работе)</span></h2></div>
         </div>
         <div class="filter-row" role="group" aria-label="Фильтр проектов">
           <button class="filter" type="button" data-filter="all" aria-pressed="true">всё</button>
@@ -636,21 +682,21 @@
           <button class="filter" type="button" data-filter="archive" aria-pressed="false">найденное</button>
         </div>
         <div class="project-grid">
-          <article class="project dialog-window" data-dialog-title="FATAL_ERROR.3MF" data-kind="print">
-            <div class="project-image"><img src="assets/glitchcore-print.jpg" alt="Физическая печатная фигурка GlitchCore с маленьким окном Fatal Error" loading="lazy"><span class="project-index">[ 001 / PRINTED ]</span></div>
-            <div class="project-info"><h3>GLITCHCORE.SVG → 3MF <img class="emoji-sticker" src="assets/emoji-chip.png" alt="Микросхема"></h3><p>Вектор стал физической фигуркой. Случайные глюки оставлены в релизе.</p><a class="project-credit" href="https://t.me/Tnxiu" target="_blank" rel="noopener noreferrer">арт: Tingxiu / Cюшечка ↗</a><span class="tag">#svg_to_stl &nbsp; #layer_by_layer</span></div>
+          <article class="project dialog-window" data-kind="print">
+            <div class="project-image"><img src="assets/glitchcore-print.jpg" alt="" loading="lazy"></div>
+            <div class="project-info"></div>
           </article>
-          <article class="project dialog-window" data-dialog-title="USER_AVATAR.PNG" data-kind="art">
-            <div class="project-image"><img src="assets/glitchcore-avatar-art.jpg" alt="Альтернативный рендер профиля GlitchCore, иллюстрация художницы Tingxiu" loading="lazy"><span class="project-index">[ 002 / USER_AVATAR.PNG ]</span></div>
-            <div class="project-info"><h3>Визуализация личности <img class="emoji-sticker" src="assets/emoji-profile.png" alt="Профиль"></h3><p>Оригинальный профиль повреждён. Альтернативный рендер предоставлен художницей.</p><a class="project-credit" href="https://t.me/Tnxiu" target="_blank" rel="noopener noreferrer">иллюстрация: Tingxiu / Cюшечка ↗</a><span class="tag">#identity_fault &nbsp; #render</span></div>
+          <article class="project dialog-window" data-kind="art">
+            <div class="project-image"><img src="assets/glitchcore-avatar-art.jpg" alt="" loading="lazy"></div>
+            <div class="project-info"></div>
           </article>
-          <article class="project dialog-window" data-dialog-title=":3.exe / VISUAL VIRUS" data-kind="art">
-            <div class="project-image"><img src="assets/visual-virus.jpg" alt="Стилизованное системное окно :3.exe, визуальный вирус" loading="lazy"><span class="project-index">[ 003 / 137 KB ]</span></div>
-            <div class="project-info"><h3>:3.exe <img class="emoji-sticker" src="assets/error-dialog-cascade.gif" data-motion-src="assets/error-dialog-cascade.gif" data-static-src="assets/xp-warning-document.png" alt="Анимированный каскад ошибок"></h3><p>Безумное мяу-мяу не переводится. Попытка анализа прервана.</p><a class="project-credit" href="https://t.me/GlitchCore3/21" target="_blank" rel="noopener noreferrer">открыть запись в канале ↗</a><span class="tag">#visual_virus &nbsp; #no_fix_needed</span></div>
+          <article class="project dialog-window" data-kind="art">
+            <div class="project-image"><img src="assets/visual-virus.jpg" alt="" loading="lazy"></div>
+            <div class="project-info"></div>
           </article>
-          <article class="project dialog-window" data-dialog-title="SD_CARD_???.SYS" data-kind="archive">
-            <div class="project-image"><img src="assets/sd-card-error.jpg" alt="Глитчевый арт найденной SD-карты с системным предупреждением" loading="lazy"><span class="project-index">[ 004 / UNKNOWN ]</span></div>
-            <div class="project-info"><h3>SD_CARD_??? <img class="emoji-sticker" src="assets/emoji-search.png" alt="Лупа"></h3><p>Не подключай чужие накопители. Система уже знает, что ты искал.</p><a class="project-credit" href="https://t.me/GlitchCore3/20" target="_blank" rel="noopener noreferrer">открыть запись в канале ↗</a><span class="tag">#external_media &nbsp; #do_not_format</span></div>
+          <article class="project dialog-window" data-kind="archive">
+            <div class="project-image"><img src="assets/sd-card-error.jpg" alt="" loading="lazy"></div>
+            <div class="project-info"></div>
           </article>
         </div>
       </section>
@@ -684,7 +730,7 @@
       </section>
 
       <section class="section" id="about" aria-labelledby="about-title">
-        <div class="section-head"><div><p class="section-kicker">03 / автор файла</p><h2 id="about-title">Это всё я, Glitch Core</h2></div></div>
+        <div class="section-head about-section-head"><div><p class="section-kicker">03 / автор файла</p><h2 id="about-title">Это всё я, Glitch Core</h2></div></div>
         <div class="about-grid">
           <div class="about-text">
             <p>Мои направления: программирование и автоматизация, 3D-моделирование и печать, электронные устройства и радиомоделирование, робототехника, концепт-арт. Люблю соединять цифровое и физическое; новые программы и инструменты осваиваю по мере задачи.</p>
@@ -696,10 +742,20 @@
               <button class="hero-delete-hotspot" type="button" aria-label="Удалить"></button>
             </div>
           </div>
+        </div>
+
+        <div class="resume-alias-section" aria-label="Аватар и прозвища">
+          <div class="resume-alias-window">
+            <div class="resume-alias-title">GLITCHCORE_ID.SYS / recovery</div>
+            <video class="resume-mascot-video" id="index-mascot-video" src="assets/mascot-resume.mp4" poster="assets/mascot-poster.jpg" controls playsinline preload="metadata" aria-label="Видео с маскотом"></video>
+            <button class="resume-video-sound" id="index-video-sound" type="button" hidden>Включить звук</button>
+            <div class="resume-aliases"><span class="resume-alias">глюкор</span><span class="resume-alias">попкорн</span><span class="resume-alias">глитчкор</span><span class="resume-alias">глюк</span><span class="resume-alias">глюкорня</span><span class="resume-alias">глиня</span><span class="resume-alias">глитч</span><span class="resume-alias">глюня</span><span class="resume-alias">и другие.exe</span></div>
+          </div>
+        </div>
       </section>
 
       <section class="section" aria-label="Что я умею">
-        <div class="section-head"><div><p class="section-kicker">04 / loaded modules</p><h2>Чем заражена система</h2></div><p class="section-note">модулей больше, чем<br>оперативной памяти</p></div>
+        <div class="section-head"><div><p class="section-kicker">04 / loaded modules</p><h2 class="skills-title">Мои направления - ваши инструменты</h2></div></div>
         <div class="skills">
           <div class="skill dialog-window" data-dialog-title="AUTOMATION.exe"><span class="skill-icon" aria-hidden="true"><img class="emoji-sticker" src="assets/emoji-pc.png" alt=""></span><strong>Код и автоматизация</strong><small>вайбкодинг</small></div>
           <div class="skill dialog-window" data-dialog-title="IO_PORTS.sys"><span class="skill-icon" aria-hidden="true"><img class="emoji-sticker" src="assets/emoji-atom.png" alt=""></span><strong>Электронные устройства</strong><small>микрокомпьютеры, датчики, радиоуправление</small></div>
@@ -1223,6 +1279,49 @@
           ambientTimer = window.setTimeout(spawnAmbientEcho, 800);
         }
       });
+    }
+
+    // Mascot video autoplay with sound
+    const indexMascotVideo = document.querySelector('#index-mascot-video');
+    const indexVideoSound = document.querySelector('#index-video-sound');
+
+    if (indexMascotVideo && indexVideoSound) {
+      async function playIndexMascot() {
+        if (!indexMascotVideo.paused) return;
+
+        indexMascotVideo.muted = false;
+        try {
+          await indexMascotVideo.play();
+          indexVideoSound.hidden = true;
+        } catch {
+          indexMascotVideo.muted = true;
+          try {
+            await indexMascotVideo.play();
+          } catch {
+            indexVideoSound.hidden = false;
+            return;
+          }
+          indexVideoSound.hidden = false;
+        }
+      }
+
+      indexVideoSound.addEventListener('click', async () => {
+        indexMascotVideo.muted = false;
+        try {
+          await indexMascotVideo.play();
+          indexVideoSound.hidden = true;
+        } catch {
+          indexVideoSound.hidden = false;
+        }
+      });
+
+      new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting) {
+          playIndexMascot();
+        } else {
+          indexMascotVideo.pause();
+        }
+      }, { threshold: 0.2 }).observe(indexMascotVideo);
     }
   </script>
 </body>
