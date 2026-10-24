@@ -71,13 +71,16 @@
     .sysbar-left, .sysbar-right { display: flex; gap: 16px; align-items: center; }
     .led { width: 8px; height: 8px; display: inline-block; background: var(--accent-blue); border-radius: 50%; box-shadow: 0 0 8px #4e91df80; }
     .window {
-      overflow: hidden;
+      overflow: visible;
       border: 2px solid var(--blue);
       background: var(--window);
       color: var(--ink);
       box-shadow: 0 0 0 1px #000, 8px 8px 0 #0008;
     }
     .titlebar {
+      position: sticky;
+      top: 0;
+      z-index: 99;
       display: flex;
       height: 38px;
       align-items: center;
@@ -94,7 +97,9 @@
     .window-controls span { width: 20px; height: 19px; display: grid; place-items: center; border: 1px solid #fff; background: #c0c0c0; color: #111; box-shadow: inset -1px -1px #707070, inset 1px 1px #fff; line-height: 1; pointer-events: none; }
     .window-controls span:last-child { color: #fff; background: var(--error-red); border-color: var(--error-red); }
     .nav {
-      position: relative;
+      position: sticky;
+      top: 38px;
+      z-index: 100;
       display: flex;
       align-items: center;
       justify-content: space-between;
