@@ -1258,49 +1258,6 @@
         }
       });
     }
-
-    // Mascot video autoplay with sound
-    const indexMascotVideo = document.querySelector('#index-mascot-video');
-    const indexVideoSound = document.querySelector('#index-video-sound');
-
-    if (indexMascotVideo && indexVideoSound) {
-      async function playIndexMascot() {
-        if (!indexMascotVideo.paused) return;
-
-        indexMascotVideo.muted = false;
-        try {
-          await indexMascotVideo.play();
-          indexVideoSound.hidden = true;
-        } catch {
-          indexMascotVideo.muted = true;
-          try {
-            await indexMascotVideo.play();
-          } catch {
-            indexVideoSound.hidden = false;
-            return;
-          }
-          indexVideoSound.hidden = false;
-        }
-      }
-
-      indexVideoSound.addEventListener('click', async () => {
-        indexMascotVideo.muted = false;
-        try {
-          await indexMascotVideo.play();
-          indexVideoSound.hidden = true;
-        } catch {
-          indexVideoSound.hidden = false;
-        }
-      });
-
-      new IntersectionObserver(([entry]) => {
-        if (entry.isIntersecting) {
-          playIndexMascot();
-        } else {
-          indexMascotVideo.pause();
-        }
-      }, { threshold: 0.2 }).observe(indexMascotVideo);
-    }
   </script>
 </body>
 </html>
