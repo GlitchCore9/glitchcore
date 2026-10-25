@@ -319,40 +319,10 @@
     .social-link strong { max-width: 100%; overflow-wrap: anywhere; color: #111; font: 500 12px/1.5 var(--pixel); }
     .social-link small { color: #333; font: 11px/1.45 var(--sans); }
     .social-arrow { position: absolute; top: 11px; right: 12px; color: var(--error-red); font: 14px var(--mono); }
-    .contact { display: flex; align-items: center; justify-content: space-between; gap: 30px; padding: 54px clamp(22px, 5vw, 62px) 44px; color: #111; background-color: #f0f0f0; background-image: url("assets/contact-clouds-grass.jpg"); background-position: center; background-size: cover; background-repeat: no-repeat; border: 2px solid var(--blue); }
+    .contact { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 30px; padding: 54px clamp(22px, 5vw, 62px) 44px; color: #111; background-color: #f0f0f0; border: 2px solid var(--blue); overflow: hidden; }
+    .contact-video { position: absolute; top: 29px; right: 0; bottom: 0; left: 0; width: 100%; height: calc(100% - 29px); object-fit: cover; z-index: 1; }
     .contact::before { position: absolute; z-index: 3; top: 0; right: 0; left: 0; height: 27px; overflow: hidden; padding: 4px 100px 2px 8px; color: #fff; background: var(--blue); content: attr(data-dialog-title); font: 10px var(--pixel); white-space: nowrap; }
-    .contact::after {
-      position: absolute;
-      z-index: 1;
-      top: 29px;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      content: "";
-      pointer-events: none;
-      background-image: url("assets/contact-clouds-grass-glitch.jpg"), url("assets/contact-clouds-grass-glitch2.jpg");
-      background-position: center;
-      background-size: cover;
-      background-repeat: no-repeat;
-      opacity: 0;
-      animation: contact-photo-glitch 10s steps(1, end) infinite;
-    }
     .contact > div { position: relative; z-index: 2; }
-    @keyframes contact-photo-glitch {
-      0%, 42%, 100% { opacity: 0; clip-path: inset(0); transform: translateX(0); background-image: url("assets/contact-clouds-grass-glitch.jpg"); }
-      42.1% { opacity: .95; clip-path: inset(35% 0 47%); transform: translateX(-7px); background-image: url("assets/contact-clouds-grass-glitch.jpg"); }
-      42.5% { opacity: 1; clip-path: inset(5% 0 78%); transform: translateX(5px); background-image: url("assets/contact-clouds-grass-glitch.jpg"); }
-      43% { opacity: 1; clip-path: inset(0); transform: translateX(-2px); background-image: url("assets/contact-clouds-grass-glitch.jpg"); }
-      45% { opacity: .9; clip-path: inset(62% 0 12%); transform: translateX(7px); background-image: url("assets/contact-clouds-grass-glitch.jpg"); }
-      45.5% { opacity: 1; clip-path: inset(28% 0 55%); transform: translateX(-4px); background-image: url("assets/contact-clouds-grass-glitch.jpg"); }
-      46%, 92% { opacity: 0; clip-path: inset(0); transform: translateX(0); }
-      92.1% { opacity: .95; clip-path: inset(15% 0 65%); transform: translateX(9px); background-image: url("assets/contact-clouds-grass-glitch2.jpg"); }
-      92.5% { opacity: 1; clip-path: inset(42% 0 38%); transform: translateX(-6px); background-image: url("assets/contact-clouds-grass-glitch2.jpg"); }
-      93% { opacity: 1; clip-path: inset(0); transform: translateX(3px); background-image: url("assets/contact-clouds-grass-glitch2.jpg"); }
-      95% { opacity: .9; clip-path: inset(20% 0 55%); transform: translateX(-8px); background-image: url("assets/contact-clouds-grass-glitch2.jpg"); }
-      95.5% { opacity: 1; clip-path: inset(70% 0 8%); transform: translateX(5px); background-image: url("assets/contact-clouds-grass-glitch2.jpg"); }
-      96% { opacity: 0; clip-path: inset(0); transform: translateX(0); }
-    }
     .contact .section-kicker, .contact p { color: #333; }
     .contact h2 { max-width: 520px; color: #111; font-size: clamp(23px, 3vw, 35px); }
     .contact p { margin: 11px 0 0; font: 11px var(--mono); }
@@ -784,6 +754,9 @@
       </section>
 
       <section class="contact dialog-window" data-dialog-title="CONTACT.exe" id="contact" aria-labelledby="contact-title">
+        <video class="contact-video" autoplay loop muted playsinline aria-hidden="true">
+          <source src="assets/field-glitch-web.mp4" type="video/mp4">
+        </video>
         <div><p class="section-kicker">06 / открыть канал связи</p><h2 id="contact-title">Есть идея?<br>Давай придумаем ещё страннее.</h2><p>чекай отзывы кибердемон: <a href="https://t.me/GlitchCore3/13" target="_blank" rel="noopener noreferrer">посмотреть (нет блин не посмотреть!)</a></p></div>
       </section>
       <footer class="statusbar"><div class="status-left"><span><i class="led"></i> PROFILE: CORRUPTED</span></div><span>errors were features all along</span></footer>
