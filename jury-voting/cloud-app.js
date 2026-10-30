@@ -124,12 +124,17 @@
   }
 
   document.querySelector('#dialog')?.addEventListener('click', async (event) => {
-    const deleteCompetition = event.target.closest('[data-action="delete-current-contest"]');
-    if (!deleteCompetition || cloud.mode !== 'admin') return;
+    const deleteButton = event.target.closest('[data-action="delete-current-contest"]');
+    const confirmButton = event.target.closest('[data-action="confirm-delete-contest"]');
+    if ((!deleteButton && !confirmButton) || cloud.mode !== 'admin') return;
     event.preventDefault();
     event.stopImmediatePropagation();
     const competition = cloud.competitions.find((item) => item.id === cloud.competitionId);
-    if (!confirm(`Удалить конкурс «${competition?.title || ''}»? Все его участницы, категории, судьи, ссылки и оценки будут удалены навсегда.`)) return;
+    if (deleteButton) {
+      document.querySelector('#dialog-title').textContent = 'Удалить конкурс?';
+      document.querySelector('#dialog-form').innerHTML = `<p class="contest-confirm">Удалить «${escapeHtml(competition?.title || '')}»? Вместе с конкурсом навсегда удалятся участницы, номинации, жюри, ссылки и оценки.</p><div class="dialog-actions"><button class="button secondary" type="button" data-close>Отмена</button><button class="button danger" type="button" data-action="confirm-delete-contest">Удалить навсегда</button></div>`;
+      return;
+    }
     document.querySelector('#dialog')?.close();
     try { await deleteCurrentCompetition(); showMessage('Конкурс удалён'); }
     catch (error) { showMessage(error.message || 'Не удалось удалить конкурс'); }
