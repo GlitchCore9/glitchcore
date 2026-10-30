@@ -91,6 +91,10 @@
     .skill { min-width: 0; padding: 16px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: #f0f0f0; }
     .skill h3 { margin: 0 0 7px; font-size: 14px; }
     .skill p { margin: 0; color: #333; font-size: 12px; line-height: 1.6; }
+    .pc-specs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+    .pc-spec { min-width: 0; padding: 16px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: #f0f0f0; }
+    .pc-spec strong { display: block; margin-bottom: 8px; color: var(--accent-blue); font: 11px var(--mono); text-transform: uppercase; }
+    .pc-spec span { color: #222; font-size: 14px; line-height: 1.55; }
     .build-flow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0; padding: 0; border-top: 1px solid var(--line); border-left: 1px solid var(--line); list-style: none; }
     .build-flow li { min-width: 0; padding: 17px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: #f0f0f0; }
     .build-flow b { display: block; margin-bottom: 11px; color: var(--accent-blue); font: 11px var(--mono); }
@@ -117,6 +121,7 @@
       .resume-hero { grid-template-columns: 1fr; gap: 24px; padding: 30px 22px; }
       .resume-contact { width: 100%; }
       .build-flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .pc-specs { grid-template-columns: 1fr; }
     }
     @media (max-width: 560px) {
       .nav-links { gap: 2px; }
@@ -215,6 +220,17 @@
           <li><b>03 / MODEL & EXPERIMENT</b><strong>Собираю идею по частям</strong><span>Моделирую прототип, проверяю форму и устройство, меняю детали и добавляю новые решения. Не подгоняю задумку под первый вариант — развиваю её, пока она не заработает.</span></li>
           <li><b>04 / MAKE IT MATERIAL</b><strong>Превращаю замысел в реальность</strong><span>Печатаю детали, собираю электронику, пишу код и свожу части вместе. Финал — не картинка и не файл, а материализованная идея, которую можно увидеть, взять в руки и проверить.</span></li>
         </ol>
+      </section>
+
+      <section class="resume-section" aria-labelledby="pc-title">
+        <div class="section-head">
+          <div><p class="section-kicker">04 / PC_HARDWARE</p><h2 id="pc-title">Компьютер</h2></div>
+        </div>
+        <div class="pc-specs">
+          <div class="pc-spec"><strong>CPU</strong><span>12th Gen Intel Core i5-12400F<br>18M Cache, до 4.40 GHz</span></div>
+          <div class="pc-spec"><strong>GPU</strong><span>NVIDIA GeForce RTX 3060<br>12 GB GDDR6</span></div>
+          <div class="pc-spec"><strong>RAM</strong><span>Apacer TEX DDR4 UDIMM<br>4 × 8 GB = 32 GB<br>AH4U08G26C08YTBAA-1</span></div>
+        </div>
       </section>
 
       <footer class="resume-footer">
