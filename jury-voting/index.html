@@ -334,7 +334,9 @@
       state = { ...defaultState, ...JSON.parse(event.newValue) };
       render();
     });
-    window.addEventListener('hashchange', render);
+    window.addEventListener('hashchange', () => {
+      if (!window.CONTEST_SUPABASE_CONFIG?.url) render();
+    });
     window.ContestApp = {
       getState: () => state,
       setState: nextState => { state = nextState; render(); },
@@ -356,6 +358,6 @@
     }, 15000);
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="cloud-app.js?v=boot-20261031-1"></script>
+  <script src="cloud-app.js?v=boot-20261031-2"></script>
 </body>
 </html>
