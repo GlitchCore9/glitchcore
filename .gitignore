@@ -1,0 +1,18 @@
+# Local credentials and data
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Runtime artifacts
+__pycache__/
+**/__pycache__/
+*.py[cod]
+constructor_bot/leads.db
+
+# Local editor and captured browser evidence
+.claude/
+.claude/settings.local.json
+attached_assets/

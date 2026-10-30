@@ -1,0 +1,38 @@
+{
+  "settings": {
+    "start_node": "start",
+    "manager_chat_id": null
+  },
+  "nodes": {
+    "start": {
+      "text": "Здравствуйте! Я бот студии. Чем могу помочь?",
+      "buttons": [
+        {"text": "Услуги и цены", "goto": "services"},
+        {"text": "Оставить заявку", "form": "lead"},
+        {"text": "Наш сайт", "url": "https://example.com"}
+      ]
+    },
+    "services": {
+      "text": "Наши услуги:\n- Разработка сайтов — от 30 000 ₽\n- Чат-боты — от 5 000 ₽\n- Поддержка — от 3 000 ₽/мес",
+      "buttons": [
+        {"text": "Оставить заявку", "form": "lead"},
+        {"text": "Контакты", "goto": "contacts"}
+      ]
+    },
+    "contacts": {
+      "text": "Телефон: +7 900 000-00-00\nПочта: info@example.com\nРаботаем ежедневно с 10:00 до 19:00.",
+      "buttons": []
+    }
+  },
+  "forms": {
+    "lead": {
+      "title": "Заявка с сайта/бота",
+      "fields": [
+        {"key": "name", "label": "Имя", "question": "Как вас зовут?", "type": "text"},
+        {"key": "phone", "label": "Телефон", "question": "Укажите телефон для связи:", "type": "phone"},
+        {"key": "task", "label": "Задача", "question": "Коротко опишите задачу:", "type": "text"}
+      ],
+      "done_text": "Спасибо! Заявка отправлена, менеджер свяжется с вами."
+    }
+  }
+}

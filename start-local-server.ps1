@@ -1,0 +1,1 @@
+$p = Get-NetTCPConnection -LocalPort 8000 -State Listen -ErrorAction SilentlyContinue; if (-not $p) { Start-Process -FilePath 'C:\Users\ivan-\AppData\Local\Programs\Python\Python312\python.exe' -ArgumentList '-m','http.server','8000' -WorkingDirectory 'D:\progs\MicMeter-0.1.0\glitchcoreweb' -WindowStyle Hidden }
