@@ -25,7 +25,7 @@
     .mobile-nav a{display:grid;min-height:48px;place-content:center;gap:2px;color:#68756c;text-align:center;text-decoration:none;font-size:9px}
     .mobile-nav a span:first-child{font-size:17px}
   </style>
-  <link rel="stylesheet" href="modern.css?v=20261031-1">
+  <link rel="stylesheet" href="modern.css?v=20261031-2">
   <script src="supabase-config.js"></script>
 </head>
 <body>
@@ -126,10 +126,10 @@
       return `<section class="page-head"><div><p class="eyebrow">Сводка конкурса</p><h1>${esc(state.title)}</h1><p>Баллы суммируются по всем судьям и категориям.</p></div><button class="button" type="button" data-action="edit-contest">⚙ Настройки конкурса</button></section><section class="stats" aria-label="Сводка"><div class="stat"><div class="stat-label">Участницы</div><div class="stat-value">${state.participants.length}</div><div class="stat-note">в текущем конкурсе</div></div><div class="stat"><div class="stat-label">Категории</div><div class="stat-value">${state.categories.length}</div><div class="stat-note">от ${state.minScore} до ${state.maxScore} баллов</div></div><div class="stat"><div class="stat-label">Проголосовали</div><div class="stat-value green">${completed}<span style="font-size:14px;color:var(--muted);font-weight:500"> / ${state.judges.length}</span></div><div class="stat-note">судейских бюллетеней</div></div><div class="stat"><div class="stat-label">Оценок получено</div><div class="stat-value">${totalVotes.toLocaleString('ru')}</div><div class="stat-note">из ${(state.judges.length * state.participants.length * state.categories.length).toLocaleString('ru')}</div></div></section><div class="toolbar"><h2>Текущий рейтинг</h2><div class="toolbar-tools"><select class="select" id="category-filter" aria-label="Фильтр по категории"><option value="all">Все категории · общий балл</option>${categoryOptions}</select><button class="button secondary small" type="button" data-action="export">↓ CSV</button></div></div><div class="table-wrap"><table><thead><tr><th>МЕСТО</th><th>УЧАСТНИЦА</th>${state.categories.map(category => `<th>${esc(category.name).toLocaleUpperCase('ru')}</th>`).join('')}<th>ИТОГО</th></tr></thead><tbody id="ranking-body">${ranked.length ? ranked.map((item, index) => `<tr><td class="rank ${index < 3 ? 'top' : ''}">${String(index + 1).padStart(2, '0')}</td><td><div class="person-cell"><span class="person-index">${String(index + 1).padStart(2, '0')}</span><div><div class="person-name">${esc(fullName(item.person))}</div><div class="person-age">${item.person.age} лет</div></div></div></td>${item.categories.map(score => `<td class="score-cell">${score || '—'}</td>`).join('')}<td class="total-cell">${item.total}<div class="bar"><i style="width:${Math.round(item.total / maxTotal * 100)}%"></i></div></td></tr>`).join('') : `<tr><td colspan="${state.categories.length + 3}" class="empty">Добавьте участниц, чтобы сформировать рейтинг.</td></tr>`}</tbody></table></div>`;
     }
     function renderPeople() {
-      return `<section class="page-head"><div><p class="eyebrow">Список конкурса</p><h1>Участницы</h1><p>Перетаскивайте участниц за значок слева, чтобы изменить очередь выхода.</p></div><button class="button" type="button" data-action="add-person">＋ Добавить участницу</button></section><section class="panel"><div class="panel-head"><h2>Участницы конкурса</h2><span class="badge">${state.participants.length} всего</span></div><div class="panel-body list" data-sort-list="participants">${state.participants.length ? state.participants.map((person, index) => `<div class="list-row" data-sort-item data-sort-id="${esc(person.id)}"><button class="drag-handle" type="button" aria-label="Перетащить участницу ${esc(fullName(person))}" title="Перетащить">⠿</button><div class="person-cell"><span class="person-index">${String(index + 1).padStart(2, '0')}</span><div><div class="list-title">${esc(fullName(person))}</div><div class="list-sub">Участница ${index + 1} · ${person.age} лет</div></div></div><div class="row-actions"><button class="button secondary small" type="button" data-action="edit-person" data-id="${esc(person.id)}">Изменить</button><button class="button danger small" type="button" data-action="delete-person" data-id="${esc(person.id)}" aria-label="Удалить ${esc(fullName(person))}">×</button></div></div>`).join('') : `<div class="empty">Пока нет участниц. Добавьте первую запись.</div>`}</div></section>`;
+      return `<section class="page-head"><div><p class="eyebrow">Список конкурса</p><h1>Участницы</h1><p>Зажмите значок слева и перетащите строку. Также можно нажать Alt+↑/↓.</p></div><button class="button" type="button" data-action="add-person">＋ Добавить участницу</button></section><section class="panel"><div class="panel-head"><h2>Участницы конкурса</h2><span class="badge">${state.participants.length} всего</span></div><div class="panel-body list" data-sort-list="participants">${state.participants.length ? state.participants.map((person, index) => `<div class="list-row" data-sort-item data-sort-id="${esc(person.id)}"><button class="drag-handle" type="button" aria-label="Перетащить участницу ${esc(fullName(person))}" title="Зажмите и перетащите">⠿</button><div class="person-cell"><span class="person-index">${String(index + 1).padStart(2, '0')}</span><div><div class="list-title">${esc(fullName(person))}</div><div class="list-sub">Участница ${index + 1} · ${person.age} лет</div></div></div><div class="row-actions"><button class="button secondary small" type="button" data-action="edit-person" data-id="${esc(person.id)}">Изменить</button><button class="button danger small" type="button" data-action="delete-person" data-id="${esc(person.id)}" aria-label="Удалить ${esc(fullName(person))}">×</button></div></div>`).join('') : `<div class="empty">Пока нет участниц. Добавьте первую запись.</div>`}</div></section>`;
     }
     function renderCategories() {
-      return `<section class="page-head"><div><p class="eyebrow">Настройка оценивания</p><h1>Категории и баллы</h1><p>Перетаскивайте категории за значок слева, чтобы изменить их порядок в бюллетене.</p></div><button class="button" type="button" data-action="add-category">＋ Новая категория</button></section><section class="panel" style="margin-bottom:16px"><div class="panel-head"><h2>Шкала оценок</h2><span class="badge">${state.minScore} — ${state.maxScore}</span></div><div class="panel-body"><form id="scale-form" class="form-grid"><div class="field"><label for="min-score">Минимум баллов</label><input id="min-score" type="number" min="0" max="100" value="${state.minScore}" required></div><div class="field"><label for="max-score">Максимум баллов</label><input id="max-score" type="number" min="1" max="100" value="${state.maxScore}" required></div><div class="field full"><span class="form-hint">Например, от 1 до 5 или от 1 до 10. Уже сохранённые оценки не меняются.</span></div><div class="field full"><button class="button small" type="submit">Сохранить шкалу</button></div></form></div></section><section class="panel"><div class="panel-head"><h2>Категории конкурса</h2><span class="badge">${state.categories.length}</span></div><div class="panel-body list" data-sort-list="categories">${state.categories.map((category, index) => `<div class="list-row" data-sort-item data-sort-id="${esc(category.id)}"><button class="drag-handle" type="button" aria-label="Перетащить категорию ${esc(category.name)}" title="Перетащить">⠿</button><div><div class="list-title"><i class="category-color"></i>${esc(category.name)}</div><div class="list-sub">Категория ${index + 1} · оценка ${state.minScore}–${state.maxScore}</div></div><div class="row-actions"><button class="button secondary small" type="button" data-action="edit-category" data-id="${esc(category.id)}">Изменить</button><button class="button danger small" type="button" data-action="delete-category" data-id="${esc(category.id)}" aria-label="Удалить ${esc(category.name)}">×</button></div></div>`).join('') || `<div class="empty">Добавьте категорию, по которой жюри будет ставить баллы.</div>`}</div></section>`;
+      return `<section class="page-head"><div><p class="eyebrow">Настройка оценивания</p><h1>Категории и баллы</h1><p>Зажмите значок слева и перетащите строку. Также можно нажать Alt+↑/↓.</p></div><button class="button" type="button" data-action="add-category">＋ Новая категория</button></section><section class="panel" style="margin-bottom:16px"><div class="panel-head"><h2>Шкала оценок</h2><span class="badge">${state.minScore} — ${state.maxScore}</span></div><div class="panel-body"><form id="scale-form" class="form-grid"><div class="field"><label for="min-score">Минимум баллов</label><input id="min-score" type="number" min="0" max="100" value="${state.minScore}" required></div><div class="field"><label for="max-score">Максимум баллов</label><input id="max-score" type="number" min="1" max="100" value="${state.maxScore}" required></div><div class="field full"><span class="form-hint">Например, от 1 до 5 или от 1 до 10. Уже сохранённые оценки не меняются.</span></div><div class="field full"><button class="button small" type="submit">Сохранить шкалу</button></div></form></div></section><section class="panel"><div class="panel-head"><h2>Категории конкурса</h2><span class="badge">${state.categories.length}</span></div><div class="panel-body list" data-sort-list="categories">${state.categories.map((category, index) => `<div class="list-row" data-sort-item data-sort-id="${esc(category.id)}"><button class="drag-handle" type="button" aria-label="Перетащить категорию ${esc(category.name)}" title="Зажмите и перетащите">⠿</button><div><div class="list-title"><i class="category-color"></i>${esc(category.name)}</div><div class="list-sub">Категория ${index + 1} · оценка ${state.minScore}–${state.maxScore}</div></div><div class="row-actions"><button class="button secondary small" type="button" data-action="edit-category" data-id="${esc(category.id)}">Изменить</button><button class="button danger small" type="button" data-action="delete-category" data-id="${esc(category.id)}" aria-label="Удалить ${esc(category.name)}">×</button></div></div>`).join('') || `<div class="empty">Добавьте категорию, по которой жюри будет ставить баллы.</div>`}</div></section>`;
     }
     function makeJudgeUrl(id) {
       const judge = state.judges.find(item => item.id === id);
@@ -267,28 +267,36 @@
     let activeDrag = null;
     app.addEventListener('pointerdown', event => {
       const handle = event.target.closest('.drag-handle');
-      if (!handle || event.button !== 0) return;
+      if (!handle || event.button !== 0 || event.isPrimary === false) return;
       const row = handle.closest('[data-sort-item]');
       const list = row?.parentElement;
       const collection = list?.dataset.sortList;
       if (!row || !collection) return;
-      event.preventDefault();
-      const bounds = row.getBoundingClientRect();
-      const placeholder = document.createElement('div');
-      placeholder.className = 'list-row drag-placeholder';
-      placeholder.setAttribute('aria-hidden', 'true');
-      placeholder.style.height = `${bounds.height}px`;
-      row.before(placeholder);
-      handle.setPointerCapture(event.pointerId);
-      activeDrag = { row, list, collection, placeholder, pointerId: event.pointerId, startY: event.clientY, originalStyle: row.getAttribute('style'), initialIds: [...list.querySelectorAll('[data-sort-item]')].map(item => item.dataset.sortId) };
-      row.classList.add('is-dragging');
-      Object.assign(row.style, { position: 'fixed', top: `${bounds.top}px`, left: `${bounds.left}px`, width: `${bounds.width}px`, margin: '0', zIndex: '10', pointerEvents: 'none', transform: 'translateY(0px)' });
+      activeDrag = {
+        handle, row, list, collection, pointerId: event.pointerId, startY: event.clientY,
+        originalStyle: row.getAttribute('style'), initialIds: [...list.querySelectorAll('[data-sort-item]')].map(item => item.dataset.sortId),
+        isDragging: false, placeholder: null,
+      };
+      try { handle.setPointerCapture(event.pointerId); } catch { /* Document-level listeners still track the pointer. */ }
     });
-    app.addEventListener('pointermove', event => {
+    document.addEventListener('pointermove', event => {
       const drag = activeDrag;
       if (!drag || event.pointerId !== drag.pointerId) return;
+      const deltaY = event.clientY - drag.startY;
+      if (!drag.isDragging && Math.abs(deltaY) < 5) return;
       event.preventDefault();
-      drag.row.style.transform = `translateY(${event.clientY - drag.startY}px)`;
+      if (!drag.isDragging) {
+        const bounds = drag.row.getBoundingClientRect();
+        drag.placeholder = document.createElement('div');
+        drag.placeholder.className = 'list-row drag-placeholder';
+        drag.placeholder.setAttribute('aria-hidden', 'true');
+        drag.placeholder.style.height = `${bounds.height}px`;
+        drag.row.before(drag.placeholder);
+        drag.row.classList.add('is-dragging');
+        Object.assign(drag.row.style, { position: 'fixed', top: `${bounds.top}px`, left: `${bounds.left}px`, width: `${bounds.width}px`, margin: '0', zIndex: '10', pointerEvents: 'none', transform: 'translateY(0px)' });
+        drag.isDragging = true;
+      }
+      drag.row.style.transform = `translateY(${deltaY}px)`;
       if (event.clientY < 70) window.scrollBy(0, -12);
       if (event.clientY > window.innerHeight - 70) window.scrollBy(0, 12);
       const target = document.elementFromPoint(event.clientX, event.clientY)?.closest('[data-sort-item]');
@@ -302,20 +310,22 @@
       const drag = activeDrag;
       if (!drag || drag.pointerId !== pointerId) return;
       activeDrag = null;
+      if (!drag.isDragging) return;
       drag.row.classList.remove('is-dragging');
       drag.placeholder.replaceWith(drag.row);
       if (drag.originalStyle === null) drag.row.removeAttribute('style');
       else drag.row.setAttribute('style', drag.originalStyle);
       drag.list.querySelectorAll('.is-drop-target').forEach(item => item.classList.remove('is-drop-target'));
       if (commit) {
-        saveSortOrder(drag.list, drag.collection);
+        const newIds = [...drag.list.querySelectorAll('[data-sort-item]')].map(item => item.dataset.sortId);
+        if (newIds.some((id, index) => id !== drag.initialIds[index])) saveSortOrder(drag.list, drag.collection);
       } else {
         const rowsById = new Map([...drag.list.querySelectorAll('[data-sort-item]')].map(row => [row.dataset.sortId, row]));
         drag.initialIds.forEach(id => drag.list.append(rowsById.get(id)));
       }
     }
-    app.addEventListener('pointerup', event => finishDrag(true, event.pointerId));
-    app.addEventListener('pointercancel', event => finishDrag(false, event.pointerId));
+    document.addEventListener('pointerup', event => finishDrag(true, event.pointerId));
+    document.addEventListener('pointercancel', event => finishDrag(false, event.pointerId));
     app.addEventListener('keydown', event => {
       const handle = event.target.closest('.drag-handle');
       if (!handle || !event.altKey || !['ArrowUp', 'ArrowDown'].includes(event.key)) return;

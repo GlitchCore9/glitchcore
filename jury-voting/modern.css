@@ -172,7 +172,11 @@ tbody tr:hover { background: #17211a; }
 .badge { border-radius: 7px; background: #1d3020; color: #c9f59a; }
 .badge.pending { background: #302719; color: #e7c47d; }
 .category-color { border-radius: 3px; }
-.drag-handle { border-color: #344238; border-radius: 9px; background: #17211a; color: #b3c0b5; }
+.drag-handle { width: 40px; height: 40px; flex-basis: 40px; border-color: #344238; border-radius: 10px; background: #17211a; color: #b3c0b5; cursor: grab; touch-action: none; user-select: none; transition: border-color .15s ease, background-color .15s ease, color .15s ease, transform .15s ease; }
+.drag-handle:hover, .drag-handle:focus-visible { border-color: var(--green); background: #213021; color: var(--green); }
+.drag-handle:active { cursor: grabbing; transform: scale(.96); }
+.list-row.is-dragging { border-radius: 12px; background: #19251a; box-shadow: 0 16px 38px #0008, 0 0 0 1px #b9f36b80; opacity: .98; }
+.drag-placeholder { border: 1px dashed #77944e; border-radius: 12px; background: #172019; }
 
 .button {
   min-height: 42px;
