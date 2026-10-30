@@ -18,9 +18,10 @@
     .drag-placeholder{border:1px dashed var(--green);background:#edf3e9}.list-row.is-dragging{z-index:10;opacity:.96;pointer-events:none;box-shadow:0 12px 30px #17251f35;will-change:transform}.contest-controls{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:-7px 0 22px;padding:14px 16px;border:1px solid var(--line);background:#f8f8f3}.contest-status{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:800}.contest-status::before{width:9px;height:9px;flex:0 0 9px;border-radius:50%;background:#268257;content:""}.contest-controls.is-paused .contest-status::before{background:#c65c48}.contest-controls p{margin:5px 0 0 19px;color:var(--muted);font-size:11px}.contest-actions{display:flex;gap:8px}.contest-actions .button{white-space:nowrap}.contest-confirm{margin:0;color:var(--ink);font-size:13px;line-height:1.65}.contest-warning{margin-top:9px;padding:10px 12px;background:#fbf0e9;color:#8c3e2e;font-size:11px;line-height:1.5}.paused-vote{margin-top:20px;padding:20px;border:1px solid #e5c9bc;background:#fbf1ec}.paused-vote h2{margin:0 0 7px;color:#87452f;font-size:17px}.paused-vote p{margin:0;color:#68564d;font-size:12px;line-height:1.55}
     @media(max-width:800px){.contest-controls{align-items:stretch;flex-direction:column;gap:12px;margin:-5px 0 19px;padding:12px}.contest-actions{display:grid;grid-template-columns:1fr 1fr}.contest-actions .button{min-height:42px;white-space:normal}}
   </style>
+  <script src="supabase-config.js"></script>
 </head>
 <body>
-  <div id="app"></div>
+  <div id="app"><main class="judge-shell"><p>Загрузка приложения…</p></main></div>
   <dialog class="dialog" id="dialog"><div class="dialog-head"><h2 id="dialog-title"></h2><button class="dialog-close" type="button" aria-label="Закрыть" data-close>×</button></div><form class="dialog-form" id="dialog-form"></form></dialog>
   <div class="toast" id="toast" role="status" hidden></div>
   <script>
@@ -342,10 +343,19 @@
       renderJudge,
       showToast,
     };
-    render();
+    if (window.CONTEST_SUPABASE_CONFIG?.url && window.CONTEST_SUPABASE_CONFIG?.publishableKey) {
+      app.innerHTML = '<main class="judge-shell"><p>Загрузка рабочего пространства…</p></main>';
+    } else {
+      render();
+      app.dataset.ready = 'true';
+    }
+    setTimeout(() => {
+      if (app.dataset.ready === 'true') return;
+      app.innerHTML = '<main class="judge-shell"><p>Не удалось загрузить приложение. Проверьте подключение и обновите страницу.</p></main>';
+      app.dataset.ready = 'true';
+    }, 15000);
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
-  <script src="cloud-app.js?v=admin-20261031"></script>
+  <script src="cloud-app.js?v=boot-20261031-1"></script>
 </body>
 </html>

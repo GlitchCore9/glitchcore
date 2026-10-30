@@ -1,9 +1,21 @@
 (() => {
   const config = window.CONTEST_SUPABASE_CONFIG;
-  if (!config?.url || !config.publishableKey || !window.supabase?.createClient) return;
+  const app = document.querySelector('#app');
+  if (!config?.url || !config.publishableKey) {
+    app?.setAttribute('data-ready', 'true');
+    return;
+  }
+  if (!window.supabase?.createClient) {
+    if (app) {
+      app.innerHTML = '<main class="judge-shell"><p>Не удалось подключиться к сервису. Обновите страницу.</p></main>';
+      app.dataset.ready = 'true';
+    }
+    return;
+  }
 
   const client = window.supabase.createClient(config.url, config.publishableKey);
-  const app = document.querySelector('#app');
+  app.innerHTML = '<main class="judge-shell"><p>Загрузка рабочего пространства…</p></main>';
+  app.dataset.ready = 'true';
   const judgeTokenStorageKey = `jury-vote-issued-links:${config.url}`;
   const loadIssuedTokens = () => {
     try { return new Map(Object.entries(JSON.parse(sessionStorage.getItem(judgeTokenStorageKey) || '{}'))); }
