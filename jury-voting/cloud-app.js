@@ -42,6 +42,7 @@
     catch { showMessage('Скопируйте ссылку сейчас: браузер не разрешил временное хранение.'); }
   };
   const isJudgeRoute = () => new URLSearchParams(location.hash.slice(1)).has('judge');
+  const isPlatformAdminRoute = () => location.pathname.replace(/\/$/, '').endsWith('/admin') || new URLSearchParams(location.hash.slice(1)).has('admin') || new URLSearchParams(location.search).has('admin');
   const judgeToken = () => new URLSearchParams(location.hash.slice(1)).get('judge');
   const makeToken = () => [...crypto.getRandomValues(new Uint8Array(32))].map((byte) => byte.toString(16).padStart(2, '0')).join('');
   const handleError = (error, fallback = 'Не удалось выполнить запрос') => {
@@ -77,10 +78,62 @@
     if (error) { authView('Не удалось проверить сессию. Обновите страницу.'); return; }
     cloud.user = session?.user || null;
     if (!cloud.user) { authView(); return; }
+    if (isPlatformAdminRoute()) { await loadPlatformAdmin(); return; }
     await loadOrganization();
   }
 
+  async function callPlatformAdmin(action, payload = {}) {
+    const { data: { session } } = await client.auth.getSession();
+    if (!session?.access_token) throw new Error('Сессия завершилась. Войдите снова.');
+    const response = await fetch(`${config.url}/functions/v1/account-admin`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: config.publishableKey, Authorization: `Bearer ${session.access_token}` },
+      body: JSON.stringify({ action, ...payload }),
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(result.error || 'Не удалось выполнить запрос администратора.');
+    return result;
+  }
+
+  async function loadPlatformAdmin(message = '') {
+    cloud.mode = 'platform-admin-loading';
+    app.innerHTML = '<main class="judge-shell"><p>Загрузка панели администратора…</p></main>';
+    try {
+      const { users } = await callPlatformAdmin('list');
+      cloud.mode = 'platform-admin';
+      app.innerHTML = `<main class="judge-shell" style="max-width:1100px"><header class="judge-top"><div class="judge-logo"><span class="brand-mark">Ж</span><span>ЖЮРИ / ПЛАТФОРМА</span></div><div style="display:flex;gap:8px"><a class="button secondary small" href="${escapeHtml(location.pathname)}">К конкурсам</a><button class="button secondary small" type="button" data-cloud-action="sign-out">Выйти</button></div></header><section class="judge-heading"><p class="eyebrow">Платформенное управление</p><h1>Аккаунты</h1><p>Блокировка запрещает доступ к рабочим данным. Удаление аккаунта необратимо удалит его организации и конкурсы.</p></section>${message ? `<p class="form-hint" role="status">${escapeHtml(message)}</p>` : ''}<section class="panel"><div class="panel-body"><div class="table-wrap"><table><thead><tr><th>Пользователь</th><th>Дата регистрации</th><th>Организации</th><th>Конкурсы</th><th>Статус</th><th>Действия</th></tr></thead><tbody>${users.map((user) => `<tr><td>${escapeHtml(user.email || 'Без email')}</td><td>${user.created_at ? new Date(user.created_at).toLocaleDateString('ru-RU') : '—'}</td><td>${user.organization_count}</td><td>${user.competition_count}</td><td><span class="badge ${user.status === 'blocked' ? 'pending' : ''}">${user.status === 'blocked' ? 'Заблокирован' : 'Активен'}</span></td><td><div class="row-actions">${user.id === cloud.user.id ? '<span class="form-hint">Вы</span>' : `<button class="button secondary small" data-admin-action="${user.status === 'blocked' ? 'unblock' : 'block'}" data-user-id="${user.id}">${user.status === 'blocked' ? 'Разблокировать' : 'Заблокировать'}</button><button class="button danger small" data-admin-action="delete" data-user-id="${user.id}">Удалить</button>`}</div></td></tr>`).join('') || '<tr><td colspan="6" class="empty">Аккаунтов пока нет</td></tr>'}</tbody></table></div></div></section></main>`;
+    } catch (error) {
+      if (/administrator|admin access|not authorized/i.test(error.message)) {
+        cloud.mode = 'platform-admin-denied';
+        app.innerHTML = `<main class="judge-shell"><header class="judge-top"><div class="judge-logo"><span class="brand-mark">Ж</span><span>ЖЮРИ / CONTEST</span></div><button class="button secondary small" data-cloud-action="sign-out">Выйти</button></header><section class="not-found"><h1>Нет доступа</h1><p>Эта учётная запись не назначена администратором платформы.</p><a class="button secondary" href="${escapeHtml(location.pathname)}">Перейти к конкурсам</a></section></main>`;
+      } else authView(error.message);
+    }
+  }
+
+  app.addEventListener('click', async (event) => {
+    const button = event.target.closest('[data-admin-action]');
+    if (!button || cloud.mode !== 'platform-admin') return;
+    const id = button.dataset.userId;
+    try {
+      if (button.dataset.adminAction === 'block') {
+        const reason = prompt('Причина блокировки (необязательно):') || '';
+        if (!confirm('Заблокировать аккаунт? Доступ к организациям и конкурсам будет закрыт.')) return;
+        await callPlatformAdmin('block', { user_id: id, reason });
+      } else if (button.dataset.adminAction === 'unblock') {
+        if (!confirm('Восстановить доступ этому аккаунту?')) return;
+        await callPlatformAdmin('unblock', { user_id: id });
+      } else {
+        const preview = await callPlatformAdmin('preview_delete', { user_id: id });
+        if (!confirm(`Удалить аккаунт ${preview.email || ''}? Будут удалены ${preview.organization_count} организаций, ${preview.competition_count} конкурсов и связанные данные. Это действие нельзя отменить.`)) return;
+        await callPlatformAdmin('delete', { user_id: id });
+      }
+      await loadPlatformAdmin('Изменения сохранены.');
+    } catch (error) { showMessage(error.message); }
+  });
+
   async function loadOrganization() {
+    try { cloud.platformAdmin = Boolean((await callPlatformAdmin('is_admin')).is_admin); }
+    catch { cloud.platformAdmin = false; }
     const { data, error } = await client.from('organization_members').select('organization_id, role').eq('user_id', cloud.user.id);
     if (error) { authView('Не удалось загрузить организацию. Проверьте, что миграция базы уже применена.'); return; }
     if (!data?.length) { organizationView(); return; }
@@ -343,7 +396,8 @@
       return;
     }
     cloud.user = result.data.user;
-    await loadOrganization();
+    if (isPlatformAdminRoute()) await loadPlatformAdmin();
+    else await loadOrganization();
   }
 
   async function handleOrganization(event) {
@@ -381,6 +435,14 @@
     const adminPill = app.querySelector('.admin-pill');
     if (adminPill && !adminPill.querySelector('[data-cloud-action="sign-out"]')) {
       adminPill.innerHTML = `<span class="avatar">${escapeHtml((cloud.user?.email || 'A').slice(0, 1).toUpperCase())}</span><span>${escapeHtml(cloud.user?.email || 'Организатор')}</span><button class="button secondary small" type="button" data-cloud-action="sign-out">Выйти</button>`;
+    }
+    if (adminPill && cloud.platformAdmin && !adminPill.querySelector('[data-platform-admin-link]')) {
+      const link = document.createElement('a');
+      link.href = `${location.pathname}#admin`;
+      link.className = 'button secondary small';
+      link.dataset.platformAdminLink = '';
+      link.textContent = 'Аккаунты';
+      adminPill.prepend(link);
     }
     app.querySelectorAll('.top-actions > .demo-label:not([data-cloud-sync])').forEach((label) => label.remove());
     const demoButton = app.querySelector('[data-action="load-demo"]');
@@ -472,6 +534,7 @@
   window.addEventListener('hashchange', () => {
     if (cloud.mode === 'starting' || cloud.mode === 'auth') return;
     if (isJudgeRoute()) loadJudge(judgeToken());
+    else if (cloud.user && isPlatformAdminRoute()) loadPlatformAdmin();
     else if (cloud.user) loadOrganization();
   });
   client.auth.onAuthStateChange((_event, session) => {

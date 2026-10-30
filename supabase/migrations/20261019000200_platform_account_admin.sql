@@ -57,7 +57,8 @@ after insert on auth.users
 for each row execute function private.add_account_access_for_new_user();
 
 insert into public.platform_admins (user_id)
-values ('8cdc98a7-1090-453a-98b8-41297958e020')
+select id from auth.users
+where id = '8cdc98a7-1090-453a-98b8-41297958e020'
 on conflict (user_id) do nothing;
 
 alter table public.organizations drop constraint organizations_created_by_fkey;
