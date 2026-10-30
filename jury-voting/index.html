@@ -18,6 +18,13 @@
     .drag-placeholder{border:1px dashed var(--green);background:#edf3e9}.list-row.is-dragging{z-index:10;opacity:.96;pointer-events:none;box-shadow:0 12px 30px #17251f35;will-change:transform}.contest-controls{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:-7px 0 22px;padding:14px 16px;border:1px solid var(--line);background:#f8f8f3}.contest-status{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:800}.contest-status::before{width:9px;height:9px;flex:0 0 9px;border-radius:50%;background:#268257;content:""}.contest-controls.is-paused .contest-status::before{background:#c65c48}.contest-controls p{margin:5px 0 0 19px;color:var(--muted);font-size:11px}.contest-actions{display:flex;gap:8px}.contest-actions .button{white-space:nowrap}.contest-confirm{margin:0;color:var(--ink);font-size:13px;line-height:1.65}.contest-warning{margin-top:9px;padding:10px 12px;background:#fbf0e9;color:#8c3e2e;font-size:11px;line-height:1.5}.paused-vote{margin-top:20px;padding:20px;border:1px solid #e5c9bc;background:#fbf1ec}.paused-vote h2{margin:0 0 7px;color:#87452f;font-size:17px}.paused-vote p{margin:0;color:#68564d;font-size:12px;line-height:1.55}
     @media(max-width:800px){.contest-controls{align-items:stretch;flex-direction:column;gap:12px;margin:-5px 0 19px;padding:12px}.contest-actions{display:grid;grid-template-columns:1fr 1fr}.contest-actions .button{min-height:42px;white-space:normal}}
   </style>
+  <style>
+    .nav .nav-tool{display:flex;min-height:43px;align-items:center;gap:11px;padding:0 11px;border:0;background:transparent;text-align:left;cursor:pointer;font-size:13px;font-weight:600}
+    .nav .nav-tool:hover{background:#e9eee7}
+    .nav a.nav-tool{color:inherit;text-decoration:none}
+    .mobile-nav a{display:grid;min-height:48px;place-content:center;gap:2px;color:#68756c;text-align:center;text-decoration:none;font-size:9px}
+    .mobile-nav a span:first-child{font-size:17px}
+  </style>
   <script src="supabase-config.js"></script>
 </head>
 <body>
@@ -96,7 +103,9 @@
       if (token) { renderJudge(token); return; }
       const completed = votersCount();
       const totalVotes = completed * state.participants.length * state.categories.length;
-      app.innerHTML = `<div class="shell"><aside class="sidebar"><div class="brand"><span class="brand-mark">Ж</span><div><div class="brand-name">ЖЮРИ / CONTEST</div><div class="brand-caption">ПАНЕЛЬ УПРАВЛЕНИЯ</div></div></div><div class="nav-label">Рабочее пространство</div><nav class="nav" aria-label="Разделы">${navItems.map(item => navButton(item)).join('')}</nav><div class="side-bottom"><p><i class="status-dot"></i>Демо-режим</p><small>Данные этого прототипа сохраняются только в браузере.</small></div></aside><main class="main"><header class="topbar"><span class="crumb">Конкурсы　/　${esc(state.title)}</span><div class="top-actions"><span class="demo-label">ЛОКАЛЬНЫЙ ПРОТОТИП</span><span class="admin-pill"><i class="avatar">А</i> Администратор</span></div></header><div class="content"><div class="notice"><span aria-hidden="true">ⓘ</span><span><b>Это демонстрационный режим.</b> Ссылки и голоса пока доступны только в этом браузере. Чтобы судьи голосовали с разных телефонов и работала выдача доступов организаторам, понадобится подключить сервер и базу данных.</span></div>${renderPage(completed, totalVotes)}</div></main><nav class="mobile-nav" aria-label="Разделы">${navItems.map(item => navButton(item, true)).join('')}</nav></div>`;
+      app.innerHTML = `<div class="shell"><aside class="sidebar"><div class="brand"><span class="brand-mark">Ж</span><div><div class="brand-name">ЖЮРИ / CONTEST</div><div class="brand-caption">ПАНЕЛЬ УПРАВЛЕНИЯ</div></div></div><div class="nav-label">Рабочее пространство</div><nav class="nav" aria-label="Разделы">${navItems.map(item => navButton(item)).join('')}<button class="nav-tool" type="button" data-action="load-demo"><span class="nav-icon">✦</span><span>Демо</span></button></nav><div class="side-bottom"><p><i class="status-dot"></i>Демо-режим</p><small>Данные этого прототипа сохраняются только в браузере.</small></div></aside><main class="main"><header class="topbar"><span class="crumb">Конкурсы　/　${esc(state.title)}</span><div class="top-actions"><span class="demo-label">ЛОКАЛЬНЫЙ ПРОТОТИП</span><span class="admin-pill"><i class="avatar">А</i> Администратор</span></div></header><div class="content"><div class="notice"><span aria-hidden="true">ⓘ</span><span><b>Это демонстрационный режим.</b> Ссылки и голоса пока доступны только в этом браузере. Чтобы судьи голосовали с разных телефонов и работала выдача доступов организаторам, понадобится подключить сервер и базу данных.</span></div>${renderPage(completed, totalVotes)}</div></main><nav class="mobile-nav" aria-label="Разделы">${navItems.map(item => navButton(item, true)).join('')}<button type="button" data-action="load-demo"><span>✦</span><span>Демо</span></button></nav></div>`;
+      const mobileNav = app.querySelector('.mobile-nav');
+      if (mobileNav) mobileNav.style.gridTemplateColumns = `repeat(${mobileNav.children.length}, minmax(0, 1fr))`;
       window.ContestCloud?.decorate();
     }
     function renderPage(completed, totalVotes) {
@@ -107,7 +116,7 @@
       return `${renderContestControls()}${page}`;
     }
     function renderContestControls() {
-      return `<section class="contest-controls ${state.isActive ? '' : 'is-paused'}"><div><div class="contest-status">${state.isActive ? 'Голосование открыто' : 'Голосование остановлено'}</div><p>${state.isActive ? 'Судьи могут заполнять и отправлять бюллетени.' : 'Новые голоса не принимаются. Конкурс можно запустить снова.'}</p></div><div class="contest-actions"><button class="button secondary" type="button" data-action="load-demo" title="Загрузить пример участниц, категорий, судей и оценок">Демо</button><button class="button ${state.isActive ? 'danger' : ''}" type="button" data-action="toggle-contest">${state.isActive ? '■ Остановить голосование' : '▶ Запустить снова'}</button><button class="button danger" type="button" data-action="reset-contest">Новый конкурс</button></div></section>`;
+      return `<section class="contest-controls ${state.isActive ? '' : 'is-paused'}"><div><div class="contest-status">${state.isActive ? 'Голосование открыто' : 'Голосование остановлено'}</div><p>${state.isActive ? 'Судьи могут заполнять и отправлять бюллетени.' : 'Новые голоса не принимаются. Конкурс можно запустить снова.'}</p></div><div class="contest-actions"><button class="button ${state.isActive ? 'danger' : ''}" type="button" data-action="toggle-contest">${state.isActive ? '■ Остановить голосование' : '▶ Запустить снова'}</button><button class="button danger" type="button" data-action="reset-contest">Новый конкурс</button></div></section>`;
     }
     function renderResults(completed, totalVotes) {
       const ranked = getTotals();
@@ -237,11 +246,22 @@
       if (action === 'delete-judge') { const judge = state.judges.find(item => item.id === id); if (confirm(`Удалить ${judge.name} и его бюллетень?`)) { state.judges = state.judges.filter(item => item.id !== id); delete state.votes[id]; persist(); render(); } }
       if (action === 'copy-link') { try { await navigator.clipboard.writeText(makeJudgeUrl(id)); showToast('Ссылка скопирована'); } catch { showToast('Скопируйте ссылку из списка'); } }
       if (action === 'export') exportCsv();
-      if (action === 'edit-contest') openDialog('Настройки конкурса', `<div class="form-grid">${inputField('title', 'Название конкурса', state.title)}${inputField('minScore', 'Минимум баллов', state.minScore, 'number')}${inputField('maxScore', 'Максимум баллов', state.maxScore, 'number')}</div><p class="form-hint">Общий рейтинг — сумма баллов по всем категориям и судьям.</p>`, 'Сохранить', data => {
-        const min = Number(data.minScore), max = Number(data.maxScore);
-        if (!Number.isInteger(min) || !Number.isInteger(max) || min < 0 || max <= min || max > 100) { showToast('Укажите корректный диапазон баллов'); return false; }
-        state.title = data.title.trim(); state.minScore = min; state.maxScore = max; persist(); render(); return true;
-      });
+      if (action === 'edit-organization') {
+        if (!window.ContestCloud?.renameOrganization) return;
+        openDialog('Переименовать организатора', `<div class="form-grid">${inputField('organizationName', 'Название организатора', actionButton.dataset.currentName || '')}</div>`, 'Сохранить', async data => {
+          try { await window.ContestCloud.renameOrganization(data.organizationName.trim()); showToast('Название организатора обновлено'); return true; }
+          catch (error) { showToast(error.message || 'Не удалось переименовать организатора'); return false; }
+        });
+        return;
+      }
+      if (action === 'edit-contest') {
+        const deleteButton = window.ContestCloud?.isAdmin() ? '<div class="field full" style="margin-top:18px"><button class="button danger" type="button" data-action="delete-current-contest">Удалить этот конкурс</button><p class="form-hint">Конкурс, участницы, жюри и оценки будут удалены без возможности восстановления.</p></div>' : '';
+        openDialog('Настройки конкурса', `<div class="form-grid">${inputField('title', 'Название конкурса', state.title)}${inputField('minScore', 'Минимум баллов', state.minScore, 'number')}${inputField('maxScore', 'Максимум баллов', state.maxScore, 'number')}${deleteButton}</div><p class="form-hint">Общий рейтинг — сумма баллов по всем категориям и судьям.</p>`, 'Сохранить', data => {
+          const min = Number(data.minScore), max = Number(data.maxScore);
+          if (!Number.isInteger(min) || !Number.isInteger(max) || min < 0 || max <= min || max > 100) { showToast('Укажите корректный диапазон баллов'); return false; }
+          state.title = data.title.trim(); state.minScore = min; state.maxScore = max; persist(); render(); return true;
+        });
+      }
     });
     let activeDrag = null;
     app.addEventListener('pointerdown', event => {

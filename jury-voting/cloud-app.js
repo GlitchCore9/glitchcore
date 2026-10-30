@@ -25,6 +25,7 @@
     mode: 'starting',
     user: null,
     organization: null,
+    organizationRole: null,
     competitions: [],
     competitionId: null,
     knownJudgeIds: new Set(),
@@ -149,9 +150,11 @@
     const { data, error } = await client.from('organization_members').select('organization_id, role').eq('user_id', cloud.user.id);
     if (error) { authView('Не удалось загрузить организацию. Проверьте, что миграция базы уже применена.'); return; }
     if (!data?.length) { organizationView(); return; }
+    cloud.organizationRole = data[0].role;
     const { data: organizations, error: organizationError } = await client.from('organizations').select('id, name').in('id', data.map((row) => row.organization_id));
     if (organizationError || !organizations?.length) { organizationView('Не удалось найти организацию.'); return; }
     cloud.organization = organizations[0];
+    cloud.organizationRole = data.find((row) => row.organization_id === cloud.organization.id)?.role || null;
     const { data: competitions, error: competitionsError } = await client.from('competitions').select('id, title, status, created_at').eq('organization_id', cloud.organization.id).order('created_at', { ascending: true });
     if (competitionsError) { organizationView('Не удалось загрузить конкурсы. Проверьте миграцию и политики доступа.'); return; }
     cloud.competitions = competitions || [];
@@ -388,6 +391,117 @@
     catch (error) { handleError(error, 'Не удалось создать конкурс'); }
   }
 
+  async function renameOrganization(name) {
+    if (!name || name.length > 120) throw new Error('Название должно содержать от 1 до 120 символов.');
+    const { data, error } = await client.from('organizations').update({ name }).eq('id', cloud.organization.id).select('id, name').maybeSingle();
+    if (error) throw error;
+    if (!data) throw new Error('У вас нет прав переименовывать эту организацию.');
+    cloud.organization = data;
+    window.ContestApp.render();
+  }
+
+  async function deleteCurrentCompetition() {
+    const deletedId = cloud.competitionId;
+    const { data, error } = await client.from('competitions').delete().eq('id', deletedId).eq('organization_id', cloud.organization.id).select('id').maybeSingle();
+    if (error) throw error;
+    if (!data) throw new Error('Конкурс не найден или у вас нет прав на его удаление.');
+    cloud.competitions = cloud.competitions.filter((item) => item.id !== deletedId);
+    if (cloud.channel) await client.removeChannel(cloud.channel);
+    cloud.channel = null;
+    cloud.competitionId = null;
+    const nextCompetition = cloud.competitions.at(-1);
+    if (nextCompetition) {
+      history.replaceState(null, '', `${location.pathname}${location.search}#competition=${encodeURIComponent(nextCompetition.id)}`);
+      await loadCompetition(nextCompetition.id);
+    } else {
+      history.replaceState(null, '', `${location.pathname}${location.search}`);
+      firstCompetitionView();
+    }
+  }
+
+  const demoCategories = ['Визитка', 'Brand', 'Богиня', 'Подача', 'Вечерний образ'];
+  const demoParticipants = [
+    { surname: 'Болдырева', given_name: 'Ярослава', age: 8 },
+    { surname: 'Самойлова', given_name: 'Камилла', age: 7 },
+    { surname: 'Перепелица', given_name: 'Мария', age: 9 },
+    { surname: 'Османова', given_name: 'Ева', age: 10 },
+    { surname: 'Козлова', given_name: 'Варвара', age: 8 },
+    { surname: 'Лупинос', given_name: 'Сандра', age: 10 },
+    { surname: 'Клячкова', given_name: 'Мирослава', age: 14 },
+    { surname: 'Власова', given_name: 'Милана', age: 15 },
+  ];
+
+  async function seedDemoData() {
+    const currentState = window.ContestApp.getState();
+    const hasData = currentState.participants.length || currentState.categories.length || currentState.judges.length;
+    const previousCompetitionId = cloud.competitionId;
+    let seededCompetitionId = previousCompetitionId;
+    let createdCompetition = null;
+
+    if (hasData) {
+      const title = `Демо · Конкурс моделей ${new Date().toLocaleDateString('ru-RU')}`;
+      const { data, error } = await client.from('competitions').insert({
+        organization_id: cloud.organization.id, title, min_score: 1, max_score: 5, status: 'draft',
+      }).select('id, title, status, created_at').single();
+      if (error) throw error;
+      createdCompetition = data;
+      cloud.competitions.push(data);
+      seededCompetitionId = data.id;
+      await loadCompetition(seededCompetitionId);
+    }
+
+    const before = cloud.competitions.find((item) => item.id === seededCompetitionId);
+    try {
+      if (cloud.channel) await client.removeChannel(cloud.channel);
+      cloud.channel = null;
+      const [{ data: categories, error: categoryError }, { data: participants, error: participantError }] = await Promise.all([
+        client.from('categories').insert(demoCategories.map((name, index) => ({ competition_id: seededCompetitionId, name, position: index + 1 }))).select('id, name, position'),
+        client.from('participants').insert(demoParticipants.map((person, index) => ({ ...person, competition_id: seededCompetitionId, position: index + 1 }))).select('id, surname, given_name, age, position'),
+      ]);
+      if (categoryError) throw categoryError;
+      if (participantError) throw participantError;
+
+      const judges = [];
+      for (let index = 1; index <= 10; index += 1) judges.push(await createJudge(`Судья ${index}`));
+
+      const scoreRows = [];
+      judges.slice(0, 3).forEach((judge, judgeIndex) => participants.forEach((person, personIndex) => categories.forEach((category, categoryIndex) => {
+        const performance = (participants.length - 1 - personIndex) / Math.max(participants.length - 1, 1);
+        const base = 1 + Math.round(4 * performance);
+        const score = Math.max(1, Math.min(5, base + ((categoryIndex + judgeIndex + personIndex) % 3) - 1));
+        scoreRows.push({ competition_id: seededCompetitionId, judge_id: judge.id, participant_id: person.id, category_id: category.id, score });
+      })));
+      const { error: votesError } = await client.from('votes').insert(scoreRows);
+      if (votesError) throw votesError;
+      const submittedAt = new Date().toISOString();
+      const { error: submittedError } = await client.from('judges').update({ submitted_at: submittedAt }).in('id', judges.slice(0, 3).map((judge) => judge.id));
+      if (submittedError) throw submittedError;
+      const { error: competitionError } = await client.from('competitions').update({ min_score: 1, max_score: 5, status: 'open' }).eq('id', seededCompetitionId);
+      if (competitionError) throw competitionError;
+
+      const competition = cloud.competitions.find((item) => item.id === seededCompetitionId);
+      if (competition) Object.assign(competition, { status: 'open' });
+      history.replaceState(null, '', `${location.pathname}${location.search}#competition=${encodeURIComponent(seededCompetitionId)}`);
+      await loadCompetition(seededCompetitionId);
+      showMessage('Пример конкурса добавлен. Выберите «Жюри», чтобы скопировать тестовые ссылки.');
+    } catch (error) {
+      if (createdCompetition) {
+        await client.from('competitions').delete().eq('id', createdCompetition.id);
+        cloud.competitions = cloud.competitions.filter((item) => item.id !== createdCompetition.id);
+      } else {
+        await Promise.all([
+          client.from('judges').delete().eq('competition_id', seededCompetitionId),
+          client.from('participants').delete().eq('competition_id', seededCompetitionId),
+          client.from('categories').delete().eq('competition_id', seededCompetitionId),
+        ]);
+        if (before) await client.from('competitions').update({ status: before.status }).eq('id', seededCompetitionId);
+      }
+      if (previousCompetitionId && previousCompetitionId !== seededCompetitionId) await loadCompetition(previousCompetitionId);
+      else await loadCompetition(seededCompetitionId);
+      throw error;
+    }
+  }
+
   async function handleAuth(event) {
     const button = event.submitter;
     const mode = button?.dataset.authMode;
@@ -418,6 +532,7 @@
     const { data: organizationId, error } = await client.rpc('create_organization', { p_name: name });
     if (error) { organizationView(error.message); return; }
     cloud.organization = { id: organizationId, name };
+    cloud.organizationRole = 'owner';
     firstCompetitionView();
     document.querySelector('#new-competition-title').value = `Конкурс ${new Date().toLocaleDateString('ru-RU')}`;
   }
@@ -441,24 +556,33 @@
     app.querySelector('.side-bottom')?.remove();
     const crumb = app.querySelector('.crumb');
     if (crumb && !crumb.querySelector('#cloud-competition-switch')) {
-      crumb.innerHTML = `<span>Организация: ${escapeHtml(cloud.organization?.name || '')}</span><select class="select" id="cloud-competition-switch" aria-label="Выбрать конкурс">${cloud.competitions.map((item) => `<option value="${item.id}" ${item.id === cloud.competitionId ? 'selected' : ''}>${escapeHtml(item.title)}</option>`).join('')}</select>`;
+      const canManageOrganization = ['owner', 'admin'].includes(cloud.organizationRole);
+      crumb.innerHTML = `<span>Организация: ${escapeHtml(cloud.organization?.name || '')}</span>${canManageOrganization ? `<button class="button secondary small" type="button" data-action="edit-organization" data-current-name="${escapeHtml(cloud.organization?.name || '')}" title="Переименовать организатора" aria-label="Переименовать организатора">✎</button>` : ''}<select class="select" id="cloud-competition-switch" aria-label="Выбрать конкурс">${cloud.competitions.map((item) => `<option value="${item.id}" ${item.id === cloud.competitionId ? 'selected' : ''}>${escapeHtml(item.title)}</option>`).join('')}</select>`;
       crumb.querySelector('select').addEventListener('change', (event) => switchCompetition(event.target.value));
     }
     const adminPill = app.querySelector('.admin-pill');
     if (adminPill && !adminPill.querySelector('[data-cloud-action="sign-out"]')) {
       adminPill.innerHTML = `<span class="avatar">${escapeHtml((cloud.user?.email || 'A').slice(0, 1).toUpperCase())}</span><span>${escapeHtml(cloud.user?.email || 'Организатор')}</span><button class="button secondary small" type="button" data-cloud-action="sign-out">Выйти</button>`;
     }
-    if (adminPill && cloud.platformAdmin && !adminPill.querySelector('[data-platform-admin-link]')) {
+    const nav = app.querySelector('.nav');
+    if (cloud.platformAdmin && nav && !nav.querySelector('[data-platform-admin-link]')) {
       const link = document.createElement('a');
-      link.href = `${location.pathname}#admin`;
-      link.className = 'button secondary small';
+      link.href = 'https://glitchcore9.github.io/glitchcore/jury-voting/#admin';
+      link.className = 'nav-tool';
       link.dataset.platformAdminLink = '';
-      link.textContent = 'Аккаунты';
-      adminPill.prepend(link);
+      link.innerHTML = '<span class="nav-icon">⚙</span>Админка аккаунтов';
+      nav.append(link);
     }
+    const mobileNav = app.querySelector('.mobile-nav');
+    if (cloud.platformAdmin && mobileNav && !mobileNav.querySelector('[data-platform-admin-link]')) {
+      const link = document.createElement('a');
+      link.href = 'https://glitchcore9.github.io/glitchcore/jury-voting/#admin';
+      link.dataset.platformAdminLink = '';
+      link.innerHTML = '<span>⚙</span><span>Админка</span>';
+      mobileNav.append(link);
+    }
+    if (mobileNav) mobileNav.style.gridTemplateColumns = `repeat(${mobileNav.children.length}, minmax(0, 1fr))`;
     app.querySelectorAll('.top-actions > .demo-label:not([data-cloud-sync])').forEach((label) => label.remove());
-    const demoButton = app.querySelector('[data-action="load-demo"]');
-    if (demoButton) demoButton.style.display = 'none';
     app.querySelectorAll('[data-action="copy-link"]').forEach((button) => {
       const judge = window.ContestApp.getState().judges.find((item) => item.id === button.dataset.id);
       if (!judge?.token) {
@@ -490,9 +614,30 @@
     }
     const rotate = event.target.closest('[data-action="rotate-judge-link"]');
     if (rotate) { event.stopImmediatePropagation(); await rotateJudge(rotate.dataset.id); return; }
-    if (event.target.closest('[data-action="load-demo"]') && cloud.mode === 'admin') {
+    const deleteCompetition = event.target.closest('[data-action="delete-current-contest"]');
+    if (deleteCompetition && cloud.mode === 'admin') {
       event.stopImmediatePropagation();
-      showMessage('Демо-кнопка доступна только в локальном режиме. Для тестирования создайте отдельный конкурс.');
+      const competition = cloud.competitions.find((item) => item.id === cloud.competitionId);
+      if (!confirm(`Удалить конкурс «${competition?.title || ''}»? Все его участницы, категории, судьи, ссылки и оценки будут удалены навсегда.`)) return;
+      document.querySelector('#dialog')?.close();
+      try { await deleteCurrentCompetition(); showMessage('Конкурс удалён'); }
+      catch (error) { showMessage(error.message || 'Не удалось удалить конкурс'); }
+      return;
+    }
+    const demoButton = event.target.closest('[data-action="load-demo"]');
+    if (demoButton && cloud.mode === 'admin') {
+      event.stopImmediatePropagation();
+      const state = window.ContestApp.getState();
+      const hasData = state.participants.length || state.categories.length || state.judges.length || Object.keys(state.votes).length;
+      if (hasData && !confirm('В этом конкурсе уже есть данные. Создать отдельный демонстрационный конкурс, сохранив текущий?')) return;
+      demoButton.disabled = true;
+      const oldLabel = demoButton.querySelector('span:last-child') || demoButton;
+      const oldText = oldLabel.textContent;
+      oldLabel.textContent = 'Создаём…';
+      try { await seedDemoData(); }
+      catch (error) { showMessage(error.message || 'Не удалось добавить пример конкурса'); }
+      finally { demoButton.disabled = false; oldLabel.textContent = oldText; }
+      return;
     }
     if (event.target.closest('[data-action="reset-contest"]') && cloud.mode === 'admin') {
       event.stopImmediatePropagation();
@@ -559,6 +704,7 @@
     decorate: decorateAdmin,
     persistState,
     createJudge,
+    renameOrganization,
   };
   start();
 })();
