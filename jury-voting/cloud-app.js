@@ -123,6 +123,18 @@
     }
   }
 
+  document.querySelector('#dialog')?.addEventListener('click', async (event) => {
+    const deleteCompetition = event.target.closest('[data-action="delete-current-contest"]');
+    if (!deleteCompetition || cloud.mode !== 'admin') return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    const competition = cloud.competitions.find((item) => item.id === cloud.competitionId);
+    if (!confirm(`Удалить конкурс «${competition?.title || ''}»? Все его участницы, категории, судьи, ссылки и оценки будут удалены навсегда.`)) return;
+    document.querySelector('#dialog')?.close();
+    try { await deleteCurrentCompetition(); showMessage('Конкурс удалён'); }
+    catch (error) { showMessage(error.message || 'Не удалось удалить конкурс'); }
+  }, true);
+
   app.addEventListener('click', async (event) => {
     const button = event.target.closest('[data-admin-action]');
     if (!button || cloud.mode !== 'platform-admin') return;
@@ -614,16 +626,6 @@
     }
     const rotate = event.target.closest('[data-action="rotate-judge-link"]');
     if (rotate) { event.stopImmediatePropagation(); await rotateJudge(rotate.dataset.id); return; }
-    const deleteCompetition = event.target.closest('[data-action="delete-current-contest"]');
-    if (deleteCompetition && cloud.mode === 'admin') {
-      event.stopImmediatePropagation();
-      const competition = cloud.competitions.find((item) => item.id === cloud.competitionId);
-      if (!confirm(`Удалить конкурс «${competition?.title || ''}»? Все его участницы, категории, судьи, ссылки и оценки будут удалены навсегда.`)) return;
-      document.querySelector('#dialog')?.close();
-      try { await deleteCurrentCompetition(); showMessage('Конкурс удалён'); }
-      catch (error) { showMessage(error.message || 'Не удалось удалить конкурс'); }
-      return;
-    }
     const demoButton = event.target.closest('[data-action="load-demo"]');
     if (demoButton && cloud.mode === 'admin') {
       event.stopImmediatePropagation();
