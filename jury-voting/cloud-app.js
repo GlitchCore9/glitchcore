@@ -77,7 +77,7 @@
   function blockedView(access = {}) {
     cloud.mode = 'blocked';
     const reason = access.reason?.trim();
-    app.innerHTML = `<main class="judge-shell"><header class="judge-top"><div class="judge-logo"><span class="brand-mark">Ж</span><span>Голосование жюри</span></div><button class="button secondary small" type="button" data-cloud-action="sign-out">Выйти</button></header><section class="judge-heading"><p class="eyebrow">Доступ к рабочему пространству</p><h1>Аккаунт временно заблокирован</h1><p>Вход выполнен, но доступ к организациям и конкурсам отключён администратором платформы.</p></section><section class="panel" style="max-width:640px"><div class="panel-body"><dl class="account-block-details"><dt>Когда</dt><dd>${escapeHtml(formatDateTime(access.updated_at))}</dd><dt>Причина</dt><dd>${reason ? escapeHtml(reason) : 'Администратор не указал причину.'}</dd></dl><p class="form-hint">Ваши данные и конкурсы сохранены. Свяжитесь с администратором платформы, чтобы уточнить блокировку. После восстановления доступа обновите страницу или войдите снова.</p></div></section></main>`;
+    app.innerHTML = `<main class="judge-shell"><header class="judge-top"><div class="judge-logo"><span class="brand-mark">Ж</span><span>Голосование жюри</span></div><button class="button secondary small" type="button" data-cloud-action="sign-out">Выйти</button></header><section class="judge-heading"><p class="eyebrow">Доступ к рабочему пространству</p><h1>Аккаунт временно заблокирован</h1><p>Вход выполнен, но доступ к организациям и конкурсам отключён администратором платформы.</p></section><section class="panel" style="max-width:640px"><div class="panel-body"><dl class="account-block-details"><dt>Когда</dt><dd>${escapeHtml(formatDateTime(access.updated_at))}</dd><dt>Причина</dt><dd>${reason ? escapeHtml(reason) : 'Администратор не указал причину.'}</dd></dl><p class="form-hint">Ваши данные и конкурсы сохранены. Обратитесь к человеку, который предоставил вам доступ к системе, и попросите уточнить блокировку. После восстановления доступа обновите страницу или войдите снова.</p></div></section></main>`;
   }
 
   async function checkAccountAccess() {
@@ -175,7 +175,9 @@
     const id = button.dataset.userId;
     try {
       if (button.dataset.adminAction === 'block') {
-        const reason = prompt('Укажите причину блокировки. Она будет показана пользователю:') || '';
+        const reason = prompt('Укажите причину блокировки. Её увидит пользователь:');
+        if (reason === null) return;
+        if (!reason.trim()) { showMessage('Укажите причину блокировки.'); return; }
         if (!confirm('Заблокировать аккаунт сейчас? Пользователь сразу потеряет доступ к организациям и конкурсам, но его данные сохранятся. Причину и время блокировки он увидит при входе.')) return;
         await callPlatformAdmin('block', { user_id: id, reason });
       } else if (button.dataset.adminAction === 'unblock') {
@@ -569,6 +571,7 @@
       return;
     }
     cloud.user = result.data.user;
+    if (await checkAccountAccess()) return;
     watchAccountAccess();
     if (isPlatformAdminRoute()) await loadPlatformAdmin();
     else await loadOrganization();
