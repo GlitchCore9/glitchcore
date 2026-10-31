@@ -20,6 +20,7 @@
     @media(max-width:800px){.contest-controls{align-items:stretch;flex-direction:column;gap:12px;margin:-5px 0 19px;padding:12px}.contest-actions{display:grid;grid-template-columns:1fr 1fr}.contest-actions .button{min-height:42px;white-space:normal}}
   </style>
   <style>
+    .missing-scores{margin:-5px 0 15px;padding:13px 15px;border:1px solid #e5c9bc;background:#fbf1ec;color:#754b3e}.missing-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px}.missing-heading span{color:#806e66;font-size:11px}.missing-scores ul{display:grid;gap:9px;margin:11px 0 0;padding:0;list-style:none}.missing-scores li{display:grid;grid-template-columns:minmax(140px,.45fr) minmax(0,1fr);align-items:center;gap:8px;font-size:11px}.missing-score-links{display:flex;flex-wrap:wrap;gap:5px}.missing-score-link{padding:5px 8px;border:1px solid #d7b5a7;background:#fffaf7;color:#754b3e;font-size:10px;cursor:pointer}.missing-score-link:hover,.missing-score-link:focus-visible{border-color:#a9563f;background:#f8e6de}.ballot-category.is-missing{margin:-5px;padding:5px;border-radius:3px;background:#fff7f3}.ballot-category.is-missing label{color:#8a4935}.missing-label{display:block;margin-top:3px;color:#a2503b;font-size:9px;font-weight:600}.ballot-category .rating{scroll-margin-top:20px}
     .nav .nav-tool{display:flex;min-height:43px;align-items:center;gap:11px;padding:0 11px;border:0;background:transparent;text-align:left;cursor:pointer;font-size:13px;font-weight:600}
     .nav .nav-tool:hover{background:#e9eee7}
     .nav a.nav-tool{color:inherit;text-decoration:none}
@@ -148,11 +149,14 @@
       let filled = 0;
       const total = state.participants.length * state.categories.length;
       for (const person of state.participants) for (const category of state.categories) if (ballot[person.id]?.[category.id] !== undefined) filled++;
+      const missingByPerson = state.participants.map(person => ({ person, categories: state.categories.filter(category => ballot[person.id]?.[category.id] === undefined) })).filter(item => item.categories.length);
+      const missingCount = missingByPerson.reduce((sum, item) => sum + item.categories.length, 0);
+      const missingSummary = missingCount ? `<section class="missing-scores" role="status"><div class="missing-heading"><strong>Не хватает оценок: ${missingCount}</strong><span>Нажмите на номинацию, чтобы перейти к пропуску.</span></div><ul>${missingByPerson.map(({ person, categories }) => `<li><b>${esc(fullName(person))}</b><div class="missing-score-links">${categories.map(category => `<button class="missing-score-link" type="button" data-missing-target="rating-${esc(person.id)}-${esc(category.id)}" aria-label="${esc(fullName(person))}, номинация ${esc(category.name)}: перейти к оценке">${esc(category.name)}</button>`).join('')}</div></li>`).join('')}</ul></section>` : '';
       if (!state.isActive && !submitted) {
         app.innerHTML = `<main class="judge-shell"><header class="judge-top"><div class="judge-logo"><span class="brand-mark">Ж</span><span>Голосование жюри</span></div><small>СУДЬЯ: ${esc(judge.name.toLocaleUpperCase('ru'))}</small></header><section class="judge-heading"><p class="eyebrow">Бюллетень судьи</p><h1>${esc(state.title)}</h1></section><section class="paused-vote"><h2>Голосование приостановлено</h2><p>Организатор остановил приём голосов. Ранее отмеченные оценки сохранены; продолжить голосование можно будет после возобновления конкурса.</p></section></main>`;
         return;
       }
-      app.innerHTML = `<main class="judge-shell"><header class="judge-top"><div class="judge-logo"><span class="brand-mark">Ж</span><span>Голосование жюри</span></div><small>СУДЬЯ: ${esc(judge.name.toLocaleUpperCase('ru'))}</small></header><section class="judge-heading"><p class="eyebrow">Бюллетень судьи</p><h1>${esc(state.title)}</h1><p>Поставьте оценку каждой участнице по каждой категории.</p></section>${submitted ? `<section class="submitted"><h2>Голос принят</h2><p>Ваш бюллетень сохранён. Повторное голосование по этой ссылке недоступно.</p></section>` : `<div class="progress-wrap"><div class="progress-track"><i style="width:${total ? Math.round(filled / total * 100) : 0}%"></i></div><span class="progress-text">${filled} / ${total}</span></div><form id="ballot-form"><div class="ballot-list">${state.participants.map((person, index) => `<article class="ballot-card"><div class="ballot-person"><span class="person-index">${String(index + 1).padStart(2, '0')}</span><div><div class="person-name">${esc(fullName(person))}</div><div class="person-age">${person.age} лет</div></div></div><div class="ballot-categories">${state.categories.map(category => `<div class="ballot-category"><label>${esc(category.name)}</label><div class="rating" role="group" aria-label="${esc(category.name)}: ${esc(fullName(person))}">${Array.from({ length: state.maxScore - state.minScore + 1 }, (_, i) => state.minScore + i).map(score => `<button type="button" data-score="${score}" data-person="${esc(person.id)}" data-category="${esc(category.id)}" aria-pressed="${ballot[person.id]?.[category.id] === score}">${score}</button>`).join('')}</div></div>`).join('')}</div></article>`).join('')}</div><footer class="judge-footer"><span>Отправить можно один раз.<br>Проверьте оценки перед отправкой.</span><button class="button" type="submit" ${filled < total ? 'disabled' : ''}>Отправить бюллетень →</button></footer></form>`}</main>`;
+      app.innerHTML = `<main class="judge-shell"><header class="judge-top"><div class="judge-logo"><span class="brand-mark">Ж</span><span>Голосование жюри</span></div><small>СУДЬЯ: ${esc(judge.name.toLocaleUpperCase('ru'))}</small></header><section class="judge-heading"><p class="eyebrow">Бюллетень судьи</p><h1>${esc(state.title)}</h1><p>Поставьте оценку каждой участнице по каждой категории.</p></section>${submitted ? `<section class="submitted"><h2>Голос принят</h2><p>Ваш бюллетень сохранён. Повторное голосование по этой ссылке недоступно.</p></section>` : `<div class="progress-wrap"><div class="progress-track"><i style="width:${total ? Math.round(filled / total * 100) : 0}%"></i></div><span class="progress-text">${filled} / ${total}</span></div>${missingSummary}<form id="ballot-form"><div class="ballot-list">${state.participants.map((person, index) => `<article class="ballot-card"><div class="ballot-person"><span class="person-index">${String(index + 1).padStart(2, '0')}</span><div><div class="person-name">${esc(fullName(person))}</div><div class="person-age">${person.age} лет</div></div></div><div class="ballot-categories">${state.categories.map(category => `<div class="ballot-category${ballot[person.id]?.[category.id] === undefined ? ' is-missing' : ''}"><label>${esc(category.name)}${ballot[person.id]?.[category.id] === undefined ? '<span class="missing-label">Нет оценки</span>' : ''}</label><div class="rating" id="rating-${esc(person.id)}-${esc(category.id)}" role="group" aria-label="${esc(category.name)}: ${esc(fullName(person))}">${Array.from({ length: state.maxScore - state.minScore + 1 }, (_, i) => state.minScore + i).map(score => `<button type="button" data-score="${score}" data-person="${esc(person.id)}" data-category="${esc(category.id)}" aria-pressed="${ballot[person.id]?.[category.id] === score}">${score}</button>`).join('')}</div></div>`).join('')}</div></article>`).join('')}</div><footer class="judge-footer"><span>${missingCount ? 'Не проставлено оценок: ' + missingCount + '.' : 'Все оценки проставлены.'}<br>Отправить можно один раз.</span><button class="button" type="submit" ${filled < total ? 'disabled' : ''}>Отправить бюллетень →</button></footer></form>`}</main>`;
     }
     function showToast(message) { const toast = document.querySelector('#toast'); toast.textContent = message; toast.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { toast.hidden = true; }, 2600); }
     dialog.addEventListener('click', event => {
@@ -199,6 +203,13 @@
       const link = document.createElement('a'); link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })); link.download = 'rezultaty-konkursa.csv'; link.click(); URL.revokeObjectURL(link.href);
     }
     app.addEventListener('click', async event => {
+      const missingScoreButton = event.target.closest('[data-missing-target]');
+      if (missingScoreButton) {
+        const target = document.getElementById(missingScoreButton.dataset.missingTarget);
+        target?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        target?.querySelector('button')?.focus({ preventScroll: true });
+        return;
+      }
       const tabButton = event.target.closest('[data-tab]');
       if (tabButton) { state.activeTab = tabButton.dataset.tab; persist(); render(); return; }
       const scoreButton = event.target.closest('[data-score]');
@@ -390,6 +401,6 @@
     }, 15000);
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="cloud-app.js?v=cloud-20261031-8"></script>
+  <script src="cloud-app.js?v=cloud-20261031-10"></script>
 </body>
 </html>
