@@ -69,7 +69,7 @@ Deno.serve(async (request) => {
   try {
     if (action === 'list') {
       const [{ data: accessRows, error: accessError }, { data: orgs, error: orgError }, { data: competitions, error: competitionsError }] = await Promise.all([
-        admin.from('account_access').select('user_id, status, reason'),
+        admin.from('account_access').select('user_id, status, reason, updated_at'),
         admin.from('organizations').select('id, created_by'),
         admin.from('competitions').select('id, organization_id'),
       ]);
@@ -94,7 +94,7 @@ Deno.serve(async (request) => {
       return json({ users: users.map((user) => {
         const access = accessByUser.get(user.id);
         const organizationIds = orgIdsByUser.get(user.id);
-        return { id: user.id, email: user.email, created_at: user.created_at, status: access?.status || 'active', reason: access?.reason || null, organization_count: organizationIds?.size || 0, competition_count: competitionsByUser.get(user.id) || 0 };
+        return { id: user.id, email: user.email, created_at: user.created_at, status: access?.status || 'active', reason: access?.reason || null, updated_at: access?.updated_at || null, organization_count: organizationIds?.size || 0, competition_count: competitionsByUser.get(user.id) || 0 };
       }) });
     }
 

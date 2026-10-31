@@ -16,6 +16,7 @@
     @media(max-width:390px){.rating button{width:30px}.ballot-category{grid-template-columns:minmax(64px,1fr) auto}.rating{gap:2px}.stat{padding:14px}.stat-value{font-size:23px}.demo-label{font-size:9px}}
     .drag-handle{display:inline-flex;width:36px;height:36px;flex:0 0 36px;align-items:center;justify-content:center;border:1px solid var(--line);background:#f8f8f3;color:#68756c;font-size:20px;line-height:1;cursor:grab;touch-action:none;user-select:none}.drag-handle:active{cursor:grabbing}.list-row.is-dragging{position:relative;z-index:1;background:#eaf1eb;opacity:.72;box-shadow:0 5px 16px #17251f1c}.list-row.is-drop-target{box-shadow:inset 0 2px var(--green)}
     .drag-placeholder{border:1px dashed var(--green);background:#edf3e9}.list-row.is-dragging{z-index:10;opacity:.96;pointer-events:none;box-shadow:0 12px 30px #17251f35;will-change:transform}.contest-controls{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:-7px 0 22px;padding:14px 16px;border:1px solid var(--line);background:#f8f8f3}.contest-status{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:800}.contest-status::before{width:9px;height:9px;flex:0 0 9px;border-radius:50%;background:#268257;content:""}.contest-controls.is-paused .contest-status::before{background:#c65c48}.contest-controls p{margin:5px 0 0 19px;color:var(--muted);font-size:11px}.contest-actions{display:flex;gap:8px}.contest-actions .button{white-space:nowrap}.contest-confirm{margin:0;color:var(--ink);font-size:13px;line-height:1.65}.contest-warning{margin-top:9px;padding:10px 12px;background:#fbf0e9;color:#8c3e2e;font-size:11px;line-height:1.5}.paused-vote{margin-top:20px;padding:20px;border:1px solid #e5c9bc;background:#fbf1ec}.paused-vote h2{margin:0 0 7px;color:#87452f;font-size:17px}.paused-vote p{margin:0;color:#68564d;font-size:12px;line-height:1.55}
+    .account-block-details{display:grid;grid-template-columns:90px minmax(0,1fr);gap:10px 14px;margin:0 0 14px}.account-block-details dt{color:var(--muted);font-size:12px}.account-block-details dd{margin:0;font-size:13px;font-weight:700;overflow-wrap:anywhere}
     @media(max-width:800px){.contest-controls{align-items:stretch;flex-direction:column;gap:12px;margin:-5px 0 19px;padding:12px}.contest-actions{display:grid;grid-template-columns:1fr 1fr}.contest-actions .button{min-height:42px;white-space:normal}}
   </style>
   <style>
@@ -389,6 +390,6 @@
     }, 15000);
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="cloud-app.js?v=cloud-20261031-5"></script>
+  <script src="cloud-app.js?v=cloud-20261031-6"></script>
 </body>
 </html>

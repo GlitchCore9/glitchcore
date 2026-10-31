@@ -34,6 +34,7 @@
     saveQueue: Promise.resolve(),
     channel: null,
     savedJudgeScores: new Map(),
+    accessChannel: null,
   };
   const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
   const showMessage = (message) => {
@@ -58,6 +59,7 @@
   const isPlatformAdminRoute = () => location.pathname.replace(/\/$/, '').endsWith('/admin') || new URLSearchParams(location.hash.slice(1)).has('admin') || new URLSearchParams(location.search).has('admin');
   const judgeToken = () => new URLSearchParams(location.hash.slice(1)).get('judge');
   const makeToken = () => [...crypto.getRandomValues(new Uint8Array(32))].map((byte) => byte.toString(16).padStart(2, '0')).join('');
+  const formatDateTime = (value) => value ? new Date(value).toLocaleString('ru-RU', { dateStyle: 'long', timeStyle: 'short' }) : 'не указано';
   const handleError = (error, fallback = 'Не удалось выполнить запрос') => {
     if (error) {
       console.error(error);
@@ -70,6 +72,31 @@
   function authView(message = '') {
     cloud.mode = 'auth';
     app.innerHTML = `<main class="judge-shell"><header class="judge-top"><div class="judge-logo"><span class="brand-mark">Ж</span><span>Голосование жюри</span></div><small>ОБЛАЧНАЯ ВЕРСИЯ</small></header><section class="judge-heading"><p class="eyebrow">Рабочее пространство</p><h1>Вход организатора</h1><p>Войдите или создайте аккаунт, чтобы управлять конкурсами.</p></section><section class="panel" style="max-width:480px"><div class="panel-body"><form id="cloud-auth-form" class="form-grid"><div class="field full"><label for="cloud-email">Электронная почта</label><input id="cloud-email" name="email" type="email" autocomplete="email" required></div><div class="field full"><label for="cloud-password">Пароль</label><input id="cloud-password" name="password" type="password" autocomplete="current-password" minlength="8" required></div><div class="field full"><p class="form-hint" id="cloud-auth-message">${escapeHtml(message)}</p></div><div class="field full" style="display:flex;gap:8px;flex-wrap:wrap"><button class="button" type="submit" data-auth-mode="sign-in">Войти</button><button class="button secondary" type="submit" data-auth-mode="sign-up">Создать аккаунт</button></div></form></div></section></main>`;
+  }
+
+  function blockedView(access = {}) {
+    cloud.mode = 'blocked';
+    const reason = access.reason?.trim();
+    app.innerHTML = `<main class="judge-shell"><header class="judge-top"><div class="judge-logo"><span class="brand-mark">Ж</span><span>Голосование жюри</span></div><button class="button secondary small" type="button" data-cloud-action="sign-out">Выйти</button></header><section class="judge-heading"><p class="eyebrow">Доступ к рабочему пространству</p><h1>Аккаунт временно заблокирован</h1><p>Вход выполнен, но доступ к организациям и конкурсам отключён администратором платформы.</p></section><section class="panel" style="max-width:640px"><div class="panel-body"><dl class="account-block-details"><dt>Когда</dt><dd>${escapeHtml(formatDateTime(access.updated_at))}</dd><dt>Причина</dt><dd>${reason ? escapeHtml(reason) : 'Администратор не указал причину.'}</dd></dl><p class="form-hint">Ваши данные и конкурсы сохранены. Свяжитесь с администратором платформы, чтобы уточнить блокировку. После восстановления доступа обновите страницу или войдите снова.</p></div></section></main>`;
+  }
+
+  async function checkAccountAccess() {
+    if (!cloud.user) return false;
+    const { data, error } = await client.from('account_access').select('status, reason, updated_at').eq('user_id', cloud.user.id).maybeSingle();
+    if (error) { authView('Не удалось проверить состояние аккаунта. Обновите страницу или обратитесь к администратору.'); return true; }
+    if (data?.status === 'blocked') { blockedView(data); return true; }
+    return false;
+  }
+
+  function watchAccountAccess() {
+    if (cloud.accessChannel) client.removeChannel(cloud.accessChannel);
+    if (!cloud.user) { cloud.accessChannel = null; return; }
+    cloud.accessChannel = client.channel(`account-access-${cloud.user.id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'account_access', filter: `user_id=eq.${cloud.user.id}` }, ({ new: access }) => {
+        if (access?.status === 'blocked') blockedView(access);
+        else if (cloud.mode === 'blocked') loadOrganization();
+      })
+      .subscribe();
   }
 
   function organizationView(message = '') {
@@ -91,6 +118,8 @@
     if (error) { authView('Не удалось проверить сессию. Обновите страницу.'); return; }
     cloud.user = session?.user || null;
     if (!cloud.user) { authView(); return; }
+    watchAccountAccess();
+    if (await checkAccountAccess()) return;
     if (isPlatformAdminRoute()) { await loadPlatformAdmin(); return; }
     await loadOrganization();
   }
@@ -114,7 +143,7 @@
     try {
       const { users } = await callPlatformAdmin('list');
       cloud.mode = 'platform-admin';
-      app.innerHTML = `<main class="judge-shell" style="max-width:1100px"><header class="judge-top"><div class="judge-logo"><span class="brand-mark">Ж</span><span>Голосование жюри</span></div><div style="display:flex;gap:8px"><a class="button secondary small" href="${escapeHtml(location.pathname)}">К конкурсам</a><button class="button secondary small" type="button" data-cloud-action="sign-out">Выйти</button></div></header><section class="judge-heading"><p class="eyebrow">Платформенное управление</p><h1>Аккаунты</h1><p>Блокировка запрещает доступ к рабочим данным. Удаление аккаунта необратимо удалит его организации и конкурсы.</p></section>${message ? `<p class="form-hint" role="status">${escapeHtml(message)}</p>` : ''}<section class="panel"><div class="panel-body"><div class="table-wrap"><table><thead><tr><th>Пользователь</th><th>Дата регистрации</th><th>Организации</th><th>Конкурсы</th><th>Статус</th><th>Действия</th></tr></thead><tbody>${users.map((user) => `<tr><td>${escapeHtml(user.email || 'Без email')}</td><td>${user.created_at ? new Date(user.created_at).toLocaleDateString('ru-RU') : '—'}</td><td>${user.organization_count}</td><td>${user.competition_count}</td><td><span class="badge ${user.status === 'blocked' ? 'pending' : ''}">${user.status === 'blocked' ? 'Заблокирован' : 'Активен'}</span></td><td><div class="row-actions">${user.id === cloud.user.id ? '<span class="form-hint">Вы</span>' : `<button class="button secondary small" data-admin-action="${user.status === 'blocked' ? 'unblock' : 'block'}" data-user-id="${user.id}">${user.status === 'blocked' ? 'Разблокировать' : 'Заблокировать'}</button><button class="button danger small" data-admin-action="delete" data-user-id="${user.id}">Удалить</button>`}</div></td></tr>`).join('') || '<tr><td colspan="6" class="empty">Аккаунтов пока нет</td></tr>'}</tbody></table></div></div></section></main>`;
+      app.innerHTML = `<main class="judge-shell" style="max-width:1100px"><header class="judge-top"><div class="judge-logo"><span class="brand-mark">Ж</span><span>Голосование жюри</span></div><div style="display:flex;gap:8px"><a class="button secondary small" href="${escapeHtml(location.pathname)}">К конкурсам</a><button class="button secondary small" type="button" data-cloud-action="sign-out">Выйти</button></div></header><section class="judge-heading"><p class="eyebrow">Платформенное управление</p><h1>Аккаунты</h1><p>При блокировке пользователь сразу теряет доступ к организациям и конкурсам; данные остаются сохранены. Время и причина блокировки видны здесь и самому пользователю.</p></section>${message ? `<p class="form-hint" role="status">${escapeHtml(message)}</p>` : ''}<section class="panel"><div class="panel-body"><div class="table-wrap"><table><thead><tr><th>Пользователь</th><th>Дата регистрации</th><th>Организации</th><th>Конкурсы</th><th>Статус и сведения</th><th>Действия</th></tr></thead><tbody>${users.map((user) => `<tr><td>${escapeHtml(user.email || 'Без email')}</td><td>${user.created_at ? new Date(user.created_at).toLocaleDateString('ru-RU') : '—'}</td><td>${user.organization_count}</td><td>${user.competition_count}</td><td><span class="badge ${user.status === 'blocked' ? 'pending' : ''}">${user.status === 'blocked' ? 'Заблокирован' : 'Активен'}</span>${user.status === 'blocked' ? `<div class="form-hint">С: ${escapeHtml(formatDateTime(user.updated_at))}<br>Причина: ${escapeHtml(user.reason || 'не указана')}</div>` : ''}</td><td><div class="row-actions">${user.id === cloud.user.id ? '<span class="form-hint">Вы</span>' : `<button class="button secondary small" data-admin-action="${user.status === 'blocked' ? 'unblock' : 'block'}" data-user-id="${user.id}">${user.status === 'blocked' ? 'Разблокировать' : 'Заблокировать'}</button><button class="button danger small" data-admin-action="delete" data-user-id="${user.id}">Удалить</button>`}</div></td></tr>`).join('') || '<tr><td colspan="6" class="empty">Аккаунтов пока нет</td></tr>'}</tbody></table></div></div></section></main>`;
     } catch (error) {
       if (/administrator|admin access|not authorized/i.test(error.message)) {
         cloud.mode = 'platform-admin-denied';
@@ -146,8 +175,8 @@
     const id = button.dataset.userId;
     try {
       if (button.dataset.adminAction === 'block') {
-        const reason = prompt('Причина блокировки (необязательно):') || '';
-        if (!confirm('Заблокировать аккаунт? Доступ к организациям и конкурсам будет закрыт.')) return;
+        const reason = prompt('Укажите причину блокировки. Она будет показана пользователю:') || '';
+        if (!confirm('Заблокировать аккаунт сейчас? Пользователь сразу потеряет доступ к организациям и конкурсам, но его данные сохранятся. Причину и время блокировки он увидит при входе.')) return;
         await callPlatformAdmin('block', { user_id: id, reason });
       } else if (button.dataset.adminAction === 'unblock') {
         if (!confirm('Восстановить доступ этому аккаунту?')) return;
@@ -162,6 +191,7 @@
   });
 
   async function loadOrganization() {
+    if (await checkAccountAccess()) return;
     try { cloud.platformAdmin = Boolean((await callPlatformAdmin('is_admin')).is_admin); }
     catch { cloud.platformAdmin = false; }
     const { data, error } = await client.from('organization_members').select('organization_id, role').eq('user_id', cloud.user.id);
@@ -539,6 +569,7 @@
       return;
     }
     cloud.user = result.data.user;
+    watchAccountAccess();
     if (isPlatformAdminRoute()) await loadPlatformAdmin();
     else await loadOrganization();
   }
@@ -617,6 +648,8 @@
     const signOut = event.target.closest('[data-cloud-action="sign-out"]');
     if (signOut) {
       if (cloud.channel) await client.removeChannel(cloud.channel);
+      if (cloud.accessChannel) await client.removeChannel(cloud.accessChannel);
+      cloud.accessChannel = null;
       cloud.channel = null; cloud.competitionId = null; cloud.competitions = []; cloud.organization = null;
       cloud.issuedJudgeTokens.clear();
       persistIssuedTokens();
