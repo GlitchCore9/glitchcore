@@ -692,7 +692,9 @@
     state.votes[token] ||= {};
     state.votes[token][scoreButton.dataset.person] ||= {};
     state.votes[token][scoreButton.dataset.person][scoreButton.dataset.category] = Number(scoreButton.dataset.score);
-    window.ContestApp.renderJudge(token);
+    const scrollY = window.scrollY;
+    window.ContestApp.setState(state);
+    window.scrollTo(0, scrollY);
     persistState(state);
   }, true);
 
@@ -704,7 +706,13 @@
     const state = window.ContestApp.getState();
     const ballot = state.votes[token] || {};
     const complete = state.participants.every((person) => state.categories.every((category) => ballot[person.id]?.[category.id] !== undefined));
-    if (!complete) { showMessage('Поставьте оценку в каждой категории для всех участниц'); return; }
+    if (!complete) {
+      window.ContestApp.renderJudge(token);
+      document.querySelector('.missing-scores')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.querySelector('.missing-score-link')?.focus({ preventScroll: true });
+      showMessage('Проверьте список пропусков выше.');
+      return;
+    }
     if (!confirm('Отправить бюллетень? После отправки изменить оценки нельзя.')) return;
     const scores = state.participants.flatMap((person) => state.categories.map((category) => ({
       participant_id: person.id,

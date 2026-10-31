@@ -156,7 +156,7 @@
         app.innerHTML = `<main class="judge-shell"><header class="judge-top"><div class="judge-logo"><span class="brand-mark">Ж</span><span>Голосование жюри</span></div><small>СУДЬЯ: ${esc(judge.name.toLocaleUpperCase('ru'))}</small></header><section class="judge-heading"><p class="eyebrow">Бюллетень судьи</p><h1>${esc(state.title)}</h1></section><section class="paused-vote"><h2>Голосование приостановлено</h2><p>Организатор остановил приём голосов. Ранее отмеченные оценки сохранены; продолжить голосование можно будет после возобновления конкурса.</p></section></main>`;
         return;
       }
-      app.innerHTML = `<main class="judge-shell"><header class="judge-top"><div class="judge-logo"><span class="brand-mark">Ж</span><span>Голосование жюри</span></div><small>СУДЬЯ: ${esc(judge.name.toLocaleUpperCase('ru'))}</small></header><section class="judge-heading"><p class="eyebrow">Бюллетень судьи</p><h1>${esc(state.title)}</h1><p>Поставьте оценку каждой участнице по каждой категории.</p></section>${submitted ? `<section class="submitted"><h2>Голос принят</h2><p>Ваш бюллетень сохранён. Повторное голосование по этой ссылке недоступно.</p></section>` : `<div class="progress-wrap"><div class="progress-track"><i style="width:${total ? Math.round(filled / total * 100) : 0}%"></i></div><span class="progress-text">${filled} / ${total}</span></div>${missingSummary}<form id="ballot-form"><div class="ballot-list">${state.participants.map((person, index) => `<article class="ballot-card"><div class="ballot-person"><span class="person-index">${String(index + 1).padStart(2, '0')}</span><div><div class="person-name">${esc(fullName(person))}</div><div class="person-age">${person.age} лет</div></div></div><div class="ballot-categories">${state.categories.map(category => `<div class="ballot-category${ballot[person.id]?.[category.id] === undefined ? ' is-missing' : ''}"><label>${esc(category.name)}${ballot[person.id]?.[category.id] === undefined ? '<span class="missing-label">Нет оценки</span>' : ''}</label><div class="rating" id="rating-${esc(person.id)}-${esc(category.id)}" role="group" aria-label="${esc(category.name)}: ${esc(fullName(person))}">${Array.from({ length: state.maxScore - state.minScore + 1 }, (_, i) => state.minScore + i).map(score => `<button type="button" data-score="${score}" data-person="${esc(person.id)}" data-category="${esc(category.id)}" aria-pressed="${ballot[person.id]?.[category.id] === score}">${score}</button>`).join('')}</div></div>`).join('')}</div></article>`).join('')}</div><footer class="judge-footer"><span>${missingCount ? 'Не проставлено оценок: ' + missingCount + '.' : 'Все оценки проставлены.'}<br>Отправить можно один раз.</span><button class="button" type="submit" ${filled < total ? 'disabled' : ''}>Отправить бюллетень →</button></footer></form>`}</main>`;
+      app.innerHTML = `<main class="judge-shell"><header class="judge-top"><div class="judge-logo"><span class="brand-mark">Ж</span><span>Голосование жюри</span></div><small>СУДЬЯ: ${esc(judge.name.toLocaleUpperCase('ru'))}</small></header><section class="judge-heading"><p class="eyebrow">Бюллетень судьи</p><h1>${esc(state.title)}</h1><p>Поставьте оценку каждой участнице по каждой категории.</p></section>${submitted ? `<section class="submitted"><h2>Голос принят</h2><p>Ваш бюллетень сохранён. Повторное голосование по этой ссылке недоступно.</p></section>` : `<div class="progress-wrap"><div class="progress-track"><i style="width:${total ? Math.round(filled / total * 100) : 0}%"></i></div><span class="progress-text">${filled} / ${total}</span></div>${missingSummary}<form id="ballot-form"><div class="ballot-list">${state.participants.map((person, index) => `<article class="ballot-card"><div class="ballot-person"><span class="person-index">${String(index + 1).padStart(2, '0')}</span><div><div class="person-name">${esc(fullName(person))}</div><div class="person-age">${person.age} лет</div></div></div><div class="ballot-categories">${state.categories.map(category => `<div class="ballot-category${ballot[person.id]?.[category.id] === undefined ? ' is-missing' : ''}"><label>${esc(category.name)}${ballot[person.id]?.[category.id] === undefined ? '<span class="missing-label">Нет оценки</span>' : ''}</label><div class="rating" id="rating-${esc(person.id)}-${esc(category.id)}" role="group" aria-label="${esc(category.name)}: ${esc(fullName(person))}">${Array.from({ length: state.maxScore - state.minScore + 1 }, (_, i) => state.minScore + i).map(score => `<button type="button" data-score="${score}" data-person="${esc(person.id)}" data-category="${esc(category.id)}" aria-pressed="${ballot[person.id]?.[category.id] === score}">${score}</button>`).join('')}</div></div>`).join('')}</div></article>`).join('')}</div><footer class="judge-footer"><span>${missingCount ? 'Не проставлено оценок: ' + missingCount + '.' : 'Все оценки проставлены.'}<br>Отправить можно один раз.</span><button class="button" type="submit">${filled < total ? 'Проверить пропуски →' : 'Отправить бюллетень →'}</button></footer></form>`}</main>`;
     }
     function showToast(message) { const toast = document.querySelector('#toast'); toast.textContent = message; toast.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { toast.hidden = true; }, 2600); }
     dialog.addEventListener('click', event => {
@@ -218,7 +218,8 @@
         if (!judge || state.votes[judge.id]?.submitted) return;
         state.votes[judge.id] ||= {}; state.votes[judge.id][scoreButton.dataset.person] ||= {};
         state.votes[judge.id][scoreButton.dataset.person][scoreButton.dataset.category] = Number(scoreButton.dataset.score);
-        persist(); renderJudge(token); return;
+        const scrollY = window.scrollY;
+        persist(); renderJudge(token); window.scrollTo(0, scrollY); return;
       }
       if (event.target.closest('[data-close]')) { dialog.close(); return; }
       const actionButton = event.target.closest('[data-action]'); if (!actionButton) return;
@@ -362,7 +363,13 @@
         event.preventDefault(); const judge = state.judges.find(item => item.id === judgeToken()); if (!judge || state.votes[judge.id]?.submitted) return;
         const ballot = state.votes[judge.id] || {};
         const complete = state.participants.every(person => state.categories.every(category => ballot[person.id]?.[category.id] !== undefined));
-        if (!complete) { showToast('Поставьте оценку в каждой категории для всех участниц'); return; }
+        if (!complete) {
+          renderJudge(judgeToken());
+          document.querySelector('.missing-scores')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          document.querySelector('.missing-score-link')?.focus({ preventScroll: true });
+          showToast('Проверьте список пропусков выше.');
+          return;
+        }
         if (confirm('Отправить бюллетень? После отправки изменить оценки нельзя.')) { ballot.submitted = true; state.votes[judge.id] = ballot; persist(); render(); }
       }
       if (event.target.id === 'scale-form') {
@@ -401,6 +408,6 @@
     }, 15000);
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="cloud-app.js?v=cloud-20261031-10"></script>
+  <script src="cloud-app.js?v=cloud-20261031-11"></script>
 </body>
 </html>
